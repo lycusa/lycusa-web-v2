@@ -1,0 +1,295 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useAuth } from '@/app/components/auth/AuthGuard';
+import { getUserProfile, createUserProfile, updateUserProfile } from '@/app/lib/api';
+
+interface UserProfile {
+  userId: string;
+  username: string;
+  bio: string;
+  avatarUrl: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export default function EditProfilePage() {
+  const router = useRouter();
+  const { user, loading: authLoading, isAuthenticated } = useAuth();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [isNewProfile, setIsNewProfile] = useState(false);
+
+  const [formData, setFormData] = useState({
+    username: '',
+    bio: '',
+    avatarUrl: '',
+  });
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/signin');
+      return;
+    }
+
+    if (user?.id) {
+      loadProfile();
+    }
+  }, [user, authLoading, isAuthenticated]);
+
+  const loadProfile = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getUserProfile(user!.id);
+
+      if (response.success && response.data) {
+        setProfile(response.data);
+        setFormData({
+          username: response.data.username || '',
+          bio: response.data.bio || '',
+          avatarUrl: response.data.avatarUrl || '',
+        });
+        setIsNewProfile(false);
+      } else {
+        setIsNewProfile(true);
+      }
+    } catch (err: any) {
+      if (err.response?.status === 404) {
+        setIsNewProfile(true);
+      } else {
+        setError(err.response?.data?.message || 'Failed to load profile');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.username.trim()) {
+      setError('Username is required');
+      return;
+    }
+
+    try {
+      setSaving(true);
+      setError(null);
+      setSuccess(false);
+
+      let response;
+      if (isNewProfile) {
+        response = await createUserProfile(formData);
+      } else {
+        response = await updateUserProfile(formData);
+      }
+
+      if (response.success) {
+        setSuccess(true);
+        setTimeout(() => {
+          router.push('/profile');
+        }, 1500);
+      } else {
+        setError(response.message || 'Failed to save profile');
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to save profile');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex justify-between items-center">
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                Lycusa
+              </span>
+            </Link>
+
+            <Link
+              href="/profile"
+              className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium hover:bg-gray-100 rounded-lg"
+            >
+              Cancel
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {isNewProfile ? 'Create Your Profile' : 'Edit Profile'}
+            </h1>
+            <p className="text-gray-600">
+              {isNewProfile
+                ? 'Set up your profile to get started on Lycusa'
+                : 'Update your profile information'}
+            </p>
+          </div>
+
+          {/* Success Message */}
+          {success && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+              <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-green-900 font-medium">Profile saved successfully!</p>
+                <p className="text-green-700 text-sm">Redirecting to your profile...</p>
+              </div>
+            </div>
+          )}
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+              <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <p className="text-red-900">{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Avatar Preview */}
+            <div className="flex justify-center">
+              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 shadow-lg flex items-center justify-center overflow-hidden">
+                {formData.avatarUrl ? (
+                  <img src={formData.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <svg className="w-16 h-16 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                )}
+              </div>
+            </div>
+
+            {/* Username */}
+            <div>
+              <label htmlFor="username" className="block text-sm font-semibold text-gray-900 mb-2">
+                Username <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                placeholder="Enter your username"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
+                required
+              />
+            </div>
+
+            {/* Bio */}
+            <div>
+              <label htmlFor="bio" className="block text-sm font-semibold text-gray-900 mb-2">
+                Bio
+              </label>
+              <textarea
+                id="bio"
+                name="bio"
+                value={formData.bio}
+                onChange={handleInputChange}
+                placeholder="Tell us about yourself..."
+                rows={4}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500 resize-none"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                {formData.bio.length} characters
+              </p>
+            </div>
+
+            {/* Avatar URL */}
+            <div>
+              <label htmlFor="avatarUrl" className="block text-sm font-semibold text-gray-900 mb-2">
+                Avatar URL
+              </label>
+              <input
+                type="url"
+                id="avatarUrl"
+                name="avatarUrl"
+                value={formData.avatarUrl}
+                onChange={handleInputChange}
+                placeholder="https://example.com/avatar.jpg"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Enter a URL to your profile picture
+              </p>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-4 pt-6">
+              <button
+                type="submit"
+                disabled={saving}
+                className="flex-1 px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+              >
+                {saving ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Saving...
+                  </span>
+                ) : (
+                  isNewProfile ? 'Create Profile' : 'Save Changes'
+                )}
+              </button>
+
+              {!isNewProfile && (
+                <Link
+                  href="/profile"
+                  className="px-6 py-4 bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:border-gray-400 hover:bg-gray-50 transition-all font-semibold text-center"
+                >
+                  Cancel
+                </Link>
+              )}
+            </div>
+          </form>
+        </div>
+      </main>
+    </div>
+  );
+}
