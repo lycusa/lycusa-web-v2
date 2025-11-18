@@ -52,7 +52,9 @@ export default function WalletAuth({ onSuccess, onError }: WalletAuthProps) {
 
       // Step 2: Get challenge from backend
       setMessage('Preparing signature request...');
-      const { siweMessage } = await getWalletChallenge(address);
+      const domain = window.location.host;
+      const uri = window.location.origin;
+      const { siweMessage } = await getWalletChallenge(address, domain, uri);
 
       // Step 3: Sign the message
       setStep('signing');

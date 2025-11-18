@@ -37,8 +37,12 @@ export const verifyOtp = async (email: string, otp: string) => {
 };
 
 // Get wallet challenge (SIWE message)
-export const getWalletChallenge = async (walletAddress: string) => {
-  const response = await api.post('/auth/auth/wallet/challenge', { walletAddress });
+export const getWalletChallenge = async (walletAddress: string, domain: string, uri: string) => {
+  const response = await api.post('/auth/auth/wallet/challenge', {
+    walletAddress,
+    domain,
+    uri
+  });
   return response.data;
 };
 
