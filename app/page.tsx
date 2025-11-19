@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useAuth } from './components/auth/AuthGuard';
-import LogoutButton from './components/auth/LogoutButton';
+import Link from "next/link";
+import { useAuth } from "./components/auth/AuthGuard";
+import LogoutButton from "./components/auth/LogoutButton";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -15,8 +15,18 @@ export default function Home() {
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center gap-2 group">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
                 </svg>
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -35,7 +45,8 @@ export default function Home() {
                   <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200/50">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-sm font-medium text-gray-700 max-w-[150px] truncate">
-                      {user?.email || `${user?.walletAddress?.slice(0, 6)}...${user?.walletAddress?.slice(-4)}`}
+                      {user?.email ||
+                        `${user?.walletAddress?.slice(0, 6)}...${user?.walletAddress?.slice(-4)}`}
                     </span>
                   </div>
                   <LogoutButton className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all text-sm font-medium shadow-md hover:shadow-lg" />
@@ -78,7 +89,8 @@ export default function Home() {
           </h1>
 
           <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Buy and sell pre-loved clothing with ease. Join our community of conscious shoppers making fashion sustainable.
+            Buy and sell pre-loved clothing with ease. Join our community of
+            conscious shoppers making fashion sustainable.
           </p>
 
           {!loading && (
@@ -87,15 +99,28 @@ export default function Home() {
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                   <div className="inline-flex items-center gap-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-6 shadow-lg">
                     <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <svg
+                        className="w-6 h-6 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                     </div>
                     <div className="text-left">
-                      <p className="text-green-900 font-semibold mb-1">Welcome back!</p>
+                      <p className="text-green-900 font-semibold mb-1">
+                        Welcome back!
+                      </p>
                       <p className="text-green-700 text-sm">
                         {user?.email && `Signed in as ${user.email}`}
-                        {user?.walletAddress && `Connected: ${user.walletAddress.slice(0, 10)}...${user.walletAddress.slice(-8)}`}
+                        {user?.walletAddress &&
+                          `Connected: ${user.walletAddress.slice(0, 10)}...${user.walletAddress.slice(-8)}`}
                       </p>
                     </div>
                   </div>
@@ -144,44 +169,83 @@ export default function Home() {
             {[
               {
                 icon: (
-                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  <svg
+                    className="w-7 h-7"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
                   </svg>
                 ),
-                color: 'blue',
-                title: 'Easy Shopping',
-                description: 'Browse thousands of curated pre-loved items from verified sellers'
+                color: "blue",
+                title: "Easy Shopping",
+                description:
+                  "Browse thousands of curated pre-loved items from verified sellers",
               },
               {
                 icon: (
-                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <svg
+                    className="w-7 h-7"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
                   </svg>
                 ),
-                color: 'purple',
-                title: 'Secure Payments',
-                description: 'Multiple authentication options including email OTP and Web3 wallet'
+                color: "purple",
+                title: "Secure Payments",
+                description:
+                  "Multiple authentication options including email OTP and Web3 wallet",
               },
               {
                 icon: (
-                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  <svg
+                    className="w-7 h-7"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
                   </svg>
                 ),
-                color: 'green',
-                title: 'Sustainable Impact',
-                description: 'Reduce fashion waste and give quality clothing a second life'
-              }
+                color: "green",
+                title: "Sustainable Impact",
+                description:
+                  "Reduce fashion waste and give quality clothing a second life",
+              },
             ].map((feature, i) => (
               <div
                 key={i}
                 className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-gray-200 hover:-translate-y-2"
               >
-                <div className={`w-14 h-14 bg-gradient-to-br from-${feature.color}-100 to-${feature.color}-50 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform text-${feature.color}-600`}>
+                <div
+                  className={`w-14 h-14 bg-gradient-to-br from-${feature.color}-100 to-${feature.color}-50 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform text-${feature.color}-600`}
+                >
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {feature.description}
+                </p>
               </div>
             ))}
           </div>
@@ -191,13 +255,17 @@ export default function Home() {
         <div className="mt-24 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-12 shadow-2xl">
           <div className="grid md:grid-cols-3 gap-8 text-center text-white">
             {[
-              { value: '10K+', label: 'Active Users' },
-              { value: '50K+', label: 'Items Listed' },
-              { value: '95%', label: 'Satisfaction' }
+              { value: "10K+", label: "Active Users" },
+              { value: "50K+", label: "Items Listed" },
+              { value: "95%", label: "Satisfaction" },
             ].map((stat, i) => (
               <div key={i} className="space-y-2">
-                <div className="text-4xl md:text-5xl font-bold">{stat.value}</div>
-                <div className="text-blue-100 text-sm md:text-base">{stat.label}</div>
+                <div className="text-4xl md:text-5xl font-bold">
+                  {stat.value}
+                </div>
+                <div className="text-blue-100 text-sm md:text-base">
+                  {stat.label}
+                </div>
               </div>
             ))}
           </div>

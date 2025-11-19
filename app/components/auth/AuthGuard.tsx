@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { isAuthenticated, getUserFromToken } from '@/app/lib/auth';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { isAuthenticated, getUserFromToken } from "@/app/lib/auth";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -17,7 +17,7 @@ export default function AuthGuard({ children, fallback }: AuthGuardProps) {
   useEffect(() => {
     const checkAuth = () => {
       if (!isAuthenticated()) {
-        router.push('/signin');
+        router.push("/signin");
       } else {
         setIsAuth(true);
       }
@@ -60,7 +60,7 @@ export function useAuth() {
 
     // Listen for storage changes (e.g., when tokens are set in another tab or after login)
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'lycusa_access_token' || e.key === null) {
+      if (e.key === "lycusa_access_token" || e.key === null) {
         checkUser();
       }
     };
@@ -70,12 +70,12 @@ export function useAuth() {
       checkUser();
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('auth-change', handleAuthChange);
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("auth-change", handleAuthChange);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('auth-change', handleAuthChange);
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("auth-change", handleAuthChange);
     };
   }, []);
 

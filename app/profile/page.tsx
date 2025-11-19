@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/app/components/auth/AuthGuard';
-import { getUserProfile, createUserProfile } from '@/app/lib/api';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/app/components/auth/AuthGuard";
+import { getUserProfile, createUserProfile } from "@/app/lib/api";
 
 interface UserProfile {
   userId: string;
@@ -25,7 +25,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.push('/signin');
+      router.push("/signin");
       return;
     }
 
@@ -49,7 +49,7 @@ export default function ProfilePage() {
       if (err.response?.status === 404) {
         setShowCreateProfile(true);
       } else {
-        setError(err.response?.data?.message || 'Failed to load profile');
+        setError(err.response?.data?.message || "Failed to load profile");
       }
     } finally {
       setLoading(false);
@@ -73,8 +73,18 @@ export default function ProfilePage() {
         <div className="max-w-2xl mx-auto px-4 py-16">
           <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 text-center">
             <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              <svg
+                className="w-10 h-10 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
               </svg>
             </div>
 
@@ -102,8 +112,18 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md mx-4 text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-8 h-8 text-red-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">Error</h2>
@@ -131,8 +151,18 @@ export default function ProfilePage() {
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center gap-2 group">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
                 </svg>
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -163,10 +193,24 @@ export default function ProfilePage() {
             <div className="absolute -top-20 left-8">
               <div className="w-40 h-40 rounded-full border-8 border-white bg-gradient-to-br from-gray-200 to-gray-300 shadow-2xl flex items-center justify-center overflow-hidden">
                 {profile.avatarUrl ? (
-                  <img src={profile.avatarUrl} alt={profile.username} className="w-full h-full object-cover" />
+                  <img
+                    src={profile.avatarUrl}
+                    alt={profile.username}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
-                  <svg className="w-20 h-20 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  <svg
+                    className="w-20 h-20 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                 )}
               </div>
@@ -180,7 +224,8 @@ export default function ProfilePage() {
                     {profile.username}
                   </h1>
                   <p className="text-gray-600">
-                    {user?.email || `${user?.walletAddress?.slice(0, 10)}...${user?.walletAddress?.slice(-8)}`}
+                    {user?.email ||
+                      `${user?.walletAddress?.slice(0, 10)}...${user?.walletAddress?.slice(-8)}`}
                   </p>
                 </div>
               </div>
@@ -198,8 +243,12 @@ export default function ProfilePage() {
                   className="group cursor-pointer"
                 >
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">0</div>
-                    <div className="text-sm text-gray-600 group-hover:text-blue-600 transition-colors">Followers</div>
+                    <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                      0
+                    </div>
+                    <div className="text-sm text-gray-600 group-hover:text-blue-600 transition-colors">
+                      Followers
+                    </div>
                   </div>
                 </Link>
 
@@ -208,8 +257,12 @@ export default function ProfilePage() {
                   className="group cursor-pointer"
                 >
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">0</div>
-                    <div className="text-sm text-gray-600 group-hover:text-blue-600 transition-colors">Following</div>
+                    <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                      0
+                    </div>
+                    <div className="text-sm text-gray-600 group-hover:text-blue-600 transition-colors">
+                      Following
+                    </div>
                   </div>
                 </Link>
               </div>
@@ -219,34 +272,58 @@ export default function ProfilePage() {
 
         {/* Profile Details Card */}
         <div className="bg-white rounded-2xl shadow-lg p-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Profile Details</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">
+            Profile Details
+          </h2>
 
           <div className="space-y-4">
             <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                <svg
+                  className="w-5 h-5 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
                 </svg>
               </div>
               <div className="flex-1">
                 <div className="text-sm text-gray-600 mb-1">Username</div>
-                <div className="text-gray-900 font-medium">{profile.username}</div>
+                <div className="text-gray-900 font-medium">
+                  {profile.username}
+                </div>
               </div>
             </div>
 
             <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
               <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <svg
+                  className="w-5 h-5 text-purple-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
                 </svg>
               </div>
               <div className="flex-1">
                 <div className="text-sm text-gray-600 mb-1">Member Since</div>
                 <div className="text-gray-900 font-medium">
-                  {new Date(profile.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+                  {new Date(profile.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                   })}
                 </div>
               </div>

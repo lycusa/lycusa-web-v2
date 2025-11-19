@@ -1,13 +1,14 @@
-import axios from 'axios';
-import { getAccessToken, isTokenExpired, clearTokens } from './auth';
+import axios from "axios";
+import { getAccessToken, isTokenExpired, clearTokens } from "./auth";
 
 // API Gateway URL - all requests go through the gateway
-const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || 'http://localhost:4000';
+const API_GATEWAY_URL =
+  process.env.NEXT_PUBLIC_API_GATEWAY_URL || "http://localhost:4000";
 
 const api = axios.create({
   baseURL: API_GATEWAY_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   withCredentials: true,
   timeout: 10000,
@@ -17,13 +18,16 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
-    console.log('[API Interceptor] Token:', token ? 'exists' : 'null');
-    console.log('[API Interceptor] Token expired:', token ? isTokenExpired(token) : 'N/A');
+    console.log("[API Interceptor] Token:", token ? "exists" : "null");
+    console.log(
+      "[API Interceptor] Token expired:",
+      token ? isTokenExpired(token) : "N/A"
+    );
     if (token && !isTokenExpired(token)) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('[API Interceptor] Authorization header set');
+      console.log("[API Interceptor] Authorization header set");
     } else {
-      console.log('[API Interceptor] No authorization header set');
+      console.log("[API Interceptor] No authorization header set");
     }
     return config;
   },
@@ -38,10 +42,10 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Handle unauthorized - clear tokens and redirect to signin
-      console.error('Unauthorized request');
+      console.error("Unauthorized request");
       clearTokens();
-      if (typeof window !== 'undefined') {
-        window.location.href = '/signin';
+      if (typeof window !== "undefined") {
+        window.location.href = "/signin";
       }
     }
     return Promise.reject(error);
@@ -50,22 +54,26 @@ api.interceptors.response.use(
 
 // Request OTP for email authentication
 export const requestOtp = async (email: string) => {
-  const response = await api.post('/auth/auth/request-otp', { email });
+  const response = await api.post("/auth/auth/request-otp", { email });
   return response.data;
 };
 
 // Verify OTP and get tokens
 export const verifyOtp = async (email: string, otp: string) => {
-  const response = await api.post('/auth/auth/verify-otp', { email, otp });
+  const response = await api.post("/auth/auth/verify-otp", { email, otp });
   return response.data;
 };
 
 // Get wallet challenge (SIWE message)
-export const getWalletChallenge = async (walletAddress: string, domain: string, uri: string) => {
-  const response = await api.post('/auth/auth/wallet/challenge', {
+export const getWalletChallenge = async (
+  walletAddress: string,
+  domain: string,
+  uri: string
+) => {
+  const response = await api.post("/auth/auth/wallet/challenge", {
     walletAddress,
     domain,
-    uri
+    uri,
   });
   return response.data;
 };
@@ -76,7 +84,7 @@ export const verifyWalletSignature = async (
   signature: string,
   walletAddress: string
 ) => {
-  const response = await api.post('/auth/auth/wallet/verify', {
+  const response = await api.post("/auth/auth/wallet/verify", {
     message,
     signature,
     walletAddress,
@@ -86,7 +94,7 @@ export const verifyWalletSignature = async (
 
 // Refresh access token using refresh token
 export const refreshAccessToken = async (refreshToken: string) => {
-  const response = await api.post('/auth/auth/refresh-token', { refreshToken });
+  const response = await api.post("/auth/auth/refresh-token", { refreshToken });
   return response.data;
 };
 
@@ -104,7 +112,7 @@ export const createUserProfile = async (data: {
   bio?: string;
   avatarUrl?: string;
 }) => {
-  const response = await api.post('/user/profile', data);
+  const response = await api.post("/user/profile", data);
   return response.data;
 };
 
@@ -114,7 +122,7 @@ export const updateUserProfile = async (data: {
   bio?: string;
   avatarUrl?: string;
 }) => {
-  const response = await api.put('/user/profile', data);
+  const response = await api.put("/user/profile", data);
   return response.data;
 };
 

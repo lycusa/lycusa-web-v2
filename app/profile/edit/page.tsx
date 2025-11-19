@@ -1,10 +1,14 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/app/components/auth/AuthGuard';
-import { getUserProfile, createUserProfile, updateUserProfile } from '@/app/lib/api';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/app/components/auth/AuthGuard";
+import {
+  getUserProfile,
+  createUserProfile,
+  updateUserProfile,
+} from "@/app/lib/api";
 
 interface UserProfile {
   userId: string;
@@ -26,14 +30,14 @@ export default function EditProfilePage() {
   const [isNewProfile, setIsNewProfile] = useState(false);
 
   const [formData, setFormData] = useState({
-    username: '',
-    bio: '',
-    avatarUrl: '',
+    username: "",
+    bio: "",
+    avatarUrl: "",
   });
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.push('/signin');
+      router.push("/signin");
       return;
     }
 
@@ -51,9 +55,9 @@ export default function EditProfilePage() {
       if (response.success && response.data) {
         setProfile(response.data);
         setFormData({
-          username: response.data.username || '',
-          bio: response.data.bio || '',
-          avatarUrl: response.data.avatarUrl || '',
+          username: response.data.username || "",
+          bio: response.data.bio || "",
+          avatarUrl: response.data.avatarUrl || "",
         });
         setIsNewProfile(false);
       } else {
@@ -63,7 +67,7 @@ export default function EditProfilePage() {
       if (err.response?.status === 404) {
         setIsNewProfile(true);
       } else {
-        setError(err.response?.data?.message || 'Failed to load profile');
+        setError(err.response?.data?.message || "Failed to load profile");
       }
     } finally {
       setLoading(false);
@@ -74,7 +78,7 @@ export default function EditProfilePage() {
     e.preventDefault();
 
     if (!formData.username.trim()) {
-      setError('Username is required');
+      setError("Username is required");
       return;
     }
 
@@ -93,19 +97,21 @@ export default function EditProfilePage() {
       if (response.success) {
         setSuccess(true);
         setTimeout(() => {
-          router.push('/profile');
+          router.push("/profile");
         }, 1500);
       } else {
-        setError(response.message || 'Failed to save profile');
+        setError(response.message || "Failed to save profile");
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to save profile');
+      setError(err.response?.data?.message || "Failed to save profile");
     } finally {
       setSaving(false);
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -132,8 +138,18 @@ export default function EditProfilePage() {
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center gap-2 group">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
                 </svg>
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -156,12 +172,12 @@ export default function EditProfilePage() {
         <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {isNewProfile ? 'Create Your Profile' : 'Edit Profile'}
+              {isNewProfile ? "Create Your Profile" : "Edit Profile"}
             </h1>
             <p className="text-gray-600">
               {isNewProfile
-                ? 'Set up your profile to get started on Lycusa'
-                : 'Update your profile information'}
+                ? "Set up your profile to get started on Lycusa"
+                : "Update your profile information"}
             </p>
           </div>
 
@@ -169,13 +185,27 @@ export default function EditProfilePage() {
           {success && (
             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
               <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-3 h-3 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               </div>
               <div>
-                <p className="text-green-900 font-medium">Profile saved successfully!</p>
-                <p className="text-green-700 text-sm">Redirecting to your profile...</p>
+                <p className="text-green-900 font-medium">
+                  Profile saved successfully!
+                </p>
+                <p className="text-green-700 text-sm">
+                  Redirecting to your profile...
+                </p>
               </div>
             </div>
           )}
@@ -184,8 +214,18 @@ export default function EditProfilePage() {
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
               <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-3 h-3 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </div>
               <p className="text-red-900">{error}</p>
@@ -197,10 +237,24 @@ export default function EditProfilePage() {
             <div className="flex justify-center">
               <div className="w-32 h-32 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 shadow-lg flex items-center justify-center overflow-hidden">
                 {formData.avatarUrl ? (
-                  <img src={formData.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  <img
+                    src={formData.avatarUrl}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
-                  <svg className="w-16 h-16 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  <svg
+                    className="w-16 h-16 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                 )}
               </div>
@@ -208,7 +262,10 @@ export default function EditProfilePage() {
 
             {/* Username */}
             <div>
-              <label htmlFor="username" className="block text-sm font-semibold text-gray-900 mb-2">
+              <label
+                htmlFor="username"
+                className="block text-sm font-semibold text-gray-900 mb-2"
+              >
                 Username <span className="text-red-500">*</span>
               </label>
               <input
@@ -225,7 +282,10 @@ export default function EditProfilePage() {
 
             {/* Bio */}
             <div>
-              <label htmlFor="bio" className="block text-sm font-semibold text-gray-900 mb-2">
+              <label
+                htmlFor="bio"
+                className="block text-sm font-semibold text-gray-900 mb-2"
+              >
                 Bio
               </label>
               <textarea
@@ -244,7 +304,10 @@ export default function EditProfilePage() {
 
             {/* Avatar URL */}
             <div>
-              <label htmlFor="avatarUrl" className="block text-sm font-semibold text-gray-900 mb-2">
+              <label
+                htmlFor="avatarUrl"
+                className="block text-sm font-semibold text-gray-900 mb-2"
+              >
                 Avatar URL
               </label>
               <input
@@ -273,8 +336,10 @@ export default function EditProfilePage() {
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     Saving...
                   </span>
+                ) : isNewProfile ? (
+                  "Create Profile"
                 ) : (
-                  isNewProfile ? 'Create Profile' : 'Save Changes'
+                  "Save Changes"
                 )}
               </button>
 

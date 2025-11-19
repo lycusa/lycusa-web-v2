@@ -5,12 +5,14 @@ This guide explains the authentication implementation for the Lycusa e-commerce 
 ## Overview
 
 The application supports two authentication methods:
+
 1. **Email + OTP** - Users receive a 6-digit code via email
 2. **Wallet (SIWE)** - Users authenticate using MetaMask with Sign-In with Ethereum
 
 ## Architecture
 
 ### Backend (lycusa-auth-service)
+
 - FastAPI service handling authentication
 - Email OTP flow with Redis caching
 - Wallet authentication using SIWE (Sign-In with Ethereum)
@@ -18,6 +20,7 @@ The application supports two authentication methods:
 - Rate limiting and security features
 
 ### Frontend (lycusa-web-v2)
+
 - Next.js 16 with React 19
 - Client-side authentication components
 - JWT storage in localStorage
@@ -59,6 +62,7 @@ Replace `http://localhost:3000` with your auth service URL.
 ### 2. Install Dependencies
 
 Dependencies are already installed:
+
 - `ethers` - Ethereum wallet integration
 - `siwe` - Sign-In with Ethereum
 - `axios` - HTTP client
@@ -96,6 +100,7 @@ Visit `http://localhost:3001` (or the port Next.js assigns)
 8. User is authenticated
 
 **API Endpoints:**
+
 - `POST /request-otp` - Request OTP code
 - `POST /verify-otp` - Verify OTP and get tokens
 
@@ -114,22 +119,26 @@ Visit `http://localhost:3001` (or the port Next.js assigns)
 11. User is authenticated
 
 **API Endpoints:**
+
 - `POST /wallet/challenge` - Get SIWE challenge message
 - `POST /wallet/verify` - Verify signature and get tokens
 
 ### Token Management
 
 **Access Token:**
+
 - Short-lived (15 minutes by default)
 - Included in Authorization header for API requests
 - Contains user ID, email/wallet address, and role
 
 **Refresh Token:**
+
 - Long-lived (7 days by default)
 - Used to obtain new access tokens
 - Stored in Redis for revocation support
 
 **API Endpoint:**
+
 - `POST /refresh-token` - Get new access token
 
 ## Using Authentication in Your App
@@ -139,7 +148,7 @@ Visit `http://localhost:3001` (or the port Next.js assigns)
 Wrap any page component with `AuthGuard`:
 
 ```tsx
-import AuthGuard from '@/app/components/auth/AuthGuard';
+import AuthGuard from "@/app/components/auth/AuthGuard";
 
 export default function ProtectedPage() {
   return (
@@ -155,7 +164,7 @@ export default function ProtectedPage() {
 Use the `useAuth` hook:
 
 ```tsx
-import { useAuth } from '@/app/components/auth/AuthGuard';
+import { useAuth } from "@/app/components/auth/AuthGuard";
 
 export default function MyComponent() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -163,33 +172,29 @@ export default function MyComponent() {
   if (loading) return <div>Loading...</div>;
   if (!isAuthenticated) return <div>Please sign in</div>;
 
-  return (
-    <div>
-      Welcome {user?.email || user?.walletAddress}!
-    </div>
-  );
+  return <div>Welcome {user?.email || user?.walletAddress}!</div>;
 }
 ```
 
 ### Making Authenticated API Calls
 
 ```tsx
-import api from '@/app/lib/api';
-import { getAccessToken } from '@/app/lib/auth';
+import api from "@/app/lib/api";
+import { getAccessToken } from "@/app/lib/auth";
 
 // Add token to request
-api.defaults.headers.common['Authorization'] = `Bearer ${getAccessToken()}`;
+api.defaults.headers.common["Authorization"] = `Bearer ${getAccessToken()}`;
 
 // Make authenticated request
-const response = await api.get('/some-protected-endpoint');
+const response = await api.get("/some-protected-endpoint");
 ```
 
 ### Logout
 
 ```tsx
-import LogoutButton from '@/app/components/auth/LogoutButton';
+import LogoutButton from "@/app/components/auth/LogoutButton";
 
-<LogoutButton />
+<LogoutButton />;
 ```
 
 ## JWT Payload Structure
@@ -197,13 +202,13 @@ import LogoutButton from '@/app/components/auth/LogoutButton';
 ```json
 {
   "id": "user-uuid",
-  "email": "user@example.com",  // or walletAddress
+  "email": "user@example.com", // or walletAddress
   "role": "user",
   "iat": 1234567890,
   "exp": 1234568790,
   "iss": "lycusa-auth-service",
   "aud": "lycusa-api",
-  "type": "access"  // or "refresh"
+  "type": "access" // or "refresh"
 }
 ```
 
@@ -220,25 +225,30 @@ import LogoutButton from '@/app/components/auth/LogoutButton';
 ## Common Issues
 
 ### MetaMask Not Detected
+
 - Install MetaMask browser extension
 - Check that you're using a supported browser
 
 ### OTP Not Received
+
 - Check spam folder
 - Verify email configuration in auth service
 - Check Redis connection
 
 ### Token Expired
+
 - Use refresh token to get new access token
 - Implement automatic token refresh in your API client
 
 ### CORS Issues
+
 - Add your frontend URL to auth service CORS configuration
 - Check `security.corsOrigins` in auth service config
 
 ## Testing
 
 ### Test Email Auth
+
 1. Navigate to `/signin`
 2. Select "Email" tab
 3. Enter your email
@@ -246,6 +256,7 @@ import LogoutButton from '@/app/components/auth/LogoutButton';
 5. Enter OTP to complete sign in
 
 ### Test Wallet Auth
+
 1. Install MetaMask
 2. Navigate to `/signin`
 3. Select "Wallet" tab
@@ -267,6 +278,7 @@ import LogoutButton from '@/app/components/auth/LogoutButton';
 ## API Reference
 
 ### Request OTP
+
 ```bash
 POST /request-otp
 Content-Type: application/json
@@ -277,6 +289,7 @@ Content-Type: application/json
 ```
 
 ### Verify OTP
+
 ```bash
 POST /verify-otp
 Content-Type: application/json
@@ -288,6 +301,7 @@ Content-Type: application/json
 ```
 
 ### Get Wallet Challenge
+
 ```bash
 POST /wallet/challenge
 Content-Type: application/json
@@ -298,6 +312,7 @@ Content-Type: application/json
 ```
 
 ### Verify Wallet
+
 ```bash
 POST /wallet/verify
 Content-Type: application/json
@@ -310,6 +325,7 @@ Content-Type: application/json
 ```
 
 ### Refresh Token
+
 ```bash
 POST /refresh-token
 Content-Type: application/json

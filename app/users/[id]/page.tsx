@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/app/components/auth/AuthGuard';
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/app/components/auth/AuthGuard";
 import {
   getUserProfile,
   checkUserRelationship,
   followUser,
   unfollowUser,
   blockUser,
-} from '@/app/lib/api';
+} from "@/app/lib/api";
 
 interface UserProfile {
   userId: string;
@@ -35,7 +35,9 @@ export default function UserProfilePage() {
   const { user, isAuthenticated } = useAuth();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [relationship, setRelationship] = useState<RelationshipStatus | null>(null);
+  const [relationship, setRelationship] = useState<RelationshipStatus | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +60,7 @@ export default function UserProfilePage() {
       if (profileResponse.success && profileResponse.data) {
         setProfile(profileResponse.data);
       } else {
-        setError('User profile not found');
+        setError("User profile not found");
         return;
       }
 
@@ -70,11 +72,11 @@ export default function UserProfilePage() {
             setRelationship(relationshipResponse.data);
           }
         } catch (err) {
-          console.error('Failed to load relationship:', err);
+          console.error("Failed to load relationship:", err);
         }
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to load user profile');
+      setError(err.response?.data?.message || "Failed to load user profile");
     } finally {
       setLoading(false);
     }
@@ -82,7 +84,7 @@ export default function UserProfilePage() {
 
   const handleFollow = async () => {
     if (!isAuthenticated) {
-      router.push('/signin');
+      router.push("/signin");
       return;
     }
 
@@ -97,7 +99,7 @@ export default function UserProfilePage() {
         }));
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to follow user');
+      alert(err.response?.data?.message || "Failed to follow user");
     } finally {
       setActionLoading(false);
     }
@@ -115,14 +117,14 @@ export default function UserProfilePage() {
         }));
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to unfollow user');
+      alert(err.response?.data?.message || "Failed to unfollow user");
     } finally {
       setActionLoading(false);
     }
   };
 
   const handleBlock = async () => {
-    if (!confirm('Are you sure you want to block this user?')) {
+    if (!confirm("Are you sure you want to block this user?")) {
       return;
     }
 
@@ -138,7 +140,7 @@ export default function UserProfilePage() {
         }));
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to block user');
+      alert(err.response?.data?.message || "Failed to block user");
     } finally {
       setActionLoading(false);
     }
@@ -160,12 +162,26 @@ export default function UserProfilePage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md mx-4 text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-8 h-8 text-red-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Profile Not Found</h2>
-          <p className="text-gray-600 mb-6">{error || 'This user does not exist'}</p>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">
+            Profile Not Found
+          </h2>
+          <p className="text-gray-600 mb-6">
+            {error || "This user does not exist"}
+          </p>
           <Link
             href="/"
             className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -178,7 +194,7 @@ export default function UserProfilePage() {
   }
 
   if (isOwnProfile) {
-    router.push('/profile');
+    router.push("/profile");
     return null;
   }
 
@@ -190,8 +206,18 @@ export default function UserProfilePage() {
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center gap-2 group">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
                 </svg>
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -224,10 +250,24 @@ export default function UserProfilePage() {
             <div className="absolute -top-20 left-8">
               <div className="w-40 h-40 rounded-full border-8 border-white bg-gradient-to-br from-gray-200 to-gray-300 shadow-2xl flex items-center justify-center overflow-hidden">
                 {profile.avatarUrl ? (
-                  <img src={profile.avatarUrl} alt={profile.username} className="w-full h-full object-cover" />
+                  <img
+                    src={profile.avatarUrl}
+                    alt={profile.username}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
-                  <svg className="w-20 h-20 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  <svg
+                    className="w-20 h-20 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                 )}
               </div>
@@ -258,7 +298,7 @@ export default function UserProfilePage() {
                             disabled={actionLoading}
                             className="px-6 py-2 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition-all font-medium disabled:opacity-50"
                           >
-                            {actionLoading ? 'Loading...' : 'Following'}
+                            {actionLoading ? "Loading..." : "Following"}
                           </button>
                         ) : (
                           <button
@@ -266,7 +306,7 @@ export default function UserProfilePage() {
                             disabled={actionLoading}
                             className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg disabled:opacity-50"
                           >
-                            {actionLoading ? 'Loading...' : 'Follow'}
+                            {actionLoading ? "Loading..." : "Follow"}
                           </button>
                         )}
 
@@ -300,8 +340,12 @@ export default function UserProfilePage() {
                   className="group cursor-pointer"
                 >
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">0</div>
-                    <div className="text-sm text-gray-600 group-hover:text-blue-600 transition-colors">Followers</div>
+                    <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                      0
+                    </div>
+                    <div className="text-sm text-gray-600 group-hover:text-blue-600 transition-colors">
+                      Followers
+                    </div>
                   </div>
                 </Link>
 
@@ -310,8 +354,12 @@ export default function UserProfilePage() {
                   className="group cursor-pointer"
                 >
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">0</div>
-                    <div className="text-sm text-gray-600 group-hover:text-blue-600 transition-colors">Following</div>
+                    <div className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                      0
+                    </div>
+                    <div className="text-sm text-gray-600 group-hover:text-blue-600 transition-colors">
+                      Following
+                    </div>
                   </div>
                 </Link>
               </div>
@@ -326,17 +374,27 @@ export default function UserProfilePage() {
           <div className="space-y-4">
             <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
               <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <svg
+                  className="w-5 h-5 text-purple-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
                 </svg>
               </div>
               <div className="flex-1">
                 <div className="text-sm text-gray-600 mb-1">Member Since</div>
                 <div className="text-gray-900 font-medium">
-                  {new Date(profile.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+                  {new Date(profile.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                   })}
                 </div>
               </div>
