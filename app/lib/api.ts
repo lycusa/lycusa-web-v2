@@ -17,8 +17,13 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
+    console.log('[API Interceptor] Token:', token ? 'exists' : 'null');
+    console.log('[API Interceptor] Token expired:', token ? isTokenExpired(token) : 'N/A');
     if (token && !isTokenExpired(token)) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('[API Interceptor] Authorization header set');
+    } else {
+      console.log('[API Interceptor] No authorization header set');
     }
     return config;
   },

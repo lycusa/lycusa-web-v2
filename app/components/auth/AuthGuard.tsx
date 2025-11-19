@@ -50,9 +50,33 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const user = getUserFromToken();
-    setUser(user);
-    setLoading(false);
+    const checkUser = () => {
+      const user = getUserFromToken();
+      setUser(user);
+      setLoading(false);
+    };
+
+    checkUser();
+
+    // Listen for storage changes (e.g., when tokens are set in another tab or after login)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'lycusa_access_token' || e.key === null) {
+        checkUser();
+      }
+    };
+
+    // Listen for custom event when tokens are set in the same tab
+    const handleAuthChange = () => {
+      checkUser();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('auth-change', handleAuthChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('auth-change', handleAuthChange);
+    };
   }, []);
 
   return { user, loading, isAuthenticated: !!user };

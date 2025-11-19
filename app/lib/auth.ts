@@ -6,6 +6,8 @@ export const setTokens = (accessToken: string, refreshToken: string) => {
   if (typeof window !== 'undefined') {
     localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
     localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+    // Dispatch custom event to notify useAuth hook
+    window.dispatchEvent(new Event('auth-change'));
   }
 };
 
@@ -27,6 +29,8 @@ export const clearTokens = () => {
   if (typeof window !== 'undefined') {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
+    // Dispatch custom event to notify useAuth hook
+    window.dispatchEvent(new Event('auth-change'));
   }
 };
 
