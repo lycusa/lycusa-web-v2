@@ -3,9 +3,32 @@
 import Link from "next/link";
 import { useAuth } from "./components/auth/AuthGuard";
 import LogoutButton from "./components/auth/LogoutButton";
+import { useState, useEffect } from "react";
+import { getUserProfile } from "./lib/api";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
+  const [hasProfile, setHasProfile] = useState<boolean | null>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
+
+  useEffect(() => {
+    const checkProfile = async () => {
+      if (isAuthenticated && user?.id) {
+        try {
+          const response = await getUserProfile(user.id);
+          setHasProfile(response.success && response.data);
+        } catch (err: any) {
+          setHasProfile(false);
+        } finally {
+          setProfileLoading(false);
+        }
+      } else {
+        setProfileLoading(false);
+      }
+    };
+
+    checkProfile();
+  }, [isAuthenticated, user]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
@@ -93,7 +116,7 @@ export default function Home() {
             conscious shoppers making fashion sustainable.
           </p>
 
-          {!loading && (
+          {!loading && !profileLoading && (
             <>
               {isAuthenticated ? (
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -125,14 +148,65 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-1">
-                      Browse Marketplace
-                    </button>
-                    <button className="px-8 py-4 bg-white text-gray-900 border-2 border-gray-300 rounded-xl hover:border-gray-400 hover:bg-gray-50 transition-all font-semibold shadow-md hover:shadow-lg hover:-translate-y-1">
-                      List an Item
-                    </button>
-                  </div>
+                  {/* Onboarding Steps */}
+                  {!hasProfile ? (
+                    <div className="max-w-2xl mx-auto">
+                      <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
+                        <div className="text-center mb-6">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                            Complete Your Profile
+                          </h3>
+                          <p className="text-gray-600">
+                            Let's get you started! Set up your profile to unlock
+                            all features.
+                          </p>
+                        </div>
+
+                        {/* Progress Steps */}
+                        <div className="flex items-center justify-center gap-4 mb-8">
+                          <div className="flex items-center gap-2">
+                            <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
+                              1
+                            </div>
+                            <span className="text-sm font-medium text-gray-900">
+                              Profile
+                            </span>
+                          </div>
+                          <div className="w-12 h-0.5 bg-gray-300"></div>
+                          <div className="flex items-center gap-2 opacity-50">
+                            <div className="w-10 h-10 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold">
+                              2
+                            </div>
+                            <span className="text-sm font-medium text-gray-500">
+                              KYC
+                            </span>
+                          </div>
+                        </div>
+
+                        <Link
+                          href="/profile/edit"
+                          className="block w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1 text-center"
+                        >
+                          Create Profile
+                        </Link>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                      <Link
+                        href="/profile"
+                        className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-1 text-center"
+                      >
+                        View Profile
+                      </Link>
+                      <Link
+                        href="/kyc"
+                        className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all font-semibold shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 hover:-translate-y-1 text-center"
+                      >
+                        KYC Verification
+                      </Link>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="flex flex-col sm:flex-row gap-4 justify-center animate-in fade-in slide-in-from-bottom-4 duration-700">

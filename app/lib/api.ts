@@ -162,4 +162,12 @@ export const getUserFollowing = async (userId: string) => {
   return response.data;
 };
 
+// ===== KYC Service API =====
+
+// Initiate KYC verification for the authenticated user
+export const initiateKycVerification = async (userUuid: string) => {
+  const response = await api.post("/kyc/kyc/verify", { userUuid });
+  return response.data;
+};
+
 export default api;

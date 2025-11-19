@@ -96,8 +96,13 @@ export default function EditProfilePage() {
 
       if (response.success) {
         setSuccess(true);
+        // If creating new profile, redirect to KYC, else go to profile
         setTimeout(() => {
-          router.push("/profile");
+          if (isNewProfile) {
+            router.push("/kyc");
+          } else {
+            router.push("/profile");
+          }
         }, 1500);
       } else {
         setError(response.message || "Failed to save profile");
@@ -174,11 +179,32 @@ export default function EditProfilePage() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               {isNewProfile ? "Create Your Profile" : "Edit Profile"}
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 mb-4">
               {isNewProfile
                 ? "Set up your profile to get started on Lycusa"
                 : "Update your profile information"}
             </p>
+
+            {/* Progress Steps - Only show for new profile */}
+            {isNewProfile && (
+              <div className="flex items-center gap-4 pt-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold">
+                    1
+                  </div>
+                  <span className="text-sm font-medium text-gray-900">
+                    Profile
+                  </span>
+                </div>
+                <div className="flex-1 h-0.5 bg-gray-300 max-w-[80px]"></div>
+                <div className="flex items-center gap-2 opacity-50">
+                  <div className="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-bold">
+                    2
+                  </div>
+                  <span className="text-sm font-medium text-gray-500">KYC</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Success Message */}
@@ -204,7 +230,9 @@ export default function EditProfilePage() {
                   Profile saved successfully!
                 </p>
                 <p className="text-green-700 text-sm">
-                  Redirecting to your profile...
+                  {isNewProfile
+                    ? "Redirecting to KYC verification..."
+                    : "Redirecting to your profile..."}
                 </p>
               </div>
             </div>

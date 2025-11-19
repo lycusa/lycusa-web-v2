@@ -170,12 +170,20 @@ export default function ProfilePage() {
               </span>
             </Link>
 
-            <Link
-              href="/profile/edit"
-              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all text-sm font-medium shadow-md hover:shadow-lg"
-            >
-              Edit Profile
-            </Link>
+            <div className="flex gap-3">
+              <Link
+                href="/kyc"
+                className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all text-sm font-medium shadow-md hover:shadow-lg"
+              >
+                KYC Verification
+              </Link>
+              <Link
+                href="/profile/edit"
+                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all text-sm font-medium shadow-md hover:shadow-lg"
+              >
+                Edit Profile
+              </Link>
+            </div>
           </div>
         </div>
       </header>
