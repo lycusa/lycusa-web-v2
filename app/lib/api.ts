@@ -98,6 +98,21 @@ export const refreshAccessToken = async (refreshToken: string) => {
   return response.data;
 };
 
+// Logout user and invalidate refresh token
+export const logout = async (refreshToken: string) => {
+  try {
+    // Call backend logout endpoint when available
+    // This will invalidate the refresh token on the server
+    const response = await api.post("/auth/auth/logout", { refreshToken });
+    return response.data;
+  } catch (error) {
+    // If the endpoint doesn't exist yet, just return success
+    // The client-side token clearing will still work
+    console.warn("Logout endpoint not available yet:", error);
+    return { success: true };
+  }
+};
+
 // ===== User Service API =====
 
 // Get user profile by user ID

@@ -77,16 +77,12 @@ export default function ProfilePage() {
         }
       }
 
-      // Check for both camelCase and snake_case field names
-      // Also handle string "true"/"false" values
       const kycStatusValue = userData?.kycStatus ?? userData?.kyc_status;
 
       if (userData && kycStatusValue !== undefined && kycStatusValue !== null) {
-        // Convert string "true"/"false" to boolean if needed
         const booleanStatus = kycStatusValue === "true" || kycStatusValue === true;
         setKycStatus(booleanStatus);
       } else {
-        // Fallback to the dedicated KYC status endpoint
         const response = await getUserKycStatus(user!.id);
         if (response.success && response.data) {
           setKycStatus(response.data.kycStatus);

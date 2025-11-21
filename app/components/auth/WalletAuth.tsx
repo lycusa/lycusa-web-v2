@@ -5,6 +5,7 @@ import {
   connectWallet,
   signMessage,
   isMetaMaskInstalled,
+  isMetaMaskUnlocked,
   onAccountsChanged,
   removeAccountsChangedListener,
 } from "@/app/lib/wallet";
@@ -25,17 +26,30 @@ export default function WalletAuth({ onSuccess, onError }: WalletAuthProps) {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [metaMaskInstalled, setMetaMaskInstalled] = useState(false);
+  const [metaMaskLocked, setMetaMaskLocked] = useState(false);
 
   useEffect(() => {
-    setMetaMaskInstalled(isMetaMaskInstalled());
+    const checkMetaMaskStatus = async () => {
+      const installed = isMetaMaskInstalled();
+      setMetaMaskInstalled(installed);
+
+      if (installed) {
+        const unlocked = await isMetaMaskUnlocked();
+        setMetaMaskLocked(!unlocked);
+      }
+    };
+
+    checkMetaMaskStatus();
 
     const handleAccountsChanged = (accounts: string[]) => {
       if (accounts.length === 0) {
         setWalletAddress("");
         setMessage("");
         setStep("idle");
+        setMetaMaskLocked(true);
       } else {
         setWalletAddress(accounts[0]);
+        setMetaMaskLocked(false);
       }
     };
 
@@ -52,11 +66,16 @@ export default function WalletAuth({ onSuccess, onError }: WalletAuthProps) {
     setMessage("");
 
     try {
-      // Step 1: Connect wallet
+      // Step 1: Connect wallet (this will trigger MetaMask to open)
       setStep("connecting");
-      setMessage("Connecting wallet...");
+      setMessage(
+        metaMaskLocked
+          ? "Opening MetaMask - please unlock it..."
+          : "Connecting wallet..."
+      );
       const address = await connectWallet();
       setWalletAddress(address);
+      setMetaMaskLocked(false);
 
       // Step 2: Get challenge from backend
       setMessage("Preparing signature request...");
@@ -89,6 +108,10 @@ export default function WalletAuth({ onSuccess, onError }: WalletAuthProps) {
       setError(errorMessage);
       onError?.(errorMessage);
       setStep("idle");
+
+      // Check if MetaMask is still locked
+      const unlocked = await isMetaMaskUnlocked();
+      setMetaMaskLocked(!unlocked);
     } finally {
       setLoading(false);
     }
@@ -187,10 +210,41 @@ export default function WalletAuth({ onSuccess, onError }: WalletAuthProps) {
 
   return (
     <div className="w-full space-y-6">
+      {/* MetaMask Locked Warning */}
+      {metaMaskLocked && !walletAddress && !loading && (
+        <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shrink-0">
+              <svg
+                className="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-amber-900 mb-1">
+                MetaMask is Locked
+              </p>
+              <p className="text-xs text-amber-700">
+                Click the button below to open MetaMask. You'll be prompted to unlock it with your password.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {walletAddress && !loading && (
         <div className="p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shrink-0">
               <svg
                 className="w-5 h-5 text-white"
                 fill="none"
@@ -293,7 +347,11 @@ export default function WalletAuth({ onSuccess, onError }: WalletAuthProps) {
               >
                 <path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM12 17.5l-5-5h3v-5h4v5h3l-5 5z" />
               </svg>
-              <span>Connect Wallet</span>
+              <span>
+                {metaMaskLocked && !walletAddress
+                  ? "Unlock & Connect Wallet"
+                  : "Connect Wallet"}
+              </span>
             </span>
           )}
         </button>

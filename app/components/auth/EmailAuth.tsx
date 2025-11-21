@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { requestOtp, verifyOtp } from "@/app/lib/api";
 import { setTokens } from "@/app/lib/auth";
 
@@ -17,6 +17,7 @@ export default function EmailAuth({ onSuccess, onError }: EmailAuthProps) {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
+  const autoSubmitRef = useRef(false);
 
   const handleRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,8 +49,8 @@ export default function EmailAuth({ onSuccess, onError }: EmailAuthProps) {
     }
   };
 
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleVerifyOtp = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setLoading(true);
     setError("");
 
@@ -71,6 +72,15 @@ export default function EmailAuth({ onSuccess, onError }: EmailAuthProps) {
     }
   };
 
+  // Auto-submit when all OTP digits are filled
+  useEffect(() => {
+    const isComplete = otp.every((digit) => digit !== "");
+    if (isComplete && !loading && autoSubmitRef.current) {
+      autoSubmitRef.current = false;
+      handleVerifyOtp();
+    }
+  }, [otp, loading]);
+
   const handleOtpChange = (index: number, value: string) => {
     if (value.length > 1) {
       value = value[value.length - 1];
@@ -83,6 +93,14 @@ export default function EmailAuth({ onSuccess, onError }: EmailAuthProps) {
 
     if (value && index < 5) {
       document.getElementById(`otp-${index + 1}`)?.focus();
+    }
+
+    // Enable auto-submit when the last digit is entered
+    if (value && index === 5) {
+      const isComplete = newOtp.every((digit) => digit !== "");
+      if (isComplete) {
+        autoSubmitRef.current = true;
+      }
     }
   };
 
@@ -103,6 +121,11 @@ export default function EmailAuth({ onSuccess, onError }: EmailAuthProps) {
     }
     setOtp(newOtp);
     document.getElementById(`otp-${Math.min(pastedData.length, 5)}`)?.focus();
+
+    // Enable auto-submit when a complete OTP is pasted
+    if (pastedData.length === 6) {
+      autoSubmitRef.current = true;
+    }
   };
 
   const handleBack = () => {
