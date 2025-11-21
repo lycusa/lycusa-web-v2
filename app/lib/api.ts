@@ -162,11 +162,29 @@ export const getUserFollowing = async (userId: string) => {
   return response.data;
 };
 
+// Get user by email (returns full user data including kycStatus)
+export const getUserByEmail = async (email: string) => {
+  const response = await api.get(`/user/users/by-email?email=${encodeURIComponent(email)}`);
+  return response.data;
+};
+
+// Get user by wallet address (returns full user data including kycStatus)
+export const getUserByAddress = async (address: string) => {
+  const response = await api.get(`/user/users/by-address?address=${encodeURIComponent(address)}`);
+  return response.data;
+};
+
 // ===== KYC Service API =====
 
 // Initiate KYC verification for the authenticated user
 export const initiateKycVerification = async (userUuid: string) => {
   const response = await api.post("/kyc/kyc/verify", { userUuid });
+  return response.data;
+};
+
+// Get user KYC status
+export const getUserKycStatus = async (userId: string) => {
+  const response = await api.get(`/user/users/${userId}/kyc-status`);
   return response.data;
 };
 
