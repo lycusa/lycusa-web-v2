@@ -10,7 +10,8 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
+  // Remove withCredentials since we're using JWT tokens in Authorization header, not cookies
+  // withCredentials: true,
   timeout: 10000,
 });
 
@@ -200,6 +201,96 @@ export const initiateKycVerification = async (userUuid: string) => {
 // Get user KYC status
 export const getUserKycStatus = async (userId: string) => {
   const response = await api.get(`/user/users/${userId}/kyc-status`);
+  return response.data;
+};
+
+// ===== Product Service API =====
+
+import type {
+  CreateProductRequest,
+  EditProductRequest,
+  SearchQuery,
+} from "./types/product";
+
+// Create a new product
+export const createProduct = async (data: CreateProductRequest) => {
+  const response = await api.post("/product/api/v1/products", data);
+  return response.data;
+};
+
+// Get a single product by ID
+export const getProduct = async (productId: string) => {
+  const response = await api.get(`/product/api/v1/products/${productId}`);
+  return response.data;
+};
+
+// Edit an existing product
+export const editProduct = async (productId: string, data: EditProductRequest) => {
+  const response = await api.put(`/product/api/v1/products/${productId}`, data);
+  return response.data;
+};
+
+// Delete a single product
+export const deleteProduct = async (productId: string) => {
+  const response = await api.delete(`/product/api/v1/products/${productId}`);
+  return response.data;
+};
+
+// Batch delete multiple products
+export const deleteProducts = async (productIds: string[]) => {
+  const response = await api.delete("/product/api/v1/products", {
+    data: { product_ids: productIds },
+  });
+  return response.data;
+};
+
+// Search products with advanced filtering
+export const searchProducts = async (query: SearchQuery) => {
+  const response = await api.post("/product/api/v1/search/products", query);
+  return response.data;
+};
+
+// Get search suggestions (autocomplete)
+export const getSearchSuggestions = async (query: string, size: number = 5) => {
+  const response = await api.get("/product/api/v1/search/suggestions", {
+    params: { q: query, size },
+  });
+  return response.data;
+};
+
+// Upload media file
+export const uploadMedia = async (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  // Don't manually set Content-Type - let axios set it automatically with the boundary
+  const response = await api.post("/product/api/v1/media", formData);
+  return response.data;
+};
+
+// Get media information
+export const getMediaInfo = async (mediaId: string) => {
+  const response = await api.get(`/product/api/v1/media/${mediaId}`);
+  return response.data;
+};
+
+// Delete a single media file
+export const deleteMedia = async (mediaId: string) => {
+  const response = await api.delete(`/product/api/v1/media/${mediaId}`);
+  return response.data;
+};
+
+// Batch retrieve multiple media files
+export const getMedias = async (mediaIds: string[]) => {
+  const response = await api.post("/product/api/v1/medias/get", {
+    media_ids: mediaIds,
+  });
+  return response.data;
+};
+
+// Get task status (for async operations like media upload)
+export const getTaskStatus = async (taskId: string) => {
+  const response = await api.get(`/product/api/v1/tasks/${taskId}/status`);
   return response.data;
 };
 

@@ -58,6 +58,12 @@ export default function Home() {
             </Link>
 
             <nav className="flex items-center gap-3">
+              <Link
+                href="/products"
+                className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium hover:bg-gray-100 rounded-lg"
+              >
+                Browse
+              </Link>
               {loading ? (
                 <div className="flex items-center gap-3">
                   <div className="w-24 h-9 bg-gray-200 animate-pulse rounded-lg"></div>
@@ -65,6 +71,12 @@ export default function Home() {
                 </div>
               ) : isAuthenticated ? (
                 <>
+                  <Link
+                    href="/my-products"
+                    className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium hover:bg-gray-100 rounded-lg"
+                  >
+                    My Products
+                  </Link>
                   <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200/50">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-sm font-medium text-gray-700 max-w-[150px] truncate">
@@ -194,6 +206,12 @@ export default function Home() {
                   ) : (
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                       <Link
+                        href="/products"
+                        className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all font-semibold shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 hover:-translate-y-1 text-center"
+                      >
+                        Browse Products
+                      </Link>
+                      <Link
                         href="/profile"
                         className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-1 text-center"
                       >
@@ -209,19 +227,29 @@ export default function Home() {
                   )}
                 </div>
               ) : (
-                <div className="flex flex-col sm:flex-row gap-4 justify-center animate-in fade-in slide-in-from-bottom-4 duration-700">
-                  <Link
-                    href="/signup"
-                    className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold text-lg shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-1"
-                  >
-                    Get Started Free
-                  </Link>
-                  <Link
-                    href="/signin"
-                    className="px-10 py-4 bg-white text-gray-900 border-2 border-gray-300 rounded-xl hover:border-gray-400 hover:bg-gray-50 transition-all font-semibold text-lg shadow-md hover:shadow-lg hover:-translate-y-1"
-                  >
-                    Sign In
-                  </Link>
+                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Link
+                      href="/products"
+                      className="px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all font-semibold text-lg shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 hover:-translate-y-1"
+                    >
+                      Browse Products
+                    </Link>
+                    <Link
+                      href="/signup"
+                      className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold text-lg shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-1"
+                    >
+                      Get Started Free
+                    </Link>
+                  </div>
+                  <div className="text-center">
+                    <Link
+                      href="/signin"
+                      className="text-gray-600 hover:text-gray-900 font-medium underline"
+                    >
+                      Already have an account? Sign In
+                    </Link>
+                  </div>
                 </div>
               )}
             </>
