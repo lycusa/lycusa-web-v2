@@ -37,7 +37,11 @@ export const clearTokens = () => {
 // Decode JWT without verification (for client-side inspection)
 export const decodeJWT = (token: string) => {
   try {
-    const base64Url = token.split(".")[1];
+    const parts = token.split(".");
+    if (parts.length !== 3) {
+      throw new Error("Invalid JWT format");
+    }
+    const base64Url = parts[1];
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
     const jsonPayload = decodeURIComponent(
       atob(base64)
