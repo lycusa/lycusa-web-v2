@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { uploadMedia, getTaskStatus } from "@/app/lib/api";
+import { uploadMedia } from "@/app/lib/api";
+import api from "@/app/lib/api";
 import type { Product, Media } from "@/app/lib/types/product";
 import { ProductType, MediaType } from "@/app/lib/types/product";
 
@@ -60,35 +61,55 @@ export default function ProductForm({
           // Poll for upload completion
           let attempts = 0;
           const maxAttempts = 30;
+          let uploadError: Error | null = null;
 
           while (attempts < maxAttempts) {
             await new Promise((resolve) => setTimeout(resolve, 2000));
 
             try {
-              const statusResponse = await getTaskStatus(task_id);
+              // Use the full status_url from backend, extract the path after /product
+              const urlPath = status_url.replace('/api/v1/', '/product/api/v1/');
+              const statusResponse = await api.get(urlPath);
 
-              if (statusResponse.success && statusResponse.data) {
-                const { state, result } = statusResponse.data;
+              if (statusResponse.data?.success && statusResponse.data?.data) {
+                const { status, result } = statusResponse.data.data;
 
-                if (state === "SUCCESS" && result?.media_id) {
-                  // Add uploaded media to the list
-                  const newMedia: Media = {
-                    id: result.media_id,
-                    url: result.url || "",
-                    type: MediaType.IMAGE,
-                    order: media.length + i,
-                  };
-                  setMedia((prev) => [...prev, newMedia]);
+                if (status === "SUCCESS") {
+                  // Check if result has success flag and media data
+                  if (result?.success && result?.media_id && result?.media_url) {
+                    const newMedia: Media = {
+                      id: result.media_id,
+                      url: result.media_url,
+                      type: MediaType.IMAGE,
+                      order: media.length + i,
+                    };
+                    setMedia((prev) => [...prev, newMedia]);
+                    break;
+                  } else if (result?.rejected) {
+                    // Check if media was rejected by content moderation
+                    uploadError = new Error(
+                      result.reason || "Media rejected by content moderation"
+                    );
+                    break;
+                  }
+                } else if (status === "FAILURE") {
+                  uploadError = new Error(
+                    result?.error || "Media upload failed"
+                  );
                   break;
-                } else if (state === "FAILURE") {
-                  throw new Error("Media upload failed");
                 }
               }
             } catch (pollError) {
               console.error("Polling error:", pollError);
+              // Continue polling on transient errors
             }
 
             attempts++;
+          }
+
+          // Check if we encountered an error during polling
+          if (uploadError) {
+            throw uploadError;
           }
 
           if (attempts >= maxAttempts) {

@@ -274,7 +274,7 @@ export default function ProductDetailPage() {
             {/* Price */}
             <div className="flex items-baseline gap-2">
               <span className="text-5xl font-bold text-gray-900">
-                {product.price.currency} {product.price.amount.toFixed(2)}
+                {product.price.currency} {Number(product.price.amount).toFixed(2)}
               </span>
             </div>
 
