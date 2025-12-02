@@ -30,6 +30,14 @@ api.interceptors.request.use(
     } else {
       console.log("[API Interceptor] No authorization header set");
     }
+
+    // For FormData uploads, remove the default Content-Type header
+    // Let the browser/axios set it with the correct multipart boundary
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+      console.log("[API Interceptor] Removed Content-Type for FormData upload");
+    }
+
     return config;
   },
   (error) => {
