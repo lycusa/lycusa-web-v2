@@ -5,6 +5,12 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'lycusa-product-media.s3.amazonaws.com', // Added this global S3 hostname
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'lycusa-product-media.s3.eu-west-1.amazonaws.com',
         port: '',
         pathname: '/**',

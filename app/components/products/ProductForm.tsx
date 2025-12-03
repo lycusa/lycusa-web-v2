@@ -35,6 +35,13 @@ export default function ProductForm({
   });
   const [media, setMedia] = useState<Media[]>(product?.media || []);
   const [error, setError] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<
+    {
+      fileName: string;
+      status: "uploading" | "success" | "rejected" | "failed";
+      reason?: string;
+    }[]
+  >([]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -49,98 +56,105 @@ export default function ProductForm({
 
     setUploadingMedia(true);
     setError(null);
+    setUploadProgress(
+      Array.from(files).map((file) => ({
+        fileName: file.name,
+        status: "uploading",
+      }))
+    );
 
-    try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      try {
         const response = await uploadMedia(file);
 
         if (response.success && response.data) {
-          const { task_id, status_url } = response.data;
+          const { status_url } = response.data;
 
-          // Poll for upload completion
           let attempts = 0;
           const maxAttempts = 30;
-          let uploadError: Error | null = null;
 
           while (attempts < maxAttempts) {
             await new Promise((resolve) => setTimeout(resolve, 2000));
-
             try {
-              // Use the full status_url from backend, extract the path after /product
-              const urlPath = status_url.replace('/api/v1/', '/product/api/v1/');
+              const urlPath = status_url.replace(
+                "/api/v1/",
+                "/product/api/v1/"
+              );
               const statusResponse = await api.get(urlPath);
+              const { status, result } = statusResponse.data.data;
 
-              if (statusResponse.data?.success && statusResponse.data?.data) {
-                const { status, result } = statusResponse.data.data;
-
-                if (status === "SUCCESS") {
-                  // Check if result has success flag and media data
-                  if (result?.success && result?.media_id) {
-                    const mediaInfoResponse = await getMediaInfo(
-                      result.media_id
-                    );
-                    if (mediaInfoResponse.success && mediaInfoResponse.data) {
-                      const mediaInfo = mediaInfoResponse.data;
-
-                      // Extract 'Expires' from the signed URL
-                      const url = new URL(mediaInfo.url);
-                      const expires = url.searchParams.get("Expires");
-
-                      if (!expires) {
-                        throw new Error(
-                          "Signed URL for media is missing expiry information."
-                        );
-                      }
-
-                      const newMedia: Media = {
-                        id: mediaInfo.id,
-                        url: mediaInfo.url,
-                        type: mediaInfo.type,
-                        order: media.length + i,
-                        expires_at: parseInt(expires, 10),
-                      };
-                      setMedia((prev) => [...prev, newMedia]);
-                    }
-                    break;
-                  } else if (result?.rejected) {
-                    // Check if media was rejected by content moderation
-                    uploadError = new Error(
-                      result.reason || "Media rejected by content moderation"
-                    );
-                    break;
-                  }
-                } else if (status === "FAILURE") {
-                  uploadError = new Error(
-                    result?.error || "Media upload failed"
+              if (status === "SUCCESS") {
+                if (result?.rejected) {
+                  setUploadProgress((prev) =>
+                    prev.map((p) =>
+                      p.fileName === file.name
+                        ? {
+                            ...p,
+                            status: "rejected",
+                            reason:
+                              result.reason ||
+                              "Media rejected by content moderation.",
+                          }
+                        : p
+                    )
                   );
-                  break;
-                }
-              }
-            } catch (pollError) {
-              console.error("Polling error:", pollError);
-              // Continue polling on transient errors
-            }
+                } else if (result?.success && result?.media_id) {
+                  const mediaInfoResponse = await getMediaInfo(result.media_id);
+                  if (mediaInfoResponse.success && mediaInfoResponse.data) {
+                    const mediaInfo = mediaInfoResponse.data;
+                    const url = new URL(mediaInfo.url);
+                    const expires = url.searchParams.get("Expires");
 
+                    if (!expires) {
+                      throw new Error("Signed URL missing expiry.");
+                    }
+
+                    const newMedia: Media = {
+                      id: mediaInfo.id,
+                      url: mediaInfo.url,
+                      type: mediaInfo.type,
+                      order: media.length + i,
+                      expires_at: parseInt(expires, 10),
+                    };
+                    setMedia((prev) => [...prev, newMedia]);
+                    setUploadProgress((prev) =>
+                      prev.map((p) =>
+                        p.fileName === file.name
+                          ? { ...p, status: "success" }
+                          : p
+                      )
+                    );
+                  }
+                }
+                break; // Exit polling loop
+              } else if (status === "FAILURE") {
+                throw new Error(result?.error || "Media upload failed");
+              }
+            } catch (pollError: any) {
+              console.error("Polling error:", pollError);
+              if (attempts >= maxAttempts - 1) {
+                throw new Error(`Polling failed for ${file.name}: ${pollError.message}`);
+              }
+            }
             attempts++;
           }
-
-          // Check if we encountered an error during polling
-          if (uploadError) {
-            throw uploadError;
-          }
-
           if (attempts >= maxAttempts) {
-            throw new Error("Media upload timed out");
+            throw new Error(`Upload timed out for ${file.name}`);
           }
         }
+      } catch (err: any) {
+        console.error(`Upload error for ${file.name}:`, err);
+        setUploadProgress((prev) =>
+          prev.map((p) =>
+            p.fileName === file.name
+              ? { ...p, status: "failed", reason: err.message }
+              : p
+          )
+        );
       }
-    } catch (err: any) {
-      console.error("Upload error:", err);
-      setError(err.message || "Failed to upload media");
-    } finally {
-      setUploadingMedia(false);
     }
+    setUploadingMedia(false);
   };
 
   const removeMedia = (index: number) => {
@@ -447,6 +461,107 @@ export default function ProductForm({
             <p className="text-xs text-gray-500">PNG, JPG up to 50MB each</p>
           </label>
         </div>
+
+        {/* Upload Progress */}
+        {uploadProgress.length > 0 && (
+          <div className="mt-4 space-y-3">
+            <h4 className="text-sm font-semibold text-gray-700">
+              Upload Status
+            </h4>
+            <ul className="space-y-2">
+              {uploadProgress.map((p, index) => {
+                if (p.status === "rejected") {
+                  return (
+                    <li key={index}>
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex items-start gap-3">
+                        <svg
+                          className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                          />
+                        </svg>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-yellow-900">
+                            {p.fileName} - Rejected
+                          </p>
+                          <p className="text-sm text-yellow-700">
+                            {p.reason}
+                          </p>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                }
+
+                return (
+                  <li
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+                  >
+                    <div className="flex items-center gap-3">
+                      {p.status === "uploading" && (
+                        <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                      )}
+                      {p.status === "success" && (
+                        <svg
+                          className="w-5 h-5 text-green-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      )}
+                      {p.status === "failed" && (
+                        <svg
+                          className="w-5 h-5 text-red-500"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      )}
+                      <span className="text-sm font-medium text-gray-800 truncate max-w-xs">
+                        {p.fileName}
+                      </span>
+                    </div>
+                    <div className="text-sm">
+                      {p.status === "failed" && (
+                        <span className="font-medium text-red-600">
+                          Failed:{" "}
+                          <span className="font-normal">{p.reason}</span>
+                        </span>
+                      )}
+                      {p.status === "success" && (
+                        <span className="font-medium text-green-600">
+                          Completed
+                        </span>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
 
         {/* Media Preview */}
         {media.length > 0 && (
