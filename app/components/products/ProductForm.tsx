@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { uploadMedia } from "@/app/lib/api";
+import { uploadMedia, getMediaInfo } from "@/app/lib/api";
 import api from "@/app/lib/api";
 import type { Product, Media } from "@/app/lib/types/product";
 import { ProductType, MediaType } from "@/app/lib/types/product";
@@ -76,14 +76,32 @@ export default function ProductForm({
 
                 if (status === "SUCCESS") {
                   // Check if result has success flag and media data
-                  if (result?.success && result?.media_id && result?.media_url) {
-                    const newMedia: Media = {
-                      id: result.media_id,
-                      url: result.media_url,
-                      type: MediaType.IMAGE,
-                      order: media.length + i,
-                    };
-                    setMedia((prev) => [...prev, newMedia]);
+                  if (result?.success && result?.media_id) {
+                    const mediaInfoResponse = await getMediaInfo(
+                      result.media_id
+                    );
+                    if (mediaInfoResponse.success && mediaInfoResponse.data) {
+                      const mediaInfo = mediaInfoResponse.data;
+
+                      // Extract 'Expires' from the signed URL
+                      const url = new URL(mediaInfo.url);
+                      const expires = url.searchParams.get("Expires");
+
+                      if (!expires) {
+                        throw new Error(
+                          "Signed URL for media is missing expiry information."
+                        );
+                      }
+
+                      const newMedia: Media = {
+                        id: mediaInfo.id,
+                        url: mediaInfo.url,
+                        type: mediaInfo.type,
+                        order: media.length + i,
+                        expires_at: parseInt(expires, 10),
+                      };
+                      setMedia((prev) => [...prev, newMedia]);
+                    }
                     break;
                   } else if (result?.rejected) {
                     // Check if media was rejected by content moderation

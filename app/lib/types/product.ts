@@ -33,6 +33,7 @@ export interface Media {
   order: number;
   moderation_status?: ModerationStatus;
   created_at?: string;
+  expires_at?: number;
 }
 
 export interface Product {
