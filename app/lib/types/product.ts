@@ -79,6 +79,7 @@ export interface EditProductRequest {
 
 export interface SearchQuery {
   query: string;
+  seller_id?: string;
   categories?: string[];
   tags?: string[];
   min_price?: number;

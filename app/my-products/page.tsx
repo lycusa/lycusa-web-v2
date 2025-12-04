@@ -23,6 +23,7 @@ export default function MyProductsPage() {
         setLoading(true);
         const response = await searchProducts({
           query: "*",
+          seller_id: user.id,
           page: 1,
           size: 100,
           sort_by: "created_at",
@@ -30,11 +31,7 @@ export default function MyProductsPage() {
         });
 
         if (response.success && response.data) {
-          // Filter products by seller_id on client side
-          const myProducts = response.data.results.filter(
-            (p: SearchResultItem) => p.seller_id === user.id
-          );
-          setProducts(myProducts);
+          setProducts(response.data.results);
         } else {
           setError(response.message || "Failed to load products");
         }
