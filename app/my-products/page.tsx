@@ -374,7 +374,7 @@ export default function MyProductsPage() {
                     <div>
                       <p className="text-sm text-gray-600 mb-1">Price</p>
                       <p className="text-2xl font-bold text-gray-900">
-                        {product.price.currency} {product.price.amount.toFixed(2)}
+                        {product.price.currency} {typeof product.price.amount === 'string' ? parseFloat(product.price.amount).toFixed(2) : product.price.amount.toFixed(2)}
                       </p>
                     </div>
                     <div>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { SearchResultItem } from "@/app/lib/types/product";
 import { ProductType, ProductStatus } from "@/app/lib/types/product";
+import { formatPrice } from "@/app/lib/utils";
 
 interface ProductCardProps {
   product: SearchResultItem;
@@ -13,6 +14,40 @@ export default function ProductCard({ product }: ProductCardProps) {
   const imageUrl = product.media_urls?.[0] || "/placeholder-product.jpg";
   const isPreOrder = product.product_type === ProductType.PRE_ORDER;
   const isActive = product.status === ProductStatus.ACTIVE;
+
+  // Helper function to render highlighted text
+  const renderHighlightedText = (text: string, highlights?: string[]) => {
+    if (!highlights || highlights.length === 0) {
+      return text;
+    }
+
+    // Use the first highlight if available
+    const highlighted = highlights[0];
+    // Parse the <em> tags and render with emphasis
+    const parts = highlighted.split(/(<em>|<\/em>)/g);
+    let isHighlighted = false;
+
+    return (
+      <>
+        {parts.map((part, i) => {
+          if (part === '<em>') {
+            isHighlighted = true;
+            return null;
+          } else if (part === '</em>') {
+            isHighlighted = false;
+            return null;
+          } else if (part) {
+            return isHighlighted ? (
+              <span key={i} className="bg-yellow-200 font-semibold">{part}</span>
+            ) : (
+              <span key={i}>{part}</span>
+            );
+          }
+          return null;
+        })}
+      </>
+    );
+  };
 
   return (
     <Link href={`/products/${product.id}`}>
@@ -73,19 +108,19 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* Product Name */}
           <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
-            {product.name}
+            {renderHighlightedText(product.name, product.highlights?.name)}
           </h3>
 
           {/* Description */}
           <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-            {product.description}
+            {renderHighlightedText(product.description, product.highlights?.description)}
           </p>
 
           {/* Price and Tags */}
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-gray-900">
-                {product.price.currency} {product.price.amount.toFixed(2)}
+                {product.price.currency} {formatPrice(product.price.amount)}
               </p>
             </div>
           </div>

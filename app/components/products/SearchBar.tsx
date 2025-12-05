@@ -52,10 +52,9 @@ export default function SearchBar({ onSearch, initialQuery = "" }: SearchBarProp
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim()) {
-      onSearch(query.trim());
-      setShowSuggestions(false);
-    }
+    // Allow empty queries to show all products
+    onSearch(query.trim() || "*");
+    setShowSuggestions(false);
   };
 
   const handleSuggestionClick = (suggestion: string) => {

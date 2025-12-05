@@ -57,6 +57,7 @@ export default function ProductFilters({
       categories: [],
       tags: [],
       currency: "USD",
+      status: ProductStatus.ACTIVE,
       sort_by: "relevance",
       sort_order: "desc",
     });

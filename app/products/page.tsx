@@ -15,6 +15,7 @@ export default function ProductsPage() {
     categories: [] as string[],
     tags: [] as string[],
     currency: "USD",
+    status: ProductStatus.ACTIVE,
     page: 1,
     size: 20,
     sort_by: "relevance" as const,
@@ -30,8 +31,9 @@ export default function ProductsPage() {
       setError(null);
 
       try {
+        // Build search query - use empty string or "*" to get all products
         const query: SearchQuery = {
-          query: searchQuery,
+          query: searchQuery || "*",
           ...filters,
         };
 
@@ -44,7 +46,17 @@ export default function ProductsPage() {
         }
       } catch (err: any) {
         console.error("Search error:", err);
-        setError(err.message || "An error occurred while searching");
+
+        // Provide more helpful error messages
+        if (err.response?.status === 401) {
+          setError("Please sign in to browse products");
+        } else if (err.response?.status === 503) {
+          setError("Search service is temporarily unavailable. Please try again later.");
+        } else if (err.code === 'ECONNABORTED' || err.code === 'ETIMEDOUT') {
+          setError("Search request timed out. Please try again.");
+        } else {
+          setError(err.response?.data?.message || err.message || "An error occurred while searching");
+        }
       } finally {
         setLoading(false);
       }
@@ -197,7 +209,13 @@ export default function ProductsPage() {
                 <h3 className="text-lg font-semibold text-red-900 mb-2">
                   Search Failed
                 </h3>
-                <p className="text-red-700">{error}</p>
+                <p className="text-red-700 mb-4">{error}</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                >
+                  Retry
+                </button>
               </div>
             )}
 
@@ -230,6 +248,7 @@ export default function ProductsPage() {
                       categories: [],
                       tags: [],
                       currency: "USD",
+                      status: ProductStatus.ACTIVE,
                       sort_by: "relevance",
                       sort_order: "desc",
                     });

@@ -22,7 +22,7 @@ export enum ModerationStatus {
 }
 
 export interface Money {
-  amount: number;
+  amount: string | number; // API returns string, but allow number for flexibility
   currency: string;
 }
 
@@ -106,9 +106,14 @@ export interface SearchResultItem {
   tags: string[];
   product_type: ProductType;
   due_date: string | null;
+  moderation_status: ModerationStatus;
+  has_media: boolean;
   media_count: number;
   media_urls: string[];
   score: number;
+  highlights?: {
+    [field: string]: string[];
+  };
 }
 
 export interface SearchResult {
