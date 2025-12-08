@@ -220,6 +220,14 @@ import type {
   SearchQuery,
 } from "./types/product";
 
+import type {
+  PlaceOrderRequest,
+  CancelOrderRequest,
+  UpdateStatusRequest,
+  CompleteOrderRequest,
+  ListOrdersQuery,
+} from "./types/order";
+
 // Create a new product
 export const createProduct = async (data: CreateProductRequest) => {
   const response = await api.post("/product/api/v1/products", data);
@@ -299,6 +307,51 @@ export const getMedias = async (mediaIds: string[]) => {
 // Get task status (for async operations like media upload)
 export const getTaskStatus = async (taskId: string) => {
   const response = await api.get(`/product/api/v1/tasks/${taskId}/status`);
+  return response.data;
+};
+
+// ===== Order Service API =====
+
+// Place a new order
+export const placeOrder = async (data: PlaceOrderRequest) => {
+  const response = await api.post("/order/api/v1/orders", data);
+  return response.data;
+};
+
+// Get order details by ID
+export const getOrder = async (orderId: string) => {
+  const response = await api.get(`/order/api/v1/orders/${orderId}`);
+  return response.data;
+};
+
+// List user's orders (as buyer or seller)
+export const listOrders = async (query?: ListOrdersQuery) => {
+  const params = new URLSearchParams();
+  if (query?.status) params.append("status", query.status);
+  if (query?.limit) params.append("limit", query.limit.toString());
+  if (query?.offset) params.append("offset", query.offset.toString());
+
+  const queryString = params.toString();
+  const url = queryString ? `/order/api/v1/orders?${queryString}` : "/order/api/v1/orders";
+  const response = await api.get(url);
+  return response.data;
+};
+
+// Cancel an order
+export const cancelOrder = async (orderId: string, data: CancelOrderRequest) => {
+  const response = await api.post(`/order/api/v1/orders/${orderId}/cancel`, data);
+  return response.data;
+};
+
+// Update order status
+export const updateOrderStatus = async (orderId: string, data: UpdateStatusRequest) => {
+  const response = await api.post(`/order/api/v1/orders/${orderId}/update-status`, data);
+  return response.data;
+};
+
+// Complete an order (buyer only, after delivery)
+export const completeOrder = async (orderId: string, data: CompleteOrderRequest) => {
+  const response = await api.post(`/order/api/v1/orders/${orderId}/complete`, data);
   return response.data;
 };
 

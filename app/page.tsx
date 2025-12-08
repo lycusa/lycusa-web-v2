@@ -77,6 +77,12 @@ export default function Home() {
                   >
                     My Products
                   </Link>
+                  <Link
+                    href="/orders"
+                    className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium hover:bg-gray-100 rounded-lg"
+                  >
+                    Orders
+                  </Link>
                   <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200/50">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-sm font-medium text-gray-700 max-w-[150px] truncate">
@@ -204,12 +210,18 @@ export default function Home() {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
                       <Link
                         href="/products"
                         className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all font-semibold shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 hover:-translate-y-1 text-center"
                       >
                         Browse Products
+                      </Link>
+                      <Link
+                        href="/orders"
+                        className="px-8 py-4 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-xl hover:from-orange-700 hover:to-amber-700 transition-all font-semibold shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 hover:-translate-y-1 text-center"
+                      >
+                        My Orders
                       </Link>
                       <Link
                         href="/profile"

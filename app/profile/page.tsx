@@ -212,6 +212,12 @@ export default function ProfilePage() {
 
             <div className="flex gap-3">
               <Link
+                href="/orders"
+                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all text-sm font-medium shadow-md hover:shadow-lg"
+              >
+                My Orders
+              </Link>
+              <Link
                 href="/kyc"
                 className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all text-sm font-medium shadow-md hover:shadow-lg"
               >
