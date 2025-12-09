@@ -11,6 +11,7 @@ import {
   completeOrder,
   getUserProfile,
   getProduct,
+  submitRating,
 } from "@/app/lib/api";
 import {
   Order,
@@ -25,6 +26,8 @@ import {
 import OrderStatusBadge from "@/app/components/orders/OrderStatusBadge";
 import OrderTimeline from "@/app/components/orders/OrderTimeline";
 import OrderActions from "@/app/components/orders/OrderActions";
+import RatingModal from "@/app/components/orders/RatingModal";
+import StarRating from "@/app/components/orders/StarRating";
 
 interface UserProfile {
   username: string;
@@ -49,6 +52,9 @@ export default function OrderDetailPage() {
   const [buyerProfile, setBuyerProfile] = useState<UserProfile | null>(null);
   const [sellerProfile, setSellerProfile] = useState<UserProfile | null>(null);
   const [productInfos, setProductInfos] = useState<Record<string, ProductInfo>>({});
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [hasRated, setHasRated] = useState(false);
+  const [submittedRating, setSubmittedRating] = useState<number | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
@@ -139,6 +145,13 @@ export default function OrderDetailPage() {
       completion_notes: notes,
     });
     await fetchOrder();
+  };
+
+  const handleRating = async (rating: number) => {
+    if (!order) return;
+    await submitRating(order.id, rating);
+    setHasRated(true);
+    setSubmittedRating(rating);
   };
 
   const formatDate = (dateString: string) => {
@@ -505,7 +518,7 @@ export default function OrderDetailPage() {
                   <div className="px-4 py-3 border-b border-gray-100">
                     <h2 className="text-sm font-semibold text-gray-900">Actions</h2>
                   </div>
-                  <div className="p-4">
+                  <div className="p-4 space-y-3">
                     <OrderActions
                       order={order}
                       currentUserId={user.id}
@@ -513,6 +526,36 @@ export default function OrderDetailPage() {
                       onUpdateStatus={handleUpdateStatus}
                       onComplete={handleComplete}
                     />
+
+                    {/* Rate Order Button - only for buyer when order is completed */}
+                    {isBuyer && order.status === OrderStatus.COMPLETED && !hasRated && (
+                      <button
+                        onClick={() => setShowRatingModal(true)}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                        </svg>
+                        Rate This Order
+                      </button>
+                    )}
+
+                    {/* Already Rated Message */}
+                    {isBuyer && order.status === OrderStatus.COMPLETED && hasRated && submittedRating && (
+                      <div className="px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-lg">
+                        <div className="flex items-center gap-2 mb-2">
+                          <svg className="w-4 h-4 text-emerald-700" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                          </svg>
+                          <span className="text-sm font-medium text-emerald-700">
+                            Rating submitted
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 pl-6">
+                          <StarRating rating={submittedRating} size="md" showValue />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -574,6 +617,14 @@ export default function OrderDetailPage() {
           </div>
         </div>
       </main>
+
+      {/* Rating Modal */}
+      <RatingModal
+        isOpen={showRatingModal}
+        onClose={() => setShowRatingModal(false)}
+        onConfirm={handleRating}
+        orderId={orderId}
+      />
     </div>
   );
 }

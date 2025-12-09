@@ -355,4 +355,15 @@ export const completeOrder = async (orderId: string, data: CompleteOrderRequest)
   return response.data;
 };
 
+// ===== Rating Service API =====
+
+// Submit a rating for an order (buyer only)
+export const submitRating = async (orderId: string, rate: number) => {
+  const response = await api.post("/rating/rating", {
+    orderId,
+    rate,
+  });
+  return response.data;
+};
+
 export default api;
