@@ -76,13 +76,6 @@ function CheckoutContent() {
       return false;
     }
 
-    // Address should have at least city, country format
-    const addressParts = deliveryAddress.split(",").map((p) => p.trim());
-    if (addressParts.length < 2) {
-      setError("Address must include at least city and country (comma-separated)");
-      return false;
-    }
-
     if (deliveryAddress.length < 10) {
       setError("Please enter a more complete address");
       return false;
@@ -512,7 +505,7 @@ function CheckoutContent() {
                     required
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Please include street, city, and country (comma-separated)
+                    Please include street, city, and country.
                   </p>
                 </div>
               </div>
