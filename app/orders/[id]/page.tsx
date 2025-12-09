@@ -159,14 +159,18 @@ export default function OrderDetailPage() {
     });
   };
 
-  const formatCurrency = (amount: number, currency: string) => {
+  const formatCurrency = (amount: number | string, currency: string) => {
+    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+    if (isNaN(numAmount)) {
+      return `0.00 ${currency}`;
+    }
     if (currency === "USD") {
       return new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
-      }).format(amount);
+      }).format(numAmount);
     }
-    return `${amount.toFixed(2)} ${currency}`;
+    return `${numAmount.toFixed(2)} ${currency}`;
   };
 
   // Loading skeleton
