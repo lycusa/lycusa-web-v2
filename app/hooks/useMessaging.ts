@@ -5,7 +5,7 @@
  * React hooks for E2E encrypted messaging functionality
  */
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import {
   connectSocket,
   disconnectSocket,
@@ -236,6 +236,8 @@ interface UseConversationReturn {
   sendMessage: (content: string) => Promise<void>;
   sendMedia: (file: File, type: MediaType, encrypt?: boolean) => Promise<void>;
   recipientId: string | null;
+  keysInitialized: boolean;
+  keysError: string | null;
 }
 
 /**
@@ -255,18 +257,27 @@ export const useConversation = (
   const [recipientId, setRecipientId] = useState<string | null>(null);
 
   // E2EE keys
-  const { keyPair, isInitialized: keysReady } = useE2EEKeys();
+  const { keyPair, isInitialized: keysReady, error: keysError } = useE2EEKeys();
 
   // Refs for shared key and recipient
   const sharedKeyRef = useRef<CryptoKey | null>(null);
 
-  // Get current user
-  const currentUser = getUserFromToken();
+  // Store keyPair in a ref to avoid re-renders when it changes
+  const keyPairRef = useRef(keyPair);
+  useEffect(() => {
+    keyPairRef.current = keyPair;
+  }, [keyPair]);
+
+  // Get current user - memoize to prevent new object on each render
+  const currentUser = useMemo(() => getUserFromToken(), []);
+  const currentUserId = currentUser?.id;
 
   // Derive shared key for encryption/decryption
+  // Use ref to avoid dependency on keyPair which would cause re-renders
   const deriveKey = useCallback(
     async (targetUserId: string): Promise<CryptoKey | null> => {
-      if (!keyPair) {
+      const currentKeyPair = keyPairRef.current;
+      if (!currentKeyPair) {
         console.warn("[E2EE] No keypair available");
         return null;
       }
@@ -282,7 +293,7 @@ export const useConversation = (
 
         const recipientPublicKey = await importPublicKey(recipientPublicKeyBase64);
         const sharedKey = await deriveSharedKey(
-          keyPair.privateKey,
+          currentKeyPair.privateKey,
           recipientPublicKey
         );
 
@@ -295,7 +306,7 @@ export const useConversation = (
         return null;
       }
     },
-    [keyPair]
+    [] // No dependencies - uses refs
   );
 
   // Decrypt a message
@@ -331,7 +342,7 @@ export const useConversation = (
 
   // Fetch conversation and messages
   useEffect(() => {
-    if (!conversationId || !keysReady || !currentUser) return;
+    if (!conversationId || !keysReady || !currentUserId) return;
 
     const fetchData = async () => {
       try {
@@ -358,7 +369,7 @@ export const useConversation = (
 
         // Determine recipient (the other user in conversation)
         const targetUserId =
-          conv.user_one_id === currentUser.id
+          conv.user_one_id === currentUserId
             ? conv.user_two_id
             : conv.user_one_id;
         setRecipientId(targetUserId);
@@ -395,13 +406,10 @@ export const useConversation = (
     };
 
     fetchData();
-  }, [
-    conversationId,
-    keysReady,
-    currentUser,
-    deriveKey,
-    decryptMessageContent,
-  ]);
+    // Only re-run when conversationId or keysReady changes
+    // deriveKey and decryptMessageContent are stable (use refs)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId, keysReady, currentUserId]);
 
   // Connect to WebSocket room
   useEffect(() => {
@@ -472,7 +480,9 @@ export const useConversation = (
       leaveRoom(conversationId);
       setIsConnected(false);
     };
-  }, [conversationId, keysReady, loading, decryptMessageContent]);
+    // decryptMessageContent is stable (no dependencies)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId, keysReady, loading]);
 
   // Send encrypted message
   const sendMessageHandler = useCallback(
@@ -553,6 +563,8 @@ export const useConversation = (
     sendMessage: sendMessageHandler,
     sendMedia: sendMediaHandler,
     recipientId,
+    keysInitialized: keysReady,
+    keysError,
   };
 };
 

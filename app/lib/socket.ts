@@ -13,9 +13,9 @@ import type {
 } from "./types/messaging";
 
 // WebSocket URL - direct connection to messaging service
+// Phoenix Socket automatically appends /websocket to the path
 const MESSAGING_WS_URL =
-  process.env.NEXT_PUBLIC_MESSAGING_WS_URL ||
-  "ws://localhost:3008/socket";
+  process.env.NEXT_PUBLIC_MESSAGING_WS_URL || "ws://localhost:4001/socket";
 
 // ===== Types =====
 

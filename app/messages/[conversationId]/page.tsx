@@ -23,6 +23,8 @@ export default function ChatPage({ params }: Props) {
         sendMessage,
         sendMedia,
         isConnected,
+        keysInitialized,
+        keysError,
     } = useConversation(conversationId);
 
     if (authLoading || loading) {
@@ -91,6 +93,8 @@ export default function ChatPage({ params }: Props) {
                     onSendMessage={sendMessage}
                     onSendMedia={sendMedia}
                     error={error}
+                    keysInitialized={keysInitialized}
+                    keysError={keysError}
                 />
             </main>
         </div>

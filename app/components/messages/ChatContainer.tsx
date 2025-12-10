@@ -1,9 +1,7 @@
-import { useEffect } from "react";
 import { DecryptedMessage, MediaType } from "@/app/lib/types/messaging";
 import MessageList from "./MessageList";
 import MessageInput from "./MessageInput";
 import EncryptionIndicator from "./EncryptionIndicator";
-import { useE2EEKeys } from "@/app/hooks/useMessaging";
 
 interface Props {
     conversationId: string;
@@ -15,6 +13,8 @@ interface Props {
     onSendMessage: (content: string) => Promise<void>;
     onSendMedia: (file: File, type: MediaType) => Promise<void>;
     error: string | null;
+    keysInitialized: boolean;
+    keysError: string | null;
 }
 
 export default function ChatContainer({
@@ -27,8 +27,9 @@ export default function ChatContainer({
     onSendMessage,
     onSendMedia,
     error,
+    keysInitialized,
+    keysError,
 }: Props) {
-    const { isInitialized, error: keyError } = useE2EEKeys();
 
     return (
         <div className="flex flex-col h-[calc(100vh-theme(spacing.32))] bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
@@ -41,7 +42,7 @@ export default function ChatContainer({
                     </span>
                 </div>
 
-                <EncryptionIndicator isInitialized={isInitialized} error={keyError} />
+                <EncryptionIndicator isInitialized={keysInitialized} error={keysError} />
             </div>
 
             {/* Global Error */}
@@ -66,7 +67,7 @@ export default function ChatContainer({
                 <MessageInput
                     onSendMessage={onSendMessage}
                     onSendMedia={onSendMedia}
-                    disabled={!isConnected || !isInitialized}
+                    disabled={!isConnected || !keysInitialized}
                 />
             )}
         </div>
