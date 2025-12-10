@@ -15,7 +15,7 @@ import type {
 // WebSocket URL - direct connection to messaging service
 const MESSAGING_WS_URL =
   process.env.NEXT_PUBLIC_MESSAGING_WS_URL ||
-  "ws://localhost:4001/socket/websocket";
+  "ws://localhost:3008/socket";
 
 // ===== Types =====
 
@@ -76,7 +76,7 @@ export const connectSocket = (): Socket => {
   });
 
   state.socket.onOpen(() => {
-    console.log("[WebSocket] Connected");
+    console.log(`[WebSocket] connected to ${MESSAGING_WS_URL}`);
     state.connectionHandlers.forEach((handler) => handler());
   });
 
@@ -125,11 +125,42 @@ export const isConnected = (): boolean => {
 // ===== Room Management =====
 
 /**
+ * Wait for socket to be connected
+ */
+const waitForConnection = (socket: Socket, timeoutMs = 5000): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    if (socket.isConnected()) {
+      resolve();
+      return;
+    }
+
+    let resolved = false;
+
+    const onOpenRef = socket.onOpen(() => {
+      if (!resolved) {
+        resolved = true;
+        resolve();
+      }
+    });
+
+    // Don't rely solely on onError/onClose as they can fire during retry
+    // Just allow a timeout to reject if connection takes too long
+    setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        // Clean up checking logic if possible, but Phoenix API doesn't make it easy to remove single listeners by ref without clearing all
+        reject(new Error("Socket connection timeout"));
+      }
+    }, timeoutMs);
+  });
+};
+
+/**
  * Join a conversation room
  */
 export const joinRoom = (conversationId: string): Promise<Channel> => {
-  return new Promise((resolve, reject) => {
-    // Ensure socket is connected
+  return new Promise(async (resolve, reject) => {
+    // Ensure socket is initialized
     if (!state.socket) {
       try {
         connectSocket();
@@ -140,7 +171,7 @@ export const joinRoom = (conversationId: string): Promise<Channel> => {
     }
 
     if (!state.socket) {
-      reject(new Error("Failed to connect socket"));
+      reject(new Error("Failed to initialize socket"));
       return;
     }
 
@@ -149,6 +180,14 @@ export const joinRoom = (conversationId: string): Promise<Channel> => {
     if (existing) {
       resolve(existing);
       return;
+    }
+
+    try {
+      // Wait for connection before attempting to join
+      await waitForConnection(state.socket);
+    } catch (err) {
+      console.warn("[WebSocket] Failed to wait for connection, attempting join anyway:", err);
+      // We proceed anyway because Phoenix client queues joins, but this warning helps debug
     }
 
     const channel = state.socket.channel(`room:${conversationId}`, {});

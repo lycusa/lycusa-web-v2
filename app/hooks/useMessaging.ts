@@ -162,33 +162,37 @@ interface UseConversationsReturn {
   conversations: Conversation[];
   loading: boolean;
   error: string | null;
-  refetch: () => Promise<void>;
+  refetch: (forceRefresh?: boolean) => Promise<void>;
 }
 
 /**
  * Hook for listing user's conversations
+ * Uses cache layer to prevent excessive API calls
  */
 export const useConversations = (): UseConversationsReturn => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchConversations = useCallback(async () => {
+  // Sort conversations helper
+  const sortConversations = useCallback((data: Conversation[]): Conversation[] => {
+    return [...data].sort((a, b) => {
+      const aTime = a.last_message_at
+        ? new Date(a.last_message_at).getTime()
+        : 0;
+      const bTime = b.last_message_at
+        ? new Date(b.last_message_at).getTime()
+        : 0;
+      return bTime - aTime;
+    });
+  }, []);
+
+  const fetchConversations = useCallback(async (forceRefresh = false) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await listConversations();
-      // Sort by last_message_at (most recent first)
-      const sorted = data.sort((a, b) => {
-        const aTime = a.last_message_at
-          ? new Date(a.last_message_at).getTime()
-          : 0;
-        const bTime = b.last_message_at
-          ? new Date(b.last_message_at).getTime()
-          : 0;
-        return bTime - aTime;
-      });
-      setConversations(sorted);
+      const data = await listConversations(forceRefresh);
+      setConversations(sortConversations(data));
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to load conversations";
@@ -196,11 +200,25 @@ export const useConversations = (): UseConversationsReturn => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [sortConversations]);
 
+  // Initial fetch and subscribe to cache updates
   useEffect(() => {
     fetchConversations();
-  }, [fetchConversations]);
+
+    // Subscribe to cache updates for real-time reflection
+    let unsubscribe: (() => void) | null = null;
+
+    import("@/app/lib/conversationsCache").then(({ subscribeToConversations }) => {
+      unsubscribe = subscribeToConversations((data) => {
+        setConversations(sortConversations(data));
+      });
+    });
+
+    return () => {
+      unsubscribe?.();
+    };
+  }, [fetchConversations, sortConversations]);
 
   return { conversations, loading, error, refetch: fetchConversations };
 };
@@ -320,9 +338,15 @@ export const useConversation = (
         setLoading(true);
         setError(null);
 
-        // Get all conversations to find this one
-        const conversations = await listConversations();
-        const conv = conversations.find((c) => c.id === conversationId);
+        // Try to get conversation from cache first
+        const { getCachedConversation } = await import("@/app/lib/conversationsCache");
+        let conv = getCachedConversation(conversationId);
+
+        // If not in cache, fetch all conversations (which will populate cache)
+        if (!conv) {
+          const conversations = await listConversations();
+          conv = conversations.find((c) => c.id === conversationId) || null;
+        }
 
         if (!conv) {
           setError("Conversation not found");
@@ -532,27 +556,55 @@ export const useConversation = (
   };
 };
 
-// ===== useSocketConnection Hook =====
+// ===== useConnectionStatus Hook =====
 
-interface UseSocketConnectionReturn {
-  isConnected: boolean;
+export enum ConnectionState {
+  CONNECTED = "connected",
+  CONNECTING = "connecting",
+  DISCONNECTED = "disconnected",
+  ERROR = "error",
+}
+
+interface UseConnectionStatusReturn {
+  status: ConnectionState;
+  error: string | null;
   connect: () => void;
   disconnect: () => void;
 }
 
 /**
- * Hook for managing WebSocket connection state
+ * Hook for managing WebSocket connection state with more detail
  */
-export const useSocketConnection = (): UseSocketConnectionReturn => {
-  const [isConnected, setIsConnected] = useState(false);
+export const useConnectionStatus = (): UseConnectionStatusReturn => {
+  const [status, setStatus] = useState<ConnectionState>(ConnectionState.DISCONNECTED);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Initial state
-    setIsConnected(checkIsConnected());
+    // Initial state check
+    if (checkIsConnected()) {
+      setStatus(ConnectionState.CONNECTED);
+    } else {
+      // Attempt to connect if not connected
+      setStatus(ConnectionState.CONNECTING);
+      try {
+        connectSocket();
+      } catch (e) {
+        setStatus(ConnectionState.ERROR);
+      }
+    }
 
     // Subscribe to connection changes
-    const unsubConnect = onConnection(() => setIsConnected(true));
-    const unsubDisconnect = onDisconnection(() => setIsConnected(false));
+    const unsubConnect = onConnection(() => {
+      setStatus(ConnectionState.CONNECTED);
+      setError(null);
+    });
+
+    const unsubDisconnect = onDisconnection(() => {
+      setStatus(ConnectionState.DISCONNECTED);
+    });
+
+    // We can also subscribe to errors if we export that from socket.ts
+    // For now, we'll rely on global handlers or assume disconnection on error
 
     return () => {
       unsubConnect();
@@ -561,13 +613,20 @@ export const useSocketConnection = (): UseSocketConnectionReturn => {
   }, []);
 
   const connect = useCallback(() => {
-    connectSocket();
+    setStatus(ConnectionState.CONNECTING);
+    setError(null);
+    try {
+      connectSocket();
+    } catch (err: unknown) {
+      setStatus(ConnectionState.ERROR);
+      setError(err instanceof Error ? err.message : "Failed to connect");
+    }
   }, []);
 
   const disconnect = useCallback(() => {
     disconnectSocket();
-    setIsConnected(false);
+    setStatus(ConnectionState.DISCONNECTED);
   }, []);
 
-  return { isConnected, connect, disconnect };
+  return { status, error, connect, disconnect };
 };

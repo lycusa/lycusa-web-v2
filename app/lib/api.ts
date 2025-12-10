@@ -382,11 +382,17 @@ export const submitRating = async (orderId: string, rate: number) => {
 
 // ===== Messaging Service API =====
 
-// List user's conversations
-export const listConversations = async (): Promise<Conversation[]> => {
-  const response = await api.get("/messaging/api/conversations");
-  // Handle case where API returns wrapped object { conversations: [...] } or { data: [...] }
-  return response.data.conversations || response.data.data || (Array.isArray(response.data) ? response.data : []);
+// List user's conversations (with caching)
+export const listConversations = async (forceRefresh = false): Promise<Conversation[]> => {
+  const { fetchConversationsWithCache } = await import("./conversationsCache");
+
+  const fetchFn = async (): Promise<Conversation[]> => {
+    const response = await api.get("/messaging/api/conversations");
+    // Handle case where API returns wrapped object { conversations: [...] } or { data: [...] }
+    return response.data.conversations || response.data.data || (Array.isArray(response.data) ? response.data : []);
+  };
+
+  return fetchConversationsWithCache(fetchFn, forceRefresh);
 };
 
 // Get conversation messages
@@ -400,11 +406,20 @@ export const getConversationMessages = async (
   return response.data.messages || response.data.data || (Array.isArray(response.data) ? response.data : []);
 };
 
-// Get conversation by order ID
+// Get conversation by order ID (uses cache)
 export const getConversationByOrderId = async (
   orderId: string
 ): Promise<Conversation | null> => {
   try {
+    const { getCachedConversationByOrderId } = await import("./conversationsCache");
+
+    // Try cache first
+    const cached = getCachedConversationByOrderId(orderId);
+    if (cached) {
+      return cached;
+    }
+
+    // Fallback to fetching all conversations (will populate cache)
     const conversations = await listConversations();
     return conversations.find((c) => c.order_id === orderId) || null;
   } catch (error) {

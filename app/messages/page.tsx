@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/app/components/auth/AuthGuard";
 import { useConversations, useE2EEKeys } from "@/app/hooks/useMessaging";
-import { ConversationList, EncryptionIndicator } from "@/app/components/messages";
+import { ConversationList, EncryptionIndicator, ConnectionStatus } from "@/app/components/messages";
 import Link from "next/link";
 
 export default function MessagesPage() {
@@ -37,7 +37,10 @@ export default function MessagesPage() {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-bold text-gray-900">Messages</h1>
-                    <EncryptionIndicator isInitialized={keysReady} error={keyError} />
+                    <div className="flex items-center gap-3">
+                        <ConnectionStatus />
+                        <EncryptionIndicator isInitialized={keysReady} error={keyError} />
+                    </div>
                 </div>
 
                 {error && (
