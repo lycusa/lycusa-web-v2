@@ -228,6 +228,13 @@ import type {
   ListOrdersQuery,
 } from "./types/order";
 
+import type {
+  Conversation,
+  Message,
+  MediaType,
+  UploadMediaResponse,
+} from "./types/messaging";
+
 // Create a new product
 export const createProduct = async (data: CreateProductRequest) => {
   const response = await api.post("/product/api/v1/products", data);
@@ -364,6 +371,114 @@ export const submitRating = async (orderId: string, rate: number) => {
     rate,
   });
   return response.data;
+};
+
+// ===== Messaging Service API =====
+
+// List user's conversations
+export const listConversations = async (): Promise<Conversation[]> => {
+  const response = await api.get("/messaging/api/conversations");
+  return response.data;
+};
+
+// Get conversation messages
+export const getConversationMessages = async (
+  conversationId: string
+): Promise<Message[]> => {
+  const response = await api.get(
+    `/messaging/api/conversations/${conversationId}/messages`
+  );
+  return response.data;
+};
+
+// Get conversation by order ID
+export const getConversationByOrderId = async (
+  orderId: string
+): Promise<Conversation | null> => {
+  try {
+    const conversations = await listConversations();
+    return conversations.find((c) => c.order_id === orderId) || null;
+  } catch (error) {
+    console.error("Failed to get conversation by order ID:", error);
+    return null;
+  }
+};
+
+// ===== Public Key API =====
+
+// Upload user's public key for E2EE
+export const uploadPublicKey = async (publicKey: string): Promise<void> => {
+  await api.post("/messaging/api/public_keys", {
+    public_key: publicKey,
+  });
+};
+
+// Get a user's public key
+export const getPublicKey = async (userId: string): Promise<string | null> => {
+  try {
+    const response = await api.get(`/messaging/api/public_keys/${userId}`);
+    return response.data.public_key;
+  } catch (error: unknown) {
+    const axiosError = error as { response?: { status: number } };
+    if (axiosError.response?.status === 404) {
+      return null;
+    }
+    throw error;
+  }
+};
+
+// Batch get public keys for multiple users
+export const batchGetPublicKeys = async (
+  userIds: string[]
+): Promise<Record<string, string>> => {
+  const response = await api.post("/messaging/api/public_keys/batch", {
+    user_ids: userIds,
+  });
+  return response.data.public_keys;
+};
+
+// ===== Messaging Media API =====
+
+// Upload media (unencrypted)
+export const uploadMessageMedia = async (
+  conversationId: string,
+  file: File,
+  type: MediaType
+): Promise<UploadMediaResponse> => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("type", type);
+
+  const response = await api.post(
+    `/messaging/api/conversations/${conversationId}/media`,
+    formData
+  );
+  return response.data;
+};
+
+// Upload encrypted media
+export const uploadEncryptedMedia = async (
+  conversationId: string,
+  encryptedBlob: Blob,
+  type: MediaType
+): Promise<UploadMediaResponse> => {
+  const formData = new FormData();
+  formData.append("file", encryptedBlob);
+  formData.append("type", type);
+
+  const response = await api.post(
+    `/messaging/api/conversations/${conversationId}/media/encrypted`,
+    formData
+  );
+  return response.data;
+};
+
+// Get presigned media URL
+export const getMessageMediaUrl = async (mediaKey: string): Promise<string> => {
+  const response = await api.get(
+    `/messaging/api/media/${encodeURIComponent(mediaKey)}`
+  );
+  return response.data.url;
 };
 
 export default api;
