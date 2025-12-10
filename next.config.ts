@@ -23,6 +23,19 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    const MESSAGING_URL = process.env.MESSAGING_SERVICE_URL || 'http://localhost:4001';
+    return [
+      {
+        source: '/messaging/api/:path*',
+        destination: `${MESSAGING_URL}/api/:path*`,
+      },
+      {
+        source: '/messaging/socket/:path*',
+        destination: `${MESSAGING_URL}/socket/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
