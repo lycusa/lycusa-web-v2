@@ -126,8 +126,15 @@ export const logout = async (refreshToken: string) => {
 
 // Get user profile by user ID
 export const getUserProfile = async (userId: string) => {
-  const response = await api.get(`/user/users/${userId}/profile`);
-  return response.data;
+  try {
+    const response = await api.get(`/user/users/${userId}/profile`);
+    return response.data;
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      return { success: false };
+    }
+    throw error;
+  }
 };
 
 // Create user profile (authenticated)
@@ -378,7 +385,17 @@ export const submitRating = async (orderId: string, rate: number) => {
 // List user's conversations
 export const listConversations = async (): Promise<Conversation[]> => {
   const response = await api.get("/messaging/api/conversations");
-  return response.data;
+  // Handle case where API returns wrapped object { conversations: [...] } or { data: [...] }
+  return response.data.conversations || response.data.data || (Array.isArray(response.data) ? response.data : []);
+};
+
+// Create a new conversation (or get existing)
+export const createConversation = async (orderId: string): Promise<Conversation> => {
+  const response = await api.post("/messaging/api/conversations", {
+    order_id: orderId,
+  });
+  // Handle wrapped response similarly
+  return response.data.conversation || response.data.data || response.data;
 };
 
 // Get conversation messages
@@ -388,7 +405,8 @@ export const getConversationMessages = async (
   const response = await api.get(
     `/messaging/api/conversations/${conversationId}/messages`
   );
-  return response.data;
+  // Handle wrapped response
+  return response.data.messages || response.data.data || (Array.isArray(response.data) ? response.data : []);
 };
 
 // Get conversation by order ID
