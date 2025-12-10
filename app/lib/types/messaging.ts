@@ -52,8 +52,7 @@ export interface Message {
 }
 
 // Decrypted message for UI display
-export interface DecryptedMessage
-  extends Omit<Message, "encrypted_content" | "nonce"> {
+export interface DecryptedMessage extends Omit<Message, "nonce"> {
   decryptedContent?: string;
   decryptionFailed?: boolean;
 }
@@ -108,7 +107,7 @@ export interface RoomClosedPayload {
   conversation_id: string;
 }
 
-export interface NewMessagePayload extends Message {}
+export interface NewMessagePayload extends Message { }
 
 // ===== UI Configuration =====
 

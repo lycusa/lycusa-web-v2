@@ -149,11 +149,20 @@ export default function OrdersPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
                 </svg>
               </Link>
-              <div>
-                <h1 className="text-lg font-semibold text-gray-900">Orders</h1>
-                {!loading && totalCount > 0 && (
-                  <p className="text-xs text-gray-500">{totalCount} total</p>
-                )}
+              <div className="flex items-center gap-4">
+                <div>
+                  <h1 className="text-lg font-semibold text-gray-900">Orders</h1>
+                  {!loading && totalCount > 0 && (
+                    <p className="text-xs text-gray-500">{totalCount} total</p>
+                  )}
+                </div>
+                <div className="h-6 w-px bg-gray-200" />
+                <Link
+                  href="/messages"
+                  className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Messages
+                </Link>
               </div>
             </div>
           </div>
