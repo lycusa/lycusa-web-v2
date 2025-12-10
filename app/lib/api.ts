@@ -389,15 +389,6 @@ export const listConversations = async (): Promise<Conversation[]> => {
   return response.data.conversations || response.data.data || (Array.isArray(response.data) ? response.data : []);
 };
 
-// Create a new conversation (or get existing)
-export const createConversation = async (orderId: string): Promise<Conversation> => {
-  const response = await api.post("/messaging/api/conversations", {
-    order_id: orderId,
-  });
-  // Handle wrapped response similarly
-  return response.data.conversation || response.data.data || response.data;
-};
-
 // Get conversation messages
 export const getConversationMessages = async (
   conversationId: string
