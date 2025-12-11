@@ -31,7 +31,7 @@ export enum MediaType {
 
 export interface Message {
   id: string;
-  conversation_id: string;
+  conversation_id?: string; // Optional - may not be included in WebSocket broadcasts
   sender_id: string;
   // Text message (one of these)
   content?: string; // Plain text (legacy)

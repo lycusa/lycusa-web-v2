@@ -9,6 +9,15 @@ const STORE_NAME = "keys";
 const PRIVATE_KEY_STORAGE = "lycusa_e2ee_private_key";
 const PUBLIC_KEY_STORAGE = "lycusa_e2ee_public_key";
 
+// Enable debug logging
+const DEBUG_E2EE = true;
+
+const debugLog = (...args: unknown[]) => {
+  if (DEBUG_E2EE) {
+    console.log("[E2EE Debug]", ...args);
+  }
+};
+
 // ===== Type Definitions =====
 
 export interface E2EEKeyPair {
@@ -73,24 +82,63 @@ export const generateKeyPair = async (): Promise<E2EEKeyPair> => {
  */
 export const exportPublicKey = async (publicKey: CryptoKey): Promise<string> => {
   const exported = await window.crypto.subtle.exportKey("raw", publicKey);
-  return arrayBufferToBase64(exported);
+  const base64 = arrayBufferToBase64(exported);
+  debugLog("Exported public key length:", exported.byteLength, "bytes");
+  debugLog("Public key fingerprint:", await getKeyFingerprint(base64));
+  return base64;
+};
+
+/**
+ * Get a short fingerprint of a base64 public key for debugging
+ */
+export const getKeyFingerprint = async (base64Key: string): Promise<string> => {
+  try {
+    const keyData = base64ToArrayBuffer(base64Key);
+    const hash = await window.crypto.subtle.digest("SHA-256", keyData);
+    const hashArray = Array.from(new Uint8Array(hash));
+    return hashArray.slice(0, 4).map(b => b.toString(16).padStart(2, '0')).join(':');
+  } catch {
+    return "unknown";
+  }
 };
 
 /**
  * Import a public key from base64 (from server)
  */
 export const importPublicKey = async (base64Key: string): Promise<CryptoKey> => {
+  debugLog("Importing public key...");
+  debugLog("Public key fingerprint:", await getKeyFingerprint(base64Key));
+
   const keyData = base64ToArrayBuffer(base64Key);
-  return window.crypto.subtle.importKey(
-    "raw",
-    keyData,
-    {
-      name: "ECDH",
-      namedCurve: "P-256",
-    },
-    true,
-    []
-  );
+  debugLog("Key data length:", keyData.byteLength, "bytes");
+
+  // P-256 uncompressed public key should be 65 bytes (04 || x || y)
+  if (keyData.byteLength !== 65) {
+    console.warn("[E2EE] Warning: Public key is not 65 bytes (P-256 uncompressed), got:", keyData.byteLength);
+    // Check if it might be a 32-byte X25519 key
+    if (keyData.byteLength === 32) {
+      throw new Error("Public key appears to be X25519 (32 bytes), but P-256 ECDH is expected (65 bytes). Key format mismatch.");
+    }
+  }
+
+  try {
+    const key = await window.crypto.subtle.importKey(
+      "raw",
+      keyData,
+      {
+        name: "ECDH",
+        namedCurve: "P-256",
+      },
+      true,
+      []
+    );
+    debugLog("Public key imported successfully");
+    return key;
+  } catch (err) {
+    console.error("[E2EE] Failed to import public key:", err);
+    console.error("[E2EE] Key data length was:", keyData.byteLength, "bytes");
+    throw err;
+  }
 };
 
 // ===== Key Exchange =====
@@ -103,19 +151,30 @@ export const deriveSharedKey = async (
   privateKey: CryptoKey,
   recipientPublicKey: CryptoKey
 ): Promise<CryptoKey> => {
-  return window.crypto.subtle.deriveKey(
-    {
-      name: "ECDH",
-      public: recipientPublicKey,
-    },
-    privateKey,
-    {
-      name: "AES-GCM",
-      length: 256,
-    },
-    false, // not extractable (security)
-    ["encrypt", "decrypt"]
-  );
+  debugLog("Deriving shared key...");
+  debugLog("Private key algorithm:", privateKey.algorithm);
+  debugLog("Recipient public key algorithm:", recipientPublicKey.algorithm);
+
+  try {
+    const sharedKey = await window.crypto.subtle.deriveKey(
+      {
+        name: "ECDH",
+        public: recipientPublicKey,
+      },
+      privateKey,
+      {
+        name: "AES-GCM",
+        length: 256,
+      },
+      false, // not extractable (security)
+      ["encrypt", "decrypt"]
+    );
+    debugLog("Shared key derived successfully");
+    return sharedKey;
+  } catch (err) {
+    console.error("[E2EE] Failed to derive shared key:", err);
+    throw err;
+  }
 };
 
 // ===== Message Encryption/Decryption =====
@@ -154,19 +213,39 @@ export const decryptMessage = async (
   nonceBase64: string,
   sharedKey: CryptoKey
 ): Promise<string> => {
-  const encrypted = base64ToArrayBuffer(encryptedBase64);
-  const iv = base64ToArrayBuffer(nonceBase64);
+  debugLog("Decrypting message...");
+  debugLog("Encrypted base64 length:", encryptedBase64.length);
+  debugLog("Nonce base64:", nonceBase64);
 
-  const decrypted = await window.crypto.subtle.decrypt(
-    {
-      name: "AES-GCM",
-      iv: new Uint8Array(iv),
-    },
-    sharedKey,
-    encrypted
-  );
+  try {
+    const encrypted = base64ToArrayBuffer(encryptedBase64);
+    const iv = base64ToArrayBuffer(nonceBase64);
 
-  return new TextDecoder().decode(decrypted);
+    debugLog("Encrypted bytes length:", encrypted.byteLength);
+    debugLog("IV bytes length:", iv.byteLength);
+
+    if (iv.byteLength !== 12) {
+      console.warn("[E2EE] Warning: IV length is not 12 bytes, got:", iv.byteLength);
+    }
+
+    const decrypted = await window.crypto.subtle.decrypt(
+      {
+        name: "AES-GCM",
+        iv: new Uint8Array(iv),
+      },
+      sharedKey,
+      encrypted
+    );
+
+    const result = new TextDecoder().decode(decrypted);
+    debugLog("Decryption successful, message length:", result.length);
+    return result;
+  } catch (err) {
+    console.error("[E2EE] Decryption failed:", err);
+    console.error("[E2EE] Encrypted content (first 50 chars):", encryptedBase64.substring(0, 50));
+    console.error("[E2EE] Nonce:", nonceBase64);
+    throw err;
+  }
 };
 
 // ===== File Encryption/Decryption =====
@@ -385,4 +464,17 @@ export const hasStoredKeys = async (): Promise<boolean> => {
   } catch {
     return false;
   }
+};
+
+/**
+ * Force regenerate keys - clears stored keys and generates new ones
+ * Call this when there's a key mismatch that can't be resolved
+ */
+export const forceRegenerateKeys = async (): Promise<E2EEKeyPair> => {
+  console.log("[E2EE] Force regenerating keys...");
+  await clearStoredKeys();
+  const keyPair = await generateKeyPair();
+  await storeKeyPair(keyPair);
+  console.log("[E2EE] New keys generated and stored");
+  return keyPair;
 };

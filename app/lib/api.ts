@@ -443,11 +443,16 @@ export const getPublicKey = async (userId: string): Promise<string | null> => {
     const response = await api.get(`/messaging/api/public_keys/${userId}`);
     return response.data.public_key;
   } catch (error: unknown) {
-    const axiosError = error as { response?: { status: number } };
+    const axiosError = error as { response?: { status: number }; message?: string };
+    // Return null for 404 (key not found) or any other error
+    // This prevents the whole E2EE flow from breaking if server has issues
     if (axiosError.response?.status === 404) {
+      console.log(`[API] Public key not found for user ${userId}`);
       return null;
     }
-    throw error;
+    // Log other errors but don't throw - return null so E2EE can continue
+    console.error(`[API] Error fetching public key for ${userId}:`, axiosError.message || error);
+    return null;
   }
 };
 

@@ -38,6 +38,7 @@ import {
   loadKeyPair,
   storeKeyPair,
   clearStoredKeys,
+  getKeyFingerprint,
   E2EEKeyPair,
 } from "@/app/lib/crypto";
 import type {
@@ -92,6 +93,22 @@ export const useE2EEKeys = (): UseE2EEKeysReturn => {
           console.log("[E2EE] New keypair generated and uploaded");
         } else {
           console.log("[E2EE] Loaded existing keypair from storage");
+
+          // Verify that our local public key matches what's on the server
+          // This helps detect key sync issues
+          try {
+            const localPublicKeyBase64 = await exportPublicKey(keys.publicKey);
+            const localFingerprint = await getKeyFingerprint(localPublicKeyBase64);
+            console.log(`[E2EE] Local public key fingerprint: ${localFingerprint}`);
+
+            // Always upload our public key to ensure server has the latest
+            // This is idempotent (upsert) so it's safe to do on every load
+            await uploadPublicKey(localPublicKeyBase64);
+            console.log("[E2EE] Public key synced to server");
+          } catch (syncErr) {
+            console.warn("[E2EE] Failed to sync public key to server:", syncErr);
+            // Don't fail initialization - we can still use local keys
+          }
         }
 
         setKeyPair(keys);
@@ -283,6 +300,45 @@ export const useConversation = (
       }
 
       try {
+        // Log our own public key fingerprint for debugging
+        const ownPublicKeyBase64 = await exportPublicKey(currentKeyPair.publicKey);
+        const ownFingerprint = await getKeyFingerprint(ownPublicKeyBase64);
+        console.log(`[E2EE] === Key Exchange Debug ===`);
+        console.log(`[E2EE] Current user ID: ${currentUserId}`);
+        console.log(`[E2EE] Target user ID: ${targetUserId}`);
+        console.log(`[E2EE] LOCAL public key fingerprint: ${ownFingerprint}`);
+
+        // Verify our key is on the server (non-blocking, just for debug)
+        try {
+          const serverOwnKeyBase64 = await getPublicKey(currentUserId!);
+          if (serverOwnKeyBase64) {
+            const serverOwnFingerprint = await getKeyFingerprint(serverOwnKeyBase64);
+            console.log(`[E2EE] SERVER has our public key fingerprint: ${serverOwnFingerprint}`);
+            if (ownFingerprint !== serverOwnFingerprint) {
+              console.warn(`[E2EE] ⚠️ KEY MISMATCH! Local key differs from server key!`);
+              console.log(`[E2EE] Re-uploading our public key to server...`);
+              await uploadPublicKey(ownPublicKeyBase64);
+              console.log(`[E2EE] Public key re-uploaded successfully`);
+            } else {
+              console.log(`[E2EE] ✓ Local and server keys match`);
+            }
+          } else {
+            console.log(`[E2EE] Server doesn't have our public key, uploading...`);
+            await uploadPublicKey(ownPublicKeyBase64);
+          }
+        } catch (selfKeyErr) {
+          // Non-critical - just log and continue
+          console.warn(`[E2EE] Could not verify own key on server:`, selfKeyErr);
+          // Try to upload our key anyway
+          try {
+            await uploadPublicKey(ownPublicKeyBase64);
+            console.log(`[E2EE] Uploaded our public key to server`);
+          } catch (uploadErr) {
+            console.warn(`[E2EE] Failed to upload public key:`, uploadErr);
+          }
+        }
+
+        // Fetch recipient's public key - this is critical
         const recipientPublicKeyBase64 = await getPublicKey(targetUserId);
         if (!recipientPublicKeyBase64) {
           console.warn(
@@ -290,6 +346,14 @@ export const useConversation = (
           );
           return null;
         }
+
+        const recipientFingerprint = await getKeyFingerprint(recipientPublicKeyBase64);
+        console.log(`[E2EE] RECIPIENT (${targetUserId}) public key fingerprint: ${recipientFingerprint}`);
+
+        // Critical debug info for comparing across users
+        console.log(`[E2EE] VERIFY: User ${currentUserId?.slice(0, 8)}... has key ${ownFingerprint}`);
+        console.log(`[E2EE] VERIFY: User ${targetUserId.slice(0, 8)}... has key ${recipientFingerprint}`);
+        console.log(`[E2EE] === End Key Exchange Debug ===`);
 
         const recipientPublicKey = await importPublicKey(recipientPublicKeyBase64);
         const sharedKey = await deriveSharedKey(
@@ -306,7 +370,7 @@ export const useConversation = (
         return null;
       }
     },
-    [] // No dependencies - uses refs
+    [currentUserId] // Add currentUserId as dependency
   );
 
   // Decrypt a message
@@ -317,6 +381,9 @@ export const useConversation = (
     ): Promise<DecryptedMessage> => {
       // Check if message has encrypted content
       if (msg.encrypted_content && msg.nonce) {
+        console.log(`[E2EE] Decrypting message ${msg.id} from sender ${msg.sender_id}`);
+        console.log(`[E2EE] Message is from: ${msg.sender_id === currentUserId ? 'me' : 'other user'}`);
+
         try {
           const decryptedContent = await decryptMessage(
             msg.encrypted_content,
@@ -326,6 +393,13 @@ export const useConversation = (
           return { ...msg, decryptedContent, decryptionFailed: false };
         } catch (err) {
           console.error("[E2EE] Failed to decrypt message:", err);
+          console.error("[E2EE] Message details:", {
+            id: msg.id,
+            sender_id: msg.sender_id,
+            isFromCurrentUser: msg.sender_id === currentUserId,
+            encrypted_content_length: msg.encrypted_content?.length,
+            nonce: msg.nonce,
+          });
           return { ...msg, decryptionFailed: true };
         }
       }
@@ -337,7 +411,7 @@ export const useConversation = (
         decryptionFailed: false,
       };
     },
-    []
+    [currentUserId]
   );
 
   // Fetch conversation and messages
