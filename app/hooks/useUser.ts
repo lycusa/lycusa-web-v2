@@ -41,11 +41,10 @@ export function useUserProfile(userId: string | undefined | null) {
             .then((data) => {
                 if (isMounted) {
                     // Adapt the response to our interface
-                    // Assuming API returns { id, username, ... } or { user: { ... } }
-                    // Based on api.ts: return response.data
-                    const user = data.user || data;
+                    // API returns { success: true, message: "...", data: { ...user } }
+                    const user = data.user || data.data || data;
 
-                    if (user && user.username) {
+                    if (user && (user.username || user.userId)) {
                         profileCache[userId] = user;
                         setProfile(user);
                         setError(null);
