@@ -1,30 +1,25 @@
 "use client";
 
 import { useAuth } from "@/app/components/auth/AuthGuard";
-import { useConversations, useE2EEKeys } from "@/app/hooks/useMessaging";
-import { ConversationList, EncryptionIndicator, ConnectionStatus } from "@/app/components/messages";
+import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 export default function MessagesPage() {
-    const { user, loading: authLoading, isAuthenticated } = useAuth();
-    const { conversations, loading, error, refetch } = useConversations();
-    const { isInitialized: keysReady, error: keyError } = useE2EEKeys();
-
-    if (authLoading || loading) {
-        return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="w-8 h-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
-            </div>
-        );
-    }
+    const { user, isAuthenticated } = useAuth();
 
     if (!isAuthenticated || !user) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="bg-white rounded-xl border border-gray-200 p-8 text-center max-w-sm">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-2">Sign in required</h2>
-                    <p className="text-sm text-gray-600 mb-6">Please sign in to view your messages.</p>
-                    <Link href="/signin" className="btn btn-primary w-full justify-center">
+            <div className="h-full flex items-center justify-center p-4">
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 text-center max-w-md w-full animate-in zoom-in-95 duration-200">
+                    <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <ChatBubbleLeftRightIcon className="w-8 h-8 text-indigo-600" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900 mb-2">Sign in to view messages</h2>
+                    <p className="text-gray-500 mb-8">Access your secure conversations by signing in to your account.</p>
+                    <Link
+                        href="/signin"
+                        className="inline-flex items-center justify-center w-full px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
+                    >
                         Sign In
                     </Link>
                 </div>
@@ -33,26 +28,26 @@ export default function MessagesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-2xl font-bold text-gray-900">Messages</h1>
-                    <div className="flex items-center gap-3">
-                        <ConnectionStatus />
-                        <EncryptionIndicator isInitialized={keysReady} error={keyError} />
+        <div className="h-full flex items-center justify-center bg-gray-50/50 pattern-grid">
+            <div className="text-center max-w-sm px-6">
+                <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm ring-1 ring-gray-100">
+                    <div className="relative">
+                        <ChatBubbleLeftRightIcon className="w-12 h-12 text-indigo-200" />
+                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-indigo-600 rounded-full border-2 border-white flex items-center justify-center">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                        </div>
                     </div>
                 </div>
-
-                {error && (
-                    <div className="bg-red-50 text-red-700 p-4 rounded-lg mb-6 border border-red-100">
-                        {error}
-                    </div>
-                )}
-
-                <ConversationList
-                    conversations={conversations}
-                    currentUserId={user.id}
-                />
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Select a conversation</h3>
+                <p className="text-gray-500 leading-relaxed">
+                    Choose a conversation from the sidebar to start securely messaging with buyers and sellers.
+                </p>
+                <div className="mt-8 flex justify-center gap-4">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
+                        🔒 End-to-End Encrypted
+                    </span>
+                </div>
             </div>
         </div>
     );

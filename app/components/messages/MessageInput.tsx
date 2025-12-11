@@ -1,5 +1,6 @@
-import { useRef, useState } from "react";
-import { PaperAirplaneIcon, PhotoIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { useRef, useState, useEffect } from "react";
+import { PaperAirplaneIcon, PhotoIcon, FaceSmileIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/solid";
 import MediaPreview from "./MediaPreview";
 import { MediaType } from "@/app/lib/types/messaging";
 
@@ -14,9 +15,18 @@ export default function MessageInput({ onSendMessage, onSendMedia, disabled }: P
     const [sending, setSending] = useState(false);
     const [mediaFile, setMediaFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    // Auto-resize textarea
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = "auto";
+            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+        }
+    }, [message]);
+
+    const handleSubmit = async (e?: React.FormEvent) => {
+        e?.preventDefault();
         if ((!message.trim() && !mediaFile) || disabled || sending) return;
 
         try {
@@ -25,13 +35,17 @@ export default function MessageInput({ onSendMessage, onSendMedia, disabled }: P
             if (mediaFile) {
                 const type = mediaFile.type.startsWith("video/")
                     ? MediaType.VIDEO
-                    : MediaType.IMAGE; // Simplifying: treating all non-video as image/file
+                    : MediaType.IMAGE;
 
                 await onSendMedia(mediaFile, type);
                 setMediaFile(null);
             } else {
                 await onSendMessage(message);
                 setMessage("");
+                // Reset height
+                if (textareaRef.current) {
+                    textareaRef.current.style.height = "auto";
+                }
             }
         } catch (error) {
             console.error("Failed to send message:", error);
@@ -49,67 +63,85 @@ export default function MessageInput({ onSendMessage, onSendMedia, disabled }: P
                 return;
             }
             setMediaFile(file);
+            // Focus textarea after selection so user can hit enter if we supported captions
+            textareaRef.current?.focus();
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="p-4 bg-white border-t border-gray-200">
+        <form
+            onSubmit={handleSubmit}
+            className="p-4 bg-white border-t border-gray-100"
+        >
             {mediaFile && (
-                <div className="mb-3">
+                <div className="mb-4 animate-in slide-in-from-bottom-2 fade-in duration-200">
                     <MediaPreview file={mediaFile} onRemove={() => setMediaFile(null)} />
                 </div>
             )}
 
-            <div className="flex items-end gap-2">
-                <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={disabled || sending || !!mediaFile}
-                    className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
-                    title="Upload image or video"
-                >
-                    <PhotoIcon className="w-6 h-6" />
-                </button>
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    accept="image/*,video/*"
-                    className="hidden"
-                />
+            <div className="flex items-end gap-3 max-w-4xl mx-auto">
+                {/* Interactions Group */}
+                <div className="flex items-center gap-1 mb-1.5">
+                    <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={disabled || sending || !!mediaFile}
+                        className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all disabled:opacity-50"
+                        title="Attach image or video"
+                    >
+                        <PhotoIcon className="w-6 h-6" />
+                    </button>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        accept="image/*,video/*"
+                        className="hidden"
+                    />
+                </div>
 
-                <div className="flex-1">
+                {/* Input Area */}
+                <div className="flex-1 relative bg-gray-50 rounded-2xl border border-gray-200 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
                     <textarea
+                        ref={textareaRef}
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         disabled={disabled || sending || !!mediaFile}
-                        placeholder={mediaFile ? "Add a caption (optional - implementation pending)" : "Type a message..."}
-                        className="w-full resize-none rounded-lg border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 min-h-[44px] max-h-32 py-2.5"
+                        placeholder={mediaFile ? "Click send to upload media" : "Type a message..."}
+                        className="w-full bg-transparent border-none focus:ring-0 resize-none py-3 px-4 min-h-[48px] max-h-32 text-gray-900 placeholder:text-gray-400"
                         rows={1}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                                 e.preventDefault();
-                                handleSubmit(e);
+                                handleSubmit();
                             }
                         }}
                     />
                 </div>
 
+                {/* Send Button */}
                 <button
                     type="submit"
                     disabled={(!message.trim() && !mediaFile) || disabled || sending}
-                    className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={`
+                        mb-1.5 p-2.5 rounded-full shadow-sm transition-all duration-200
+                        ${(!message.trim() && !mediaFile) || disabled || sending
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-md hover:scale-105 active:scale-95"
+                        }
+                    `}
                 >
                     {sending ? (
-                        <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
                     ) : (
-                        <PaperAirplaneIcon className="w-6 h-6" />
+                        <PaperAirplaneIcon className="w-5 h-5 -ml-0.5" />
                     )}
                 </button>
             </div>
+
             {disabled && (
-                <p className="text-center text-xs text-gray-500 mt-2">
-                    This conversation is closed. You cannot send new messages.
+                <p className="text-center text-xs text-gray-400 mt-2">
+                    This conversation is closed.
                 </p>
             )}
         </form>
