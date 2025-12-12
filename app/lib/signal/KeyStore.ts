@@ -1,7 +1,7 @@
 
 import { SignalIdentity, SignalSession } from './types';
 
-const DB_NAME = 'signal-protocol';
+const DB_NAME = 'signal-protocol-v2'; // Bumped version for new key format
 const DB_VERSION = 1;
 
 const STORES = {
@@ -11,6 +11,10 @@ const STORES = {
     SESSIONS: 'sessions',
 } as const;
 
+/**
+ * KeyStore for Signal Protocol keys
+ * Updated to work with X25519/Ed25519 raw key format
+ */
 export class KeyStore {
     private db: IDBDatabase | null = null;
 
@@ -50,52 +54,57 @@ export class KeyStore {
         return identity !== undefined;
     }
 
+    /**
+     * Save identity key pair (X25519 format - raw bytes)
+     */
     async saveIdentity(
         identityKeyPair: CryptoKeyPair,
         registrationId: number
     ): Promise<void> {
-        const publicKeyRaw = await crypto.subtle.exportKey(
-            'raw',
-            identityKeyPair.publicKey
-        );
-        const privateKeyJwk = await crypto.subtle.exportKey(
-            'jwk',
-            identityKeyPair.privateKey
-        );
+        // Extract raw bytes from wrapped keys
+        const publicKeyRaw = (identityKeyPair.publicKey as any)._raw as Uint8Array;
+        const privateKeyRaw = (identityKeyPair.privateKey as any)._raw as Uint8Array;
+
+        if (!publicKeyRaw || !privateKeyRaw) {
+            throw new Error('Invalid key format - expected X25519 wrapped keys');
+        }
 
         await this.put(STORES.IDENTITY, {
             id: 'local',
             publicKey: this.arrayBufferToBase64(publicKeyRaw),
-            privateKey: privateKeyJwk,
+            privateKey: this.arrayBufferToBase64(privateKeyRaw),
             registrationId,
             createdAt: Date.now(),
         });
     }
 
+    /**
+     * Get identity key pair
+     */
     async getIdentity(): Promise<SignalIdentity | null> {
         const stored = await this.get<any>(STORES.IDENTITY, 'local');
         if (!stored) return null;
 
-        const publicKey = await crypto.subtle.importKey(
-            'raw',
-            this.base64ToArrayBuffer(stored.publicKey),
-            { name: 'ECDH', namedCurve: 'P-256' },
-            true,
-            []
-        );
+        const publicKeyRaw = this.base64ToArrayBuffer(stored.publicKey);
+        const privateKeyRaw = this.base64ToArrayBuffer(stored.privateKey);
 
-        const privateKey = await crypto.subtle.importKey(
-            'jwk',
-            stored.privateKey,
-            { name: 'ECDH', namedCurve: 'P-256' },
-            true,
-            ['deriveKey', 'deriveBits']
-        );
+        // Wrap as CryptoKey-like objects
+        const publicKey = {
+            _raw: new Uint8Array(publicKeyRaw),
+            type: 'public',
+            algorithm: { name: 'X25519' }
+        } as unknown as CryptoKey;
+
+        const privateKey = {
+            _raw: new Uint8Array(privateKeyRaw),
+            type: 'private',
+            algorithm: { name: 'X25519' }
+        } as unknown as CryptoKey;
 
         return {
             publicKey,
             privateKey,
-            publicKeyRaw: this.base64ToArrayBuffer(stored.publicKey),
+            publicKeyRaw,
             registrationId: stored.registrationId,
         };
     }
@@ -131,62 +140,72 @@ export class KeyStore {
         return session !== null;
     }
 
+    /**
+     * Save signed prekey and optional one-time prekeys
+     */
     async saveHelperKeys(
         signedPreKey: { keyId: number; keyPair: CryptoKeyPair; signature: ArrayBuffer },
         oneTimePreKeys: Array<{ keyId: number; keyPair: CryptoKeyPair }>
     ): Promise<void> {
-        // Save Signed PreKey
-        const spkPub = await crypto.subtle.exportKey('raw', signedPreKey.keyPair.publicKey);
-        const spkPriv = await crypto.subtle.exportKey('jwk', signedPreKey.keyPair.privateKey);
+        // Save Signed PreKey (Ed25519 format)
+        const spkPubRaw = (signedPreKey.keyPair.publicKey as any)._raw as Uint8Array;
+        const spkPrivRaw = (signedPreKey.keyPair.privateKey as any)._raw as Uint8Array;
+
+        if (!spkPubRaw || !spkPrivRaw) {
+            throw new Error('Invalid signed prekey format');
+        }
 
         await this.put(STORES.SIGNED_PREKEY, {
             keyId: signedPreKey.keyId,
-            publicKey: this.arrayBufferToBase64(spkPub),
-            privateKey: spkPriv,
-            signature: this.arrayBufferToBase64(signedPreKey.signature),
+            publicKey: this.arrayBufferToBase64(spkPubRaw),
+            privateKey: this.arrayBufferToBase64(spkPrivRaw),
+            signature: this.arrayBufferToBase64(new Uint8Array(signedPreKey.signature)),
             createdAt: Date.now()
         });
 
-        // Save OneTime PreKeys
+        // Save OneTime PreKeys (X25519 format)
         for (const key of oneTimePreKeys) {
-            const otpPub = await crypto.subtle.exportKey('raw', key.keyPair.publicKey);
-            const otpPriv = await crypto.subtle.exportKey('jwk', key.keyPair.privateKey);
+            const otpPubRaw = (key.keyPair.publicKey as any)._raw as Uint8Array;
+            const otpPrivRaw = (key.keyPair.privateKey as any)._raw as Uint8Array;
+
+            if (!otpPubRaw || !otpPrivRaw) {
+                throw new Error('Invalid one-time prekey format');
+            }
 
             await this.put(STORES.ONETIME_PREKEYS, {
                 keyId: key.keyId,
-                publicKey: this.arrayBufferToBase64(otpPub),
-                privateKey: otpPriv,
+                publicKey: this.arrayBufferToBase64(otpPubRaw),
+                privateKey: this.arrayBufferToBase64(otpPrivRaw),
                 createdAt: Date.now()
             });
         }
     }
 
-    // Helper method to retrieve a specific OnTime PreKey by ID (needed for decryption)
+    /**
+     * Get one-time prekey by ID
+     */
     async getOneTimePreKey(keyId: number): Promise<CryptoKeyPair | null> {
         const stored = await this.get<any>(STORES.ONETIME_PREKEYS, keyId);
         if (!stored) return null;
 
-        const publicKey = await crypto.subtle.importKey(
-            'raw',
-            this.base64ToArrayBuffer(stored.publicKey),
-            { name: 'ECDH', namedCurve: 'P-256' },
-            true,
-            []
-        );
+        const publicKeyRaw = this.base64ToArrayBuffer(stored.publicKey);
+        const privateKeyRaw = this.base64ToArrayBuffer(stored.privateKey);
 
-        const privateKey = await crypto.subtle.importKey(
-            'jwk',
-            stored.privateKey,
-            { name: 'ECDH', namedCurve: 'P-256' },
-            true,
-            ['deriveKey', 'deriveBits']
-        );
-
-        return { publicKey, privateKey };
+        return {
+            publicKey: {
+                _raw: new Uint8Array(publicKeyRaw),
+                type: 'public',
+                algorithm: { name: 'X25519' }
+            } as unknown as CryptoKey,
+            privateKey: {
+                _raw: new Uint8Array(privateKeyRaw),
+                type: 'private',
+                algorithm: { name: 'X25519' }
+            } as unknown as CryptoKey
+        };
     }
 
     async removeOneTimePreKey(keyId: number): Promise<void> {
-        // Logic to remove...
         return new Promise((resolve, reject) => {
             const tx = this.db!.transaction(STORES.ONETIME_PREKEYS, 'readwrite');
             const store = tx.objectStore(STORES.ONETIME_PREKEYS);
@@ -197,31 +216,32 @@ export class KeyStore {
         });
     }
 
+    /**
+     * Get signed prekey by ID
+     */
     async getSignedPreKey(keyId: number): Promise<CryptoKeyPair | null> {
         const stored = await this.get<any>(STORES.SIGNED_PREKEY, keyId);
         if (!stored) return null;
 
-        const publicKey = await crypto.subtle.importKey(
-            'raw',
-            this.base64ToArrayBuffer(stored.publicKey),
-            { name: 'ECDH', namedCurve: 'P-256' },
-            true,
-            []
-        );
+        const publicKeyRaw = this.base64ToArrayBuffer(stored.publicKey);
+        const privateKeyRaw = this.base64ToArrayBuffer(stored.privateKey);
 
-        const privateKey = await crypto.subtle.importKey(
-            'jwk',
-            stored.privateKey,
-            { name: 'ECDH', namedCurve: 'P-256' },
-            true,
-            ['deriveKey', 'deriveBits']
-        );
-
-        return { publicKey, privateKey };
+        return {
+            publicKey: {
+                _raw: new Uint8Array(publicKeyRaw),
+                type: 'public',
+                algorithm: { name: 'Ed25519' }
+            } as unknown as CryptoKey,
+            privateKey: {
+                _raw: new Uint8Array(privateKeyRaw),
+                type: 'private',
+                algorithm: { name: 'Ed25519' }
+            } as unknown as CryptoKey
+        };
     }
 
     private async get<T>(storeName: string, key: string | number): Promise<T | undefined> {
-        if (!this.db) await this.init(); // Auto-init
+        if (!this.db) await this.init();
         return new Promise((resolve, reject) => {
             const tx = this.db!.transaction(storeName, 'readonly');
             const store = tx.objectStore(storeName);
@@ -244,8 +264,8 @@ export class KeyStore {
         });
     }
 
-    private arrayBufferToBase64(buffer: ArrayBuffer): string {
-        const bytes = new Uint8Array(buffer);
+    private arrayBufferToBase64(buffer: ArrayBuffer | Uint8Array): string {
+        const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
         let binary = '';
         for (let i = 0; i < bytes.byteLength; i++) {
             binary += String.fromCharCode(bytes[i]);

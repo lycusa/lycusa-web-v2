@@ -143,19 +143,42 @@ export const useE2EEKeys = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadKeys = async () => {
+    const initKeys = async () => {
       try {
-        const keys = await loadKeyPair();
+        // First try to load existing keys
+        let keys = await loadKeyPair();
+
+        // If no keys exist, generate new ones
+        if (!keys) {
+          console.log("[E2EE] No keys found, generating new key pair...");
+          const { generateKeyPair, storeKeyPair, exportPublicKey } = await import("@/app/lib/crypto");
+          keys = await generateKeyPair();
+          await storeKeyPair(keys);
+          console.log("[E2EE] New keys generated and stored");
+
+          // Upload public key to server
+          try {
+            const publicKeyBase64 = await exportPublicKey(keys.publicKey);
+            const { uploadPublicKey } = await import("@/app/lib/api");
+            await uploadPublicKey(publicKeyBase64);
+            console.log("[E2EE] Public key uploaded to server");
+          } catch (uploadErr) {
+            console.warn("[E2EE] Failed to upload public key:", uploadErr);
+            // Don't fail initialization, encryption can still work locally
+          }
+        }
+
         setKeyPair(keys);
         setIsInitialized(true);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load keys");
+        console.error("[E2EE] Failed to initialize keys:", err);
+        setError(err instanceof Error ? err.message : "Failed to initialize keys");
       } finally {
         setIsLoading(false);
       }
     };
     if (typeof window !== "undefined") {
-      loadKeys();
+      initKeys();
     }
   }, []);
 
@@ -208,7 +231,7 @@ export const useConversation = (
 
   // Signal Protocol client
   const token = getAccessToken() || "";
-  const { signalClient, isRegistered: signalReady, decryptMessage: signalDecrypt } = useSignal(token);
+  const { signalClient, isRegistered: signalReady, encryptMessage: signalEncrypt, decryptMessage: signalDecrypt } = useSignal(token);
 
   // Refs for shared key and recipient
   const sharedKeyRef = useRef<CryptoKey | null>(null);
@@ -388,6 +411,11 @@ export const useConversation = (
         if (!conv) {
           const conversations = await listConversations();
           conv = conversations.find((c) => c.id === conversationId) || null;
+
+          // If still not found, try to find by order_id (URL might contain order ID instead of conversation ID)
+          if (!conv) {
+            conv = conversations.find((c) => c.order_id === conversationId) || null;
+          }
         }
 
         if (!conv) {
@@ -444,7 +472,11 @@ export const useConversation = (
 
   // Connect to WebSocket room
   useEffect(() => {
-    if (!conversationId || !keysReady || loading) return;
+    // Wait for conversation to be resolved before joining the room
+    if (!conversation || !keysReady || loading) return;
+
+    // Use the resolved conversation ID, not the URL parameter
+    const roomId = conversation.id;
 
     let unsubMessage: (() => void) | null = null;
     let unsubClosed: (() => void) | null = null;
@@ -454,7 +486,7 @@ export const useConversation = (
     const connect = async () => {
       try {
         connectSocket();
-        await joinRoom(conversationId);
+        await joinRoom(roomId);
         setIsConnected(true);
 
         // Subscribe to connection status
@@ -462,7 +494,7 @@ export const useConversation = (
         unsubDisconnection = onDisconnection(() => setIsConnected(false));
 
         // Subscribe to new messages
-        unsubMessage = onMessage(conversationId, async (msg: Message) => {
+        unsubMessage = onMessage(roomId, async (msg: Message) => {
           console.log("[WebSocket] New message received:", msg.id);
 
           const targetUser = recipientId || "";
@@ -476,7 +508,7 @@ export const useConversation = (
 
         // Subscribe to room closure
         unsubClosed = onRoomClosed(
-          conversationId,
+          roomId,
           (data: RoomClosedPayload) => {
             console.log("[WebSocket] Room closed:", data.reason);
             setIsClosed(true);
@@ -499,43 +531,75 @@ export const useConversation = (
       unsubClosed?.();
       unsubConnection?.();
       unsubDisconnection?.();
-      leaveRoom(conversationId);
+      leaveRoom(roomId);
       setIsConnected(false);
     };
     // decryptMessageContent is stable (no dependencies)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [conversationId, keysReady, loading]);
+  }, [conversation, keysReady, loading]);
 
-  // Send encrypted message
+  // Send encrypted message (using Signal Protocol)
   const sendMessageHandler = useCallback(
     async (content: string) => {
-      if (!sharedKeyRef.current) {
-        throw new Error("Encryption not initialized");
+      if (!signalReady) {
+        throw new Error("Signal Protocol not initialized. Please refresh the page.");
+      }
+
+      if (!conversation) {
+        throw new Error("Conversation not loaded");
+      }
+
+      if (!recipientId) {
+        throw new Error("Recipient not identified");
       }
 
       if (isClosed) {
         throw new Error("Conversation is closed");
       }
 
-      const { encrypted, nonce } = await encryptMessage(
-        content,
-        sharedKeyRef.current
-      );
+      // Get the actual conversation ID
+      const actualConversationId = conversation.id;
 
-      await socketSendMessage(conversationId, {
-        encrypted_content: encrypted,
-        nonce: nonce,
-      });
+      try {
+        // Use Signal Protocol for encryption via the hook
+        const encrypted = await signalEncrypt(
+          recipientId,
+          actualConversationId,
+          content
+        );
+
+        await socketSendMessage(actualConversationId, {
+          signal_ciphertext: encrypted.ciphertext,
+          signal_message_type: encrypted.messageType as 1 | 2,
+          encrypted_content: "", // Legacy fields empty
+          nonce: "",
+        });
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+
+        // Check if the error is about recipient not being registered
+        if (errorMessage.includes("not registered") || errorMessage.includes("User not registered")) {
+          throw new Error("The other user hasn't opened this chat yet. Please wait for them to come online, or ask them to open the conversation.");
+        }
+
+        throw err;
+      }
     },
-    [conversationId, isClosed]
+    [conversation, recipientId, isClosed, signalReady, signalEncrypt]
   );
 
   // Send media message
   const sendMediaHandler = useCallback(
     async (file: File, type: MediaType, encrypt: boolean = true) => {
+      if (!conversation) {
+        throw new Error("Conversation not loaded");
+      }
+
       if (isClosed) {
         throw new Error("Conversation is closed");
       }
+
+      const actualConversationId = conversation.id;
 
       if (encrypt && sharedKeyRef.current) {
         // Encrypt file before upload
@@ -545,13 +609,13 @@ export const useConversation = (
         );
 
         const response = await uploadEncryptedMedia(
-          conversationId,
+          actualConversationId,
           encrypted,
           type
         );
 
         // Send media message via WebSocket
-        await socketSendMediaMessage(conversationId, {
+        await socketSendMediaMessage(actualConversationId, {
           media_key: response.media_key,
           media_type: type,
           media_size: response.media_size,
@@ -560,9 +624,9 @@ export const useConversation = (
         });
       } else {
         // Upload without encryption
-        const response = await uploadMessageMedia(conversationId, file, type);
+        const response = await uploadMessageMedia(actualConversationId, file, type);
 
-        await socketSendMediaMessage(conversationId, {
+        await socketSendMediaMessage(actualConversationId, {
           media_key: response.media_key,
           media_type: type,
           media_size: response.media_size,
@@ -571,7 +635,7 @@ export const useConversation = (
         });
       }
     },
-    [conversationId, isClosed]
+    [conversation, isClosed]
   );
 
   return {
