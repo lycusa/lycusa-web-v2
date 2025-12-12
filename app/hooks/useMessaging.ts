@@ -427,10 +427,15 @@ export const useConversation = (
         setIsClosed(conv.status === "closed");
 
         // Determine recipient (the other user in conversation)
+        // Use string comparison to avoid type mismatches
+        const currentIdStr = String(currentUserId || '');
+        const userOneIdStr = String(conv.user_one_id || '');
+        const userTwoIdStr = String(conv.user_two_id || '');
+
         const targetUserId =
-          conv.user_one_id === currentUserId
-            ? conv.user_two_id
-            : conv.user_one_id;
+          userOneIdStr === currentIdStr ? conv.user_two_id :
+          userTwoIdStr === currentIdStr ? conv.user_one_id :
+          conv.user_two_id; // Fallback
         setRecipientId(targetUserId);
 
         // Derive shared key with recipient

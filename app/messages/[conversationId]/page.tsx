@@ -32,8 +32,18 @@ export default function ChatPage({ params }: PageProps) {
     const { isInitialized: keysInitialized, error: keysError } = useE2EEKeys();
 
     const currentUserId = user?.id || "";
+    // Determine the other user in the conversation with proper string comparison
     const otherUserId = conversation
-        ? (conversation.user_one_id === currentUserId ? conversation.user_two_id : conversation.user_one_id)
+        ? (() => {
+            const currentIdStr = String(currentUserId);
+            const userOneIdStr = String(conversation.user_one_id || '');
+            const userTwoIdStr = String(conversation.user_two_id || '');
+
+            if (userOneIdStr === currentIdStr) return conversation.user_two_id;
+            if (userTwoIdStr === currentIdStr) return conversation.user_one_id;
+            // Fallback if current user doesn't match either
+            return conversation.user_two_id;
+        })()
         : null;
 
     const { profile: otherUserProfile, loading: profileLoading } = useUserProfile(otherUserId);

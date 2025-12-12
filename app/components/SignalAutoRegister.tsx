@@ -2,27 +2,35 @@
 
 /**
  * SignalAutoRegister Component
- * 
+ *
  * This component automatically registers the current user with Signal Protocol
  * as soon as they authenticate. This ensures both parties in a conversation
  * have their Signal keys registered before attempting to send messages.
- * 
+ *
  * Place this component in the main layout or auth wrapper to ensure
  * registration happens as early as possible.
  */
 
 import { useEffect, useRef, useState } from "react";
-import { getAccessToken, getUserFromToken } from "@/app/lib/auth";
+import { getAccessToken } from "@/app/lib/auth";
+import { useAuth } from "@/app/components/auth/AuthGuard";
 
 const MAX_RETRIES = 5;
 const INITIAL_BACKOFF_MS = 5000; // 5 seconds
 
 export function SignalAutoRegister() {
+    const { user, loading: authLoading, isAuthenticated } = useAuth();
     const isProcessingRef = useRef(false);
     const retryCountRef = useRef(0);
     const [status, setStatus] = useState<'idle' | 'checking' | 'registering' | 'done' | 'error' | 'rate_limited'>('idle');
 
     useEffect(() => {
+        // Don't attempt registration if not authenticated or still loading auth
+        if (authLoading || !isAuthenticated || !user) {
+            console.log("[SignalAutoRegister] Waiting for authentication...", { authLoading, isAuthenticated, hasUser: !!user });
+            return;
+        }
+
         let timeoutId: NodeJS.Timeout | null = null;
 
         const scheduleRetry = () => {
@@ -57,19 +65,16 @@ export function SignalAutoRegister() {
                 return;
             }
 
-            // Check for authentication token
-            const token = getAccessToken();
-            if (!token) {
-                console.log("[SignalAutoRegister] No auth token available");
-                retryCountRef.current++;
-                scheduleRetry();
+            // Verify user is still authenticated (double check)
+            if (!isAuthenticated || !user || !user.id) {
+                console.log("[SignalAutoRegister] User not authenticated, skipping");
                 return;
             }
 
-            // Verify user is actually authenticated
-            const user = getUserFromToken();
-            if (!user || !user.id) {
-                console.log("[SignalAutoRegister] Invalid or expired token - user not authenticated");
+            // Get authentication token
+            const token = getAccessToken();
+            if (!token) {
+                console.log("[SignalAutoRegister] No auth token available, retrying...");
                 retryCountRef.current++;
                 scheduleRetry();
                 return;
@@ -150,7 +155,7 @@ export function SignalAutoRegister() {
             }
         };
 
-        // Try immediately on mount
+        // Try immediately once authenticated
         checkAndRegister();
 
         return () => {
@@ -158,7 +163,7 @@ export function SignalAutoRegister() {
                 clearTimeout(timeoutId);
             }
         };
-    }, []); // Empty dependency array - only run once on mount
+    }, [authLoading, isAuthenticated, user]); // Run when authentication state changes
 
     // This component renders nothing visible
     return null;

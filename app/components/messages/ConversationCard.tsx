@@ -10,8 +10,22 @@ interface Props {
 }
 
 export default function ConversationCard({ conversation, currentUserId }: Props) {
-    const isUserOne = conversation.user_one_id === currentUserId;
-    const otherUserId = isUserOne ? conversation.user_two_id : conversation.user_one_id;
+    // Determine which user is the "other" user in the conversation
+    // Use string comparison to avoid type mismatches
+    const currentUserIdStr = String(currentUserId || '');
+    const userOneIdStr = String(conversation.user_one_id || '');
+    const userTwoIdStr = String(conversation.user_two_id || '');
+
+    // Check if current user matches either user in the conversation
+    const isUserOne = userOneIdStr === currentUserIdStr;
+    const isUserTwo = userTwoIdStr === currentUserIdStr;
+
+    // Get the OTHER user's ID (not the current user)
+    const otherUserId = isUserOne ? conversation.user_two_id :
+                        isUserTwo ? conversation.user_one_id :
+                        // Fallback: if current user doesn't match either, default to user_two
+                        conversation.user_two_id;
+
     const { profile, loading } = useUserProfile(otherUserId);
 
     // Generate avatar gradient based on user ID
