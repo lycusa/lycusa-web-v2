@@ -3,6 +3,7 @@
 /**
  * Messaging Hooks
  * React hooks for E2E encrypted messaging functionality
+ * Now integrated with Signal Protocol
  */
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
@@ -27,20 +28,8 @@ import {
   uploadMessageMedia,
   uploadEncryptedMedia,
 } from "@/app/lib/api";
-import {
-  generateKeyPair,
-  exportPublicKey,
-  importPublicKey,
-  deriveSharedKey,
-  encryptMessage,
-  decryptMessage,
-  encryptFile,
-  loadKeyPair,
-  storeKeyPair,
-  clearStoredKeys,
-  getKeyFingerprint,
-  E2EEKeyPair,
-} from "@/app/lib/crypto";
+import { useSignal } from "./useSignal";
+import { getAccessToken } from "@/app/lib/auth";
 import type {
   Conversation,
   Message,
@@ -49,6 +38,17 @@ import type {
   RoomClosedPayload,
 } from "@/app/lib/types/messaging";
 import { getUserFromToken } from "@/app/lib/auth";
+import {
+  exportPublicKey,
+  importPublicKey,
+  deriveSharedKey,
+  encryptMessage,
+  decryptMessage,
+  encryptFile,
+  getKeyFingerprint,
+  E2EEKeyPair,
+  loadKeyPair,
+} from "@/app/lib/crypto";
 
 // ===== useE2EEKeys Hook =====
 
@@ -65,113 +65,7 @@ interface UseE2EEKeysReturn {
  * Hook for E2EE key management
  * Handles key generation, storage, and upload to server
  */
-export const useE2EEKeys = (): UseE2EEKeysReturn => {
-  const [keyPair, setKeyPair] = useState<E2EEKeyPair | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Initialize or load keys on mount
-  useEffect(() => {
-    const initKeys = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        // Try to load existing keys from IndexedDB
-        let keys = await loadKeyPair();
-
-        if (!keys) {
-          console.log("[E2EE] No stored keys found, generating new keypair");
-          // Generate new keys
-          keys = await generateKeyPair();
-          await storeKeyPair(keys);
-
-          // Upload public key to server
-          const publicKeyBase64 = await exportPublicKey(keys.publicKey);
-          await uploadPublicKey(publicKeyBase64);
-          console.log("[E2EE] New keypair generated and uploaded");
-        } else {
-          console.log("[E2EE] Loaded existing keypair from storage");
-
-          // Verify that our local public key matches what's on the server
-          // This helps detect key sync issues
-          try {
-            const localPublicKeyBase64 = await exportPublicKey(keys.publicKey);
-            const localFingerprint = await getKeyFingerprint(localPublicKeyBase64);
-            console.log(`[E2EE] Local public key fingerprint: ${localFingerprint}`);
-
-            // Always upload our public key to ensure server has the latest
-            // This is idempotent (upsert) so it's safe to do on every load
-            await uploadPublicKey(localPublicKeyBase64);
-            console.log("[E2EE] Public key synced to server");
-          } catch (syncErr) {
-            console.warn("[E2EE] Failed to sync public key to server:", syncErr);
-            // Don't fail initialization - we can still use local keys
-          }
-        }
-
-        setKeyPair(keys);
-        setIsInitialized(true);
-      } catch (err: unknown) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to initialize E2EE keys";
-        console.error("[E2EE] Initialization failed:", errorMessage);
-        setError(errorMessage);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    // Only run in browser
-    if (typeof window !== "undefined") {
-      initKeys();
-    }
-  }, []);
-
-  // Regenerate keys (e.g., for security reset)
-  const regenerateKeys = useCallback(async (): Promise<E2EEKeyPair> => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      console.log("[E2EE] Regenerating keypair");
-      const keys = await generateKeyPair();
-      await storeKeyPair(keys);
-
-      const publicKeyBase64 = await exportPublicKey(keys.publicKey);
-      await uploadPublicKey(publicKeyBase64);
-
-      setKeyPair(keys);
-      console.log("[E2EE] New keypair regenerated and uploaded");
-      return keys;
-    } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to regenerate keys";
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Clear keys (for logout)
-  const clearKeys = useCallback(async (): Promise<void> => {
-    await clearStoredKeys();
-    setKeyPair(null);
-    setIsInitialized(false);
-    console.log("[E2EE] Keys cleared");
-  }, []);
-
-  return {
-    keyPair,
-    isInitialized,
-    isLoading,
-    error,
-    regenerateKeys,
-    clearKeys,
-  };
-};
+// Removed Legacy useE2EEKeys logic (replaced by signal)
 
 // ===== useConversations Hook =====
 
@@ -240,6 +134,41 @@ export const useConversations = (): UseConversationsReturn => {
   return { conversations, loading, error, refetch: fetchConversations };
 };
 
+// Use E2EE Keys alias for compatibility - loads legacy crypto keys
+// Signal protocol is used for new messages, but we still need this for UI compatibility
+export const useE2EEKeys = () => {
+  const [keyPair, setKeyPair] = useState<E2EEKeyPair | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadKeys = async () => {
+      try {
+        const keys = await loadKeyPair();
+        setKeyPair(keys);
+        setIsInitialized(true);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load keys");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if (typeof window !== "undefined") {
+      loadKeys();
+    }
+  }, []);
+
+  return {
+    isInitialized,
+    keyPair,
+    error,
+    regenerateKeys: async () => keyPair!, // Stub
+    clearKeys: async () => { }, // Not impl
+    isLoading
+  };
+}
+
 // ===== useConversation Hook =====
 
 interface UseConversationReturn {
@@ -260,6 +189,7 @@ interface UseConversationReturn {
 /**
  * Hook for a single conversation with real-time messaging
  * Handles WebSocket connection, message encryption/decryption
+ * Now supports both legacy ECDH and Signal Protocol messages
  */
 export const useConversation = (
   conversationId: string
@@ -273,8 +203,12 @@ export const useConversation = (
   const [isConnected, setIsConnected] = useState(false);
   const [recipientId, setRecipientId] = useState<string | null>(null);
 
-  // E2EE keys
+  // E2EE keys (legacy)
   const { keyPair, isInitialized: keysReady, error: keysError } = useE2EEKeys();
+
+  // Signal Protocol client
+  const token = getAccessToken() || "";
+  const { signalClient, isRegistered: signalReady, decryptMessage: signalDecrypt } = useSignal(token);
 
   // Refs for shared key and recipient
   const sharedKeyRef = useRef<CryptoKey | null>(null);
@@ -373,15 +307,33 @@ export const useConversation = (
     [currentUserId] // Add currentUserId as dependency
   );
 
-  // Decrypt a message
+  // Decrypt a message (supports both Signal Protocol and legacy ECDH)
   const decryptMessageContent = useCallback(
     async (
       msg: Message,
-      sharedKey: CryptoKey
+      sharedKey: CryptoKey | null,
+      targetUserId: string
     ): Promise<DecryptedMessage> => {
-      // Check if message has encrypted content
-      if (msg.encrypted_content && msg.nonce) {
-        console.log(`[E2EE] Decrypting message ${msg.id} from sender ${msg.sender_id}`);
+      // 1. Try Signal Protocol decryption first (for newer messages)
+      if (msg.signal_ciphertext && msg.signal_message_type && signalReady) {
+        console.log(`[Signal] Decrypting message ${msg.id} with Signal Protocol`);
+        try {
+          const decryptedContent = await signalDecrypt(
+            msg.sender_id,
+            conversationId,
+            msg.signal_ciphertext,
+            msg.signal_message_type
+          );
+          return { ...msg, decryptedContent, decryptionFailed: false };
+        } catch (err) {
+          console.error("[Signal] Failed to decrypt message:", err);
+          // Don't return failed yet - try legacy if available
+        }
+      }
+
+      // 2. Try legacy ECDH decryption (for older messages)
+      if (msg.encrypted_content && msg.nonce && sharedKey) {
+        console.log(`[E2EE] Decrypting message ${msg.id} with legacy ECDH`);
         console.log(`[E2EE] Message is from: ${msg.sender_id === currentUserId ? 'me' : 'other user'}`);
 
         try {
@@ -404,14 +356,19 @@ export const useConversation = (
         }
       }
 
-      // Plain text message (legacy) or media-only message
+      // 3. Check if it's an encrypted message we couldn't decrypt
+      if ((msg.signal_ciphertext || msg.encrypted_content) && !msg.content) {
+        return { ...msg, decryptionFailed: true };
+      }
+
+      // 4. Plain text message (legacy) or media-only message
       return {
         ...msg,
         decryptedContent: msg.content,
         decryptionFailed: false,
       };
     },
-    [currentUserId]
+    [currentUserId, conversationId, signalReady, signalDecrypt]
   );
 
   // Fetch conversation and messages
@@ -457,7 +414,7 @@ export const useConversation = (
         // Decrypt messages
         if (sharedKey) {
           const decrypted = await Promise.all(
-            rawMessages.map((msg) => decryptMessageContent(msg, sharedKey))
+            rawMessages.map((msg) => decryptMessageContent(msg, sharedKey, targetUserId))
           );
           setMessages(decrypted);
         } else {
@@ -508,22 +465,13 @@ export const useConversation = (
         unsubMessage = onMessage(conversationId, async (msg: Message) => {
           console.log("[WebSocket] New message received:", msg.id);
 
-          if (sharedKeyRef.current) {
-            const decrypted = await decryptMessageContent(
-              msg,
-              sharedKeyRef.current
-            );
-            setMessages((prev) => [...prev, decrypted]);
-          } else {
-            setMessages((prev) => [
-              ...prev,
-              {
-                ...msg,
-                decryptedContent: msg.content,
-                decryptionFailed: !!msg.encrypted_content,
-              },
-            ]);
-          }
+          const targetUser = recipientId || "";
+          const decrypted = await decryptMessageContent(
+            msg,
+            sharedKeyRef.current,
+            targetUser
+          );
+          setMessages((prev) => [...prev, decrypted]);
         });
 
         // Subscribe to room closure

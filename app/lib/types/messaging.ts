@@ -37,6 +37,9 @@ export interface Message {
   content?: string; // Plain text (legacy)
   encrypted_content?: string; // E2EE encrypted (base64)
   nonce?: string; // Encryption nonce (base64)
+  // Signal Protocol Fields
+  signal_ciphertext?: string;
+  signal_message_type?: 1 | 2; // 1 = PreKeyMessage, 2 = SignalMessage
   // Media message
   media_key?: string;
   media_type?: MediaType;
@@ -69,8 +72,10 @@ export interface UserPublicKey {
 // ===== Request/Response Types =====
 
 export interface SendMessagePayload {
-  encrypted_content: string;
-  nonce: string;
+  encrypted_content?: string;
+  nonce?: string;
+  signal_ciphertext?: string;
+  signal_message_type?: 1 | 2;
 }
 
 export interface SendMediaPayload {
