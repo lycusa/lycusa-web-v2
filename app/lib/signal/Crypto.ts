@@ -247,7 +247,12 @@ export class SignalCrypto {
     }
 
     static async encrypt(key: CryptoKey, data: ArrayBuffer): Promise<{ ciphertext: ArrayBuffer, iv: ArrayBuffer }> {
-        const iv = randomBytes(12);
+        const ivBytes = randomBytes(12);
+        // Copy IV to a new ArrayBuffer to ensure we have proper ArrayBuffer type
+        const ivBuffer = new ArrayBuffer(ivBytes.length);
+        const iv = new Uint8Array(ivBuffer);
+        iv.set(ivBytes);
+
         const ciphertext = await window.crypto.subtle.encrypt(
             {
                 name: 'AES-GCM',
@@ -256,9 +261,6 @@ export class SignalCrypto {
             key,
             data
         );
-        // Copy IV to a new ArrayBuffer to ensure we have proper ArrayBuffer type
-        const ivBuffer = new ArrayBuffer(iv.length);
-        new Uint8Array(ivBuffer).set(iv);
         return { ciphertext, iv: ivBuffer };
     }
 

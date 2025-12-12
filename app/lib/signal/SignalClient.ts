@@ -198,7 +198,7 @@ export class SignalClient {
             });
         }
 
-        await this.keyStore.saveHelperKeys({} as any, keys); // Saving OneTime keys only
+        await this.keyStore.saveHelperKeys(null, keys); // Saving OneTime keys only
         // Note: saveHelperKeys impl in KeyStore handles empty signedPreKey param gracefully? 
         // Checking my KeyStore impl... It expects signedPreKey. 
         // I should update KeyStore or call separate method.

@@ -144,24 +144,26 @@ export class KeyStore {
      * Save signed prekey and optional one-time prekeys
      */
     async saveHelperKeys(
-        signedPreKey: { keyId: number; keyPair: CryptoKeyPair; signature: ArrayBuffer },
+        signedPreKey: { keyId: number; keyPair: CryptoKeyPair; signature: ArrayBuffer } | null,
         oneTimePreKeys: Array<{ keyId: number; keyPair: CryptoKeyPair }>
     ): Promise<void> {
-        // Save Signed PreKey (Ed25519 format)
-        const spkPubRaw = (signedPreKey.keyPair.publicKey as any)._raw as Uint8Array;
-        const spkPrivRaw = (signedPreKey.keyPair.privateKey as any)._raw as Uint8Array;
+        // Save Signed PreKey (Ed25519 format) - only if provided
+        if (signedPreKey && signedPreKey.keyPair) {
+            const spkPubRaw = (signedPreKey.keyPair.publicKey as any)._raw as Uint8Array;
+            const spkPrivRaw = (signedPreKey.keyPair.privateKey as any)._raw as Uint8Array;
 
-        if (!spkPubRaw || !spkPrivRaw) {
-            throw new Error('Invalid signed prekey format');
+            if (!spkPubRaw || !spkPrivRaw) {
+                throw new Error('Invalid signed prekey format');
+            }
+
+            await this.put(STORES.SIGNED_PREKEY, {
+                keyId: signedPreKey.keyId,
+                publicKey: this.arrayBufferToBase64(spkPubRaw),
+                privateKey: this.arrayBufferToBase64(spkPrivRaw),
+                signature: this.arrayBufferToBase64(new Uint8Array(signedPreKey.signature)),
+                createdAt: Date.now()
+            });
         }
-
-        await this.put(STORES.SIGNED_PREKEY, {
-            keyId: signedPreKey.keyId,
-            publicKey: this.arrayBufferToBase64(spkPubRaw),
-            privateKey: this.arrayBufferToBase64(spkPrivRaw),
-            signature: this.arrayBufferToBase64(new Uint8Array(signedPreKey.signature)),
-            createdAt: Date.now()
-        });
 
         // Save OneTime PreKeys (X25519 format)
         for (const key of oneTimePreKeys) {
