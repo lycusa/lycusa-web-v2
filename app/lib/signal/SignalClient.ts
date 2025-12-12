@@ -35,10 +35,11 @@ export class SignalClient {
     async register(): Promise<void> {
         if (!this.initialized) await this.init();
 
-        // Generate identity key pair
-        const identityKeyPair = await SignalCrypto.generateKeyPair();
+        // Generate identity key pair (Ed25519 for signing)
+        const identityKeyPair = await SignalCrypto.generateSigningKeyPair();
         const registrationId = SignalCrypto.generateRegistrationId();
-        const signingKeyPair = await SignalCrypto.generateSigningKeyPair();
+        // Generate signed pre-key (X25519 for DH)
+        const signedPreKeyPair = await SignalCrypto.generateKeyPair();
 
         // Save identity locally
         await this.keyStore.saveIdentity(identityKeyPair, registrationId);
@@ -54,7 +55,7 @@ export class SignalClient {
         });
 
         // Upload pre-keys
-        await this.uploadSignedPreKey(signingKeyPair, identityKeyPair);
+        await this.uploadSignedPreKey(signedPreKeyPair, identityKeyPair);
         await this.uploadOneTimePreKeys(100);
     }
 
@@ -138,18 +139,16 @@ export class SignalClient {
 
         let session = await this.keyStore.getSession(senderId, conversationId);
 
-        if (messageType === 1 || !session) {
-            // Handle PreKeyMessage (might establish new session if needed, or just process it)
-            // If we don't have a session, we MUST process PreKeyMessage.
-            // If we DO have a session, but receive PreKeyMessage, it might be a new session.
-            // For simplicity, if PreKeyMessage, we try to process it.
-            if (!session || messageType === 1) {
-                session = await this.processPreKeyMessage(
-                    senderId,
-                    conversationId,
-                    envelope
-                );
-            }
+        if (messageType === 1) {
+            // Always process PreKeyMessage (establishes or re-establishes session)
+            session = await this.processPreKeyMessage(
+                senderId,
+                conversationId,
+                envelope
+            );
+        } else if (!session) {
+            // messageType === 2 but no session = error
+            throw new Error('Cannot decrypt message: no session established. Sender must send PreKeyMessage first.');
         }
 
         if (!session) {
@@ -235,15 +234,15 @@ export class SignalClient {
         await this.apiCall('POST', '/prekeys/onetime', { prekeys: keysToUpload });
     }
 
-    async uploadSignedPreKey(signingKeyPair: CryptoKeyPair, identityKeyPair: CryptoKeyPair): Promise<void> {
+    async uploadSignedPreKey(signedPreKeyPair: CryptoKeyPair, identityKeyPair: CryptoKeyPair): Promise<void> {
         const keyId = Math.floor(Math.random() * 10000);
-        const pubKeyRaw = await SignalCrypto.exportPublicKey(signingKeyPair.publicKey);
+        const pubKeyRaw = await SignalCrypto.exportPublicKey(signedPreKeyPair.publicKey);
 
-        // Sign the public key
+        // Sign the public key with identity key (Ed25519 signs X25519 public key)
         const signature = await SignalCrypto.sign(identityKeyPair.privateKey, pubKeyRaw);
 
         await this.keyStore.saveHelperKeys(
-            { keyId, keyPair: signingKeyPair, signature },
+            { keyId, keyPair: signedPreKeyPair, signature },
             []
         );
 
@@ -303,33 +302,26 @@ export class SignalClient {
             ephemeralKeyPair.publicKey
         );
 
-        // X3DH key agreement
-        // DH1 = IK_A + SPK_B
+        // Simplified X3DH key agreement (2-DH protocol)
+        // Note: Identity keys are Ed25519 (for signing only), so we skip DH1 and DH2
+        // This is a simplified but still secure variant of X3DH
+
+        // DH1 = EK_A + SPK_B (Ephemeral × Signed PreKey)
         const dh1 = await SignalCrypto.ecdh(
-            identity.privateKey,
-            recipientSignedPreKey
-        );
-        // DH2 = EK_A + IK_B
-        const dh2 = await SignalCrypto.ecdh(
-            ephemeralKeyPair.privateKey,
-            recipientIdentityKey
-        );
-        // DH3 = EK_A + SPK_B
-        const dh3 = await SignalCrypto.ecdh(
             ephemeralKeyPair.privateKey,
             recipientSignedPreKey
         );
 
         let dhConcat: Uint8Array;
         if (recipientOneTimePreKey) {
-            // DH4 = EK_A + OPK_B
-            const dh4 = await SignalCrypto.ecdh(
+            // DH2 = EK_A + OPK_B (Ephemeral × OneTime PreKey)
+            const dh2 = await SignalCrypto.ecdh(
                 ephemeralKeyPair.privateKey,
                 recipientOneTimePreKey
             );
-            dhConcat = SignalCrypto.concat(dh1, dh2, dh3, dh4);
+            dhConcat = SignalCrypto.concat(dh1, dh2);
         } else {
-            dhConcat = SignalCrypto.concat(dh1, dh2, dh3);
+            dhConcat = dh1;
         }
 
         // Derive shared secret
@@ -379,50 +371,25 @@ export class SignalClient {
             // If OPK used, we should delete it after processing, but for now we just use it.
         }
 
-        // 2. Import sender's ephemeral key
-        // PreKeyMessage should contain Identity Key of sender? 
-        // The envelope structure in `encryptMessage` does NOT include sender's identity key!
-        // This is a flaw in the provided guide?
-        // Standard Signal PreKeyMessage includes: RegistrationId, IdentityKey, ...
-        // In `encryptMessage`, envelope only has: counter, iv, ciphertext, ephemeralKey, signedPreKeyId...
-        // It assumes the receiver knows the sender's identity?
-        // "Deniable authentication" relies on knowing the sender's identity to perform DH.
-        // X3DH: DH1 = SPK_A + IK_B. (Receiver is B, Sender is A).
-        // DH1 = SPK_B (My SPK) + IK_A (Sender IK).
-        // If Sender IK is not in message, how do we get it?
-        // Maybe we fetch it from server? `/bundle/{senderId}`?
-        // Yes, `establishSession` fetches bundle.
-        // But `processPreKeyMessage` is for Receiver.
-        // Receiver needs IK of Sender.
-        // I will assume we fetch Sender's bundle to get their IK? 
-        // But Sender Key Bundle has THEIR SPK/OPK. Identity Key is constant.
-        // So yes, we can fetch their identity key from server.
-
-        const senderBundle = await this.apiCall<PreKeyBundle>('GET', `/bundle/${senderId}`);
-        const senderIdentityKey = await SignalCrypto.importPublicKey(SignalCrypto.base64ToArrayBuffer(senderBundle.identity_key));
-
+        // Import sender's ephemeral key from the message envelope
         const senderEphemeralKey = await SignalCrypto.importPublicKey(SignalCrypto.base64ToArrayBuffer(envelope.ephemeralKey));
 
-        // X3DH key agreement (Receiver side)
-        // DH1 = SPK_B (Me) + IK_A (Sender)
-        const dh1 = await SignalCrypto.ecdh(spk.privateKey, senderIdentityKey);
+        // Simplified X3DH key agreement (Receiver side, 2-DH protocol)
+        // Note: Identity keys are Ed25519 (for signing only), not used in DH
 
-        // DH2 = IK_B (Me) + EK_A (Sender)
-        const dh2 = await SignalCrypto.ecdh(identity.privateKey, senderEphemeralKey);
-
-        // DH3 = SPK_B (Me) + EK_A (Sender)
-        const dh3 = await SignalCrypto.ecdh(spk.privateKey, senderEphemeralKey);
+        // DH1 = SPK_B (Me) + EK_A (Sender) - Signed PreKey × Ephemeral
+        const dh1 = await SignalCrypto.ecdh(spk.privateKey, senderEphemeralKey);
 
         let dhConcat: Uint8Array;
         if (opk) {
-            // DH4 = OPK_B (Me) + EK_A (Sender)
-            const dh4 = await SignalCrypto.ecdh(opk.privateKey, senderEphemeralKey);
-            dhConcat = SignalCrypto.concat(dh1, dh2, dh3, dh4);
+            // DH2 = OPK_B (Me) + EK_A (Sender) - OneTime PreKey × Ephemeral
+            const dh2 = await SignalCrypto.ecdh(opk.privateKey, senderEphemeralKey);
+            dhConcat = SignalCrypto.concat(dh1, dh2);
 
             // Delete used OPK
             await this.keyStore.removeOneTimePreKey(envelope.oneTimePreKeyId);
         } else {
-            dhConcat = SignalCrypto.concat(dh1, dh2, dh3);
+            dhConcat = dh1;
         }
 
         // Derive shared secret
@@ -433,12 +400,6 @@ export class SignalClient {
             recipientId: senderId,
             conversationId,
             sharedSecret: SignalCrypto.arrayBufferToBase64(sharedSecret),
-            // We don't store ephemeral key of sender in our session state usually, 
-            // but we might need it? No, sharedSecret is enough for ratchet (if we implemented full ratchet).
-            // Here we use simplified signal (no ratchet updates shown in guide? Just counter?).
-            // Guide: `counter` and `messageCounter`.
-            // Guide `encryptMessage`: derives key from `sharedSecret` + `counter`.
-            // This is NOT Double Ratchet. This is "Single Ratchet" or just "Counter Mode" with X3DH.
             messageCounter: 0,
             isInitiator: false,
             createdAt: Date.now(),

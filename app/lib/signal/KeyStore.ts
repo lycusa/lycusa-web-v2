@@ -1,7 +1,7 @@
 
 import { SignalIdentity, SignalSession } from './types';
 
-const DB_NAME = 'signal-protocol-v2'; // Bumped version for new key format
+const DB_NAME = 'signal-protocol-v3'; // Bumped version for Ed25519/X25519 fix
 const DB_VERSION = 1;
 
 const STORES = {
@@ -55,7 +55,7 @@ export class KeyStore {
     }
 
     /**
-     * Save identity key pair (X25519 format - raw bytes)
+     * Save identity key pair (Ed25519 format - raw bytes)
      */
     async saveIdentity(
         identityKeyPair: CryptoKeyPair,
@@ -66,7 +66,7 @@ export class KeyStore {
         const privateKeyRaw = (identityKeyPair.privateKey as any)._raw as Uint8Array;
 
         if (!publicKeyRaw || !privateKeyRaw) {
-            throw new Error('Invalid key format - expected X25519 wrapped keys');
+            throw new Error('Invalid key format - expected Ed25519 wrapped keys');
         }
 
         await this.put(STORES.IDENTITY, {
@@ -92,13 +92,13 @@ export class KeyStore {
         const publicKey = {
             _raw: new Uint8Array(publicKeyRaw),
             type: 'public',
-            algorithm: { name: 'X25519' }
+            algorithm: { name: 'Ed25519' }
         } as unknown as CryptoKey;
 
         const privateKey = {
             _raw: new Uint8Array(privateKeyRaw),
             type: 'private',
-            algorithm: { name: 'X25519' }
+            algorithm: { name: 'Ed25519' }
         } as unknown as CryptoKey;
 
         return {
@@ -147,7 +147,7 @@ export class KeyStore {
         signedPreKey: { keyId: number; keyPair: CryptoKeyPair; signature: ArrayBuffer } | null,
         oneTimePreKeys: Array<{ keyId: number; keyPair: CryptoKeyPair }>
     ): Promise<void> {
-        // Save Signed PreKey (Ed25519 format) - only if provided
+        // Save Signed PreKey (X25519 format) - only if provided
         if (signedPreKey && signedPreKey.keyPair) {
             const spkPubRaw = (signedPreKey.keyPair.publicKey as any)._raw as Uint8Array;
             const spkPrivRaw = (signedPreKey.keyPair.privateKey as any)._raw as Uint8Array;
@@ -232,12 +232,12 @@ export class KeyStore {
             publicKey: {
                 _raw: new Uint8Array(publicKeyRaw),
                 type: 'public',
-                algorithm: { name: 'Ed25519' }
+                algorithm: { name: 'X25519' }
             } as unknown as CryptoKey,
             privateKey: {
                 _raw: new Uint8Array(privateKeyRaw),
                 type: 'private',
-                algorithm: { name: 'Ed25519' }
+                algorithm: { name: 'X25519' }
             } as unknown as CryptoKey
         };
     }
