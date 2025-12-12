@@ -3,7 +3,8 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { SignalClient } from '@/app/lib/signal/SignalClient';
 
-const API_BASE = process.env.NEXT_PUBLIC_MESSAGING_API_URL || 'http://localhost:4001';
+// Use API Gateway for all requests (same as other messaging endpoints)
+const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || 'http://localhost:4000';
 
 export function useSignal(token: string) {
     const clientRef = useRef<SignalClient | null>(null);
@@ -19,7 +20,8 @@ export function useSignal(token: string) {
 
         const initClient = async () => {
             try {
-                const client = new SignalClient(`${API_BASE}/api/signal`, token);
+                // Signal endpoints are under /messaging/api/signal via API Gateway
+                const client = new SignalClient(`${API_GATEWAY_URL}/messaging/api/signal`, token);
                 await client.init();
 
                 if (!mounted) return;

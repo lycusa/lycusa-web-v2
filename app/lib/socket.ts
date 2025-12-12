@@ -190,7 +190,8 @@ export const joinRoom = (conversationId: string): Promise<Channel> => {
       // We proceed anyway because Phoenix client queues joins, but this warning helps debug
     }
 
-    const channel = state.socket.channel(`room:${conversationId}`, {});
+    const token = getAccessToken();
+    const channel = state.socket.channel(`room:${conversationId}`, { token });
 
     channel
       .join()

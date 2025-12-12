@@ -455,26 +455,38 @@ export class SignalClient {
         path: string,
         body?: unknown
     ): Promise<T> {
-        const response = await fetch(`${this.baseUrl}${path}`, {
-            method,
-            headers: {
-                Authorization: `Bearer ${this.token}`,
-                'Content-Type': 'application/json',
-            },
-            body: body ? JSON.stringify(body) : undefined,
-        });
+        const url = `${this.baseUrl}${path}`;
+        console.log(`[Signal API] ${method} ${url}`);
 
-        if (!response.ok) {
-            // Try to read text
-            const text = await response.text();
-            try {
-                const error = JSON.parse(text);
-                throw new Error(error.error || `API error: ${response.status}`);
-            } catch (e) {
-                throw new Error(`API error: ${response.status} ${text}`);
+        try {
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: body ? JSON.stringify(body) : undefined,
+            });
+
+            if (!response.ok) {
+                // Try to read text
+                const text = await response.text();
+                console.error(`[Signal API] Error ${response.status}:`, text);
+                try {
+                    const error = JSON.parse(text);
+                    throw new Error(error.error || error.message || `API error: ${response.status}`);
+                } catch (e) {
+                    throw new Error(`API error: ${response.status} ${text}`);
+                }
             }
-        }
 
-        return response.json();
+            return response.json();
+        } catch (err) {
+            if (err instanceof TypeError && err.message.includes('Failed to fetch')) {
+                console.error(`[Signal API] Network error - is the server running at ${this.baseUrl}?`);
+                throw new Error(`Cannot connect to Signal API at ${this.baseUrl}. Is the messaging service running?`);
+            }
+            throw err;
+        }
     }
 }
