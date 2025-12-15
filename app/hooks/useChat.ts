@@ -93,7 +93,7 @@ export function useChat({
 
             if (msg.signal_ciphertext && msg.signal_message_type) {
                 // Check cache first - Signal messages can only be decrypted once
-                const cachedPlaintext = getLocalMessagePlaintext(msg.id);
+                const cachedPlaintext = await getLocalMessagePlaintext(msg.id);
                 if (cachedPlaintext) {
                     console.log(`[useChat] Using cached plaintext for message ${msg.id}`);
                     setMessages(prev => {
