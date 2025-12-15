@@ -59,6 +59,7 @@ const MAX_LOCAL_MESSAGES = 1000; // Prevent unbounded growth
 interface LocalMessageEntry {
   id: string;
   plaintext: string;
+  ciphertext?: string; // New: secondary lookup key
   timestamp: number;
 }
 
@@ -69,28 +70,31 @@ interface LocalMessageEntry {
  * @param messageId - The server-assigned message ID
  * @param plaintext - The plaintext content
  */
-export function storeLocalMessagePlaintext(messageId: string, plaintext: string): void {
+export function storeLocalMessagePlaintext(messageId: string, plaintext: string, ciphertext?: string): void {
   if (typeof window === "undefined") return;
 
   try {
+    const id = String(messageId); // Ensure ID is a string
     const stored = localStorage.getItem(LOCAL_MESSAGES_KEY);
     const messages: LocalMessageEntry[] = stored ? JSON.parse(stored) : [];
 
     // Check if message already exists - avoid duplicates
-    const existingIndex = messages.findIndex((m) => m.id === messageId);
+    const existingIndex = messages.findIndex((m) => m.id === id);
     if (existingIndex >= 0) {
       // Update existing entry
       messages[existingIndex].plaintext = plaintext;
+      if (ciphertext) messages[existingIndex].ciphertext = ciphertext; // Update ciphertext if provided
       messages[existingIndex].timestamp = Date.now();
-      console.log(`[LocalMessages] Updated existing cache for message ${messageId}`);
+      console.log(`[LocalMessages] Updated existing cache for message ${id}`);
     } else {
       // Add new message
       messages.push({
-        id: messageId,
+        id: id,
         plaintext,
+        ciphertext,
         timestamp: Date.now(),
       });
-      console.log(`[LocalMessages] Cached new message ${messageId}`);
+      console.log(`[LocalMessages] Cached new message ${id}`);
     }
 
     // Prune old messages if exceeding limit
@@ -109,21 +113,43 @@ export function storeLocalMessagePlaintext(messageId: string, plaintext: string)
  * @param messageId - The message ID to look up
  * @returns The plaintext or null if not found
  */
-export function getLocalMessagePlaintext(messageId: string): string | null {
+export function getLocalMessagePlaintext(messageId: string, ciphertext?: string): string | null {
   if (typeof window === "undefined") return null;
 
   try {
+    const id = String(messageId); // Ensure ID is a string
     const stored = localStorage.getItem(LOCAL_MESSAGES_KEY);
     if (!stored) return null;
 
     const messages: LocalMessageEntry[] = JSON.parse(stored);
-    console.log(`%c[CACHE LOOKUP] Looking for: ${messageId}`, 'color: orange');
-    console.log(`%c[CACHE LOOKUP] Available IDs: ${messages.map(m => m.id).join(', ')}`, 'color: gray; font-size: 10px');
-    const entry = messages.find((m) => m.id === messageId);
+
+    // Debug logging
+    if (process.env.NODE_ENV === 'development') {
+      // console.log(`%c[CACHE LOOKUPS] Checking ID: "${id}"`, 'color: orange');
+    }
+
+    // 1. Try primary lookup by ID
+    let entry = messages.find((m) => m.id === id);
+
+    // 2. Fallback: Try secondary lookup by Ciphertext if provided and no ID match
+    if (!entry && ciphertext) {
+      entry = messages.find((m) => m.ciphertext === ciphertext);
+      if (entry) {
+        console.log(`%c[CACHE LOOKUP] AUTO-HEALING: Found by ciphertext! Updating ID ${entry.id} -> ${id}`, 'background: purple; color: white');
+        // Auto-heal: The server ID is the source of truth, so update our cache to match
+        entry.id = id;
+        localStorage.setItem(LOCAL_MESSAGES_KEY, JSON.stringify(messages));
+      }
+    }
+
     if (entry) {
-      console.log(`%c[CACHE LOOKUP] FOUND: ${messageId}`, 'background: green; color: white');
+      if (process.env.NODE_ENV === 'development') {
+        // console.log(`%c[CACHE LOOKUP] FOUND: ${id}`, 'background: green; color: white');
+      }
     } else {
-      console.log(`%c[CACHE LOOKUP] NOT FOUND: ${messageId}`, 'background: red; color: white');
+      if (process.env.NODE_ENV === 'development') {
+        // console.log(`%c[CACHE LOOKUP] NOT FOUND: ${id}`, 'background: red; color: white');
+      }
     }
     return entry?.plaintext || null;
   } catch (err) {
@@ -148,17 +174,31 @@ export function updateLocalMessageId(tempId: string, realId: string): void {
   if (typeof window === "undefined") return;
 
   try {
+    const tId = String(tempId);
+    const rId = String(realId);
+
     const stored = localStorage.getItem(LOCAL_MESSAGES_KEY);
     if (!stored) return;
 
-    const messages: LocalMessageEntry[] = JSON.parse(stored);
-    const tempEntry = messages.find((m) => m.id === tempId);
-    if (tempEntry) {
-      // Update the temp entry to use the real ID
-      tempEntry.id = realId;
-      tempEntry.timestamp = Date.now();
+    let messages: LocalMessageEntry[] = JSON.parse(stored);
+    const tempIndex = messages.findIndex((m) => m.id === tId);
+
+    if (tempIndex >= 0) {
+      // Check if real ID already exists (race condition: socket echo vs API response)
+      const realIndex = messages.findIndex((m) => m.id === rId);
+
+      if (realIndex >= 0) {
+        // Real ID already exists, so we just remove the temp entry
+        console.log(`[LocalMessages] Real ID ${rId} already exists, removing temp ID ${tId}`);
+        messages.splice(tempIndex, 1);
+      } else {
+        // Update the temp entry to use the real ID
+        messages[tempIndex].id = rId;
+        messages[tempIndex].timestamp = Date.now();
+        console.log(`[LocalMessages] Updated temp ID ${tId} to real ID ${rId}`);
+      }
+
       localStorage.setItem(LOCAL_MESSAGES_KEY, JSON.stringify(messages));
-      console.log(`[LocalMessages] Updated temp ID ${tempId} to real ID ${realId}`);
     }
   } catch (err) {
     console.warn("[LocalMessages] Failed to update message ID:", err);
@@ -486,7 +526,7 @@ export const useConversation = (
 
       // CRITICAL: Check local cache FIRST for ALL messages
       // Signal Protocol messages can only be decrypted once, so we cache plaintext
-      const cachedPlaintext = getLocalMessagePlaintext(msg.id);
+      const cachedPlaintext = getLocalMessagePlaintext(msg.id, msg.signal_ciphertext || msg.encrypted_content);
       if (cachedPlaintext) {
         console.log(`[Decrypt] Using cached plaintext for message ${msg.id}`);
         return { ...msg, decryptedContent: cachedPlaintext, decryptionFailed: false };
@@ -522,7 +562,7 @@ export const useConversation = (
 
           // CRITICAL: Cache the decrypted plaintext for future page loads
           // Signal Protocol messages can only be decrypted once!
-          storeLocalMessagePlaintext(msg.id, decryptedContent);
+          storeLocalMessagePlaintext(msg.id, decryptedContent, msg.signal_ciphertext);
           console.log(`[Signal] Cached decrypted message ${msg.id}`);
 
           return { ...msg, decryptedContent, decryptionFailed: false };
@@ -544,7 +584,7 @@ export const useConversation = (
           );
 
           // Cache legacy decrypted messages too
-          storeLocalMessagePlaintext(msg.id, decryptedContent);
+          storeLocalMessagePlaintext(msg.id, decryptedContent, msg.encrypted_content);
 
           return { ...msg, decryptedContent, decryptionFailed: false };
         } catch (err) {
@@ -759,7 +799,7 @@ export const useConversation = (
 
               // Message not in state - this is a message sent from another device
               // or a reload scenario - add it with local plaintext if available
-              const plaintext = getLocalMessagePlaintext(msg.id);
+              const plaintext = getLocalMessagePlaintext(msg.id, msg.signal_ciphertext || msg.encrypted_content);
 
               // If no plaintext found and there's a temp version being processed,
               // skip this echo - the send flow will handle it
@@ -893,7 +933,7 @@ export const useConversation = (
         // This ensures cache hits on page reload and handles race conditions
         // where WebSocket echo arrives before updateLocalMessageId is called
         console.log(`%c[CACHE FIX v2] Storing: ${serverMessage.id}`, 'background: green; color: white; font-weight: bold');
-        storeLocalMessagePlaintext(serverMessage.id, content);
+        storeLocalMessagePlaintext(serverMessage.id, content, encrypted.ciphertext);
         console.log(`%c[CACHE FIX v2] Done storing: ${serverMessage.id}`, 'background: blue; color: white');
 
         // Also update the temp ID entry (for cleanup purposes)
