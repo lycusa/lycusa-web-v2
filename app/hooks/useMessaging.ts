@@ -117,7 +117,14 @@ export function getLocalMessagePlaintext(messageId: string): string | null {
     if (!stored) return null;
 
     const messages: LocalMessageEntry[] = JSON.parse(stored);
+    console.log(`%c[CACHE LOOKUP] Looking for: ${messageId}`, 'color: orange');
+    console.log(`%c[CACHE LOOKUP] Available IDs: ${messages.map(m => m.id).join(', ')}`, 'color: gray; font-size: 10px');
     const entry = messages.find((m) => m.id === messageId);
+    if (entry) {
+      console.log(`%c[CACHE LOOKUP] FOUND: ${messageId}`, 'background: green; color: white');
+    } else {
+      console.log(`%c[CACHE LOOKUP] NOT FOUND: ${messageId}`, 'background: red; color: white');
+    }
     return entry?.plaintext || null;
   } catch (err) {
     console.warn("[LocalMessages] Failed to retrieve message:", err);
@@ -611,8 +618,8 @@ export const useConversation = (
 
         const targetUserId =
           userOneIdStr === currentIdStr ? conv.user_two_id :
-          userTwoIdStr === currentIdStr ? conv.user_one_id :
-          conv.user_two_id; // Fallback
+            userTwoIdStr === currentIdStr ? conv.user_one_id :
+              conv.user_two_id; // Fallback
         setRecipientId(targetUserId);
 
         // Derive shared key with recipient
@@ -620,6 +627,8 @@ export const useConversation = (
 
         // Fetch messages
         const rawMessages = await getConversationMessages(conversationId);
+        console.log(`%c[SERVER MESSAGES] Received ${rawMessages.length} messages:`, 'background: purple; color: white');
+        console.log(`%c[SERVER MESSAGES] IDs: ${rawMessages.map(m => m.id).join(', ')}`, 'color: purple; font-size: 10px');
 
         // Decrypt messages
         if (sharedKey) {
@@ -751,6 +760,14 @@ export const useConversation = (
               // Message not in state - this is a message sent from another device
               // or a reload scenario - add it with local plaintext if available
               const plaintext = getLocalMessagePlaintext(msg.id);
+
+              // If no plaintext found and there's a temp version being processed,
+              // skip this echo - the send flow will handle it
+              if (!plaintext && hasTempVersion) {
+                console.log("[WebSocket] Own message echo arrived but cache not updated yet, skipping");
+                return prev;
+              }
+
               return [
                 ...prev,
                 {
@@ -872,7 +889,14 @@ export const useConversation = (
           nonce: "",
         });
 
-        // Update the temporary message ID to the real server ID in cache
+        // CRITICAL FIX: Store plaintext with the REAL server ID immediately
+        // This ensures cache hits on page reload and handles race conditions
+        // where WebSocket echo arrives before updateLocalMessageId is called
+        console.log(`%c[CACHE FIX v2] Storing: ${serverMessage.id}`, 'background: green; color: white; font-weight: bold');
+        storeLocalMessagePlaintext(serverMessage.id, content);
+        console.log(`%c[CACHE FIX v2] Done storing: ${serverMessage.id}`, 'background: blue; color: white');
+
+        // Also update the temp ID entry (for cleanup purposes)
         updateLocalMessageId(tempId, serverMessage.id);
 
         // Update optimistic message with server response
@@ -880,10 +904,10 @@ export const useConversation = (
           prev.map((msg) =>
             msg.id === tempId
               ? {
-                  ...serverMessage,
-                  decryptedContent: content,
-                  decryptionFailed: false,
-                }
+                ...serverMessage,
+                decryptedContent: content,
+                decryptionFailed: false,
+              }
               : msg
           )
         );
