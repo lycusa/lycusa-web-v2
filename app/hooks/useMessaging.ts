@@ -42,7 +42,6 @@ import {
   exportPublicKey,
   importPublicKey,
   deriveSharedKey,
-  encryptMessage,
   decryptMessage,
   encryptFile,
   getKeyFingerprint,
@@ -50,9 +49,145 @@ import {
   loadKeyPair,
 } from "@/app/lib/crypto";
 
+// ===== Local Message Storage =====
+// Stores plaintext of sent messages so we can display them without decryption
+// This is industry standard - Signal, WhatsApp, etc. all do this
+
+const LOCAL_MESSAGES_KEY = "lycusa_local_messages";
+const MAX_LOCAL_MESSAGES = 1000; // Prevent unbounded growth
+
+interface LocalMessageEntry {
+  id: string;
+  plaintext: string;
+  timestamp: number;
+}
+
+/**
+ * Store plaintext of a message locally (sent OR received)
+ * This is critical for Signal Protocol - messages can only be decrypted once,
+ * so we cache the plaintext after successful decryption.
+ * @param messageId - The server-assigned message ID
+ * @param plaintext - The plaintext content
+ */
+export function storeLocalMessagePlaintext(messageId: string, plaintext: string): void {
+  if (typeof window === "undefined") return;
+
+  try {
+    const stored = localStorage.getItem(LOCAL_MESSAGES_KEY);
+    const messages: LocalMessageEntry[] = stored ? JSON.parse(stored) : [];
+
+    // Check if message already exists - avoid duplicates
+    const existingIndex = messages.findIndex((m) => m.id === messageId);
+    if (existingIndex >= 0) {
+      // Update existing entry
+      messages[existingIndex].plaintext = plaintext;
+      messages[existingIndex].timestamp = Date.now();
+      console.log(`[LocalMessages] Updated existing cache for message ${messageId}`);
+    } else {
+      // Add new message
+      messages.push({
+        id: messageId,
+        plaintext,
+        timestamp: Date.now(),
+      });
+      console.log(`[LocalMessages] Cached new message ${messageId}`);
+    }
+
+    // Prune old messages if exceeding limit
+    while (messages.length > MAX_LOCAL_MESSAGES) {
+      messages.shift();
+    }
+
+    localStorage.setItem(LOCAL_MESSAGES_KEY, JSON.stringify(messages));
+  } catch (err) {
+    console.warn("[LocalMessages] Failed to store message:", err);
+  }
+}
+
+/**
+ * Retrieve plaintext of a sent message
+ * @param messageId - The message ID to look up
+ * @returns The plaintext or null if not found
+ */
+export function getLocalMessagePlaintext(messageId: string): string | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const stored = localStorage.getItem(LOCAL_MESSAGES_KEY);
+    if (!stored) return null;
+
+    const messages: LocalMessageEntry[] = JSON.parse(stored);
+    const entry = messages.find((m) => m.id === messageId);
+    return entry?.plaintext || null;
+  } catch (err) {
+    console.warn("[LocalMessages] Failed to retrieve message:", err);
+    return null;
+  }
+}
+
+/**
+ * Store plaintext with a temporary ID (before server response)
+ * Used for optimistic updates
+ */
+export function storeLocalMessageWithTempId(tempId: string, plaintext: string): void {
+  storeLocalMessagePlaintext(tempId, plaintext);
+}
+
+/**
+ * Update the message ID after server confirms (temp -> real ID)
+ * Also removes the old temp entry to avoid duplicates
+ */
+export function updateLocalMessageId(tempId: string, realId: string): void {
+  if (typeof window === "undefined") return;
+
+  try {
+    const stored = localStorage.getItem(LOCAL_MESSAGES_KEY);
+    if (!stored) return;
+
+    const messages: LocalMessageEntry[] = JSON.parse(stored);
+    const tempEntry = messages.find((m) => m.id === tempId);
+    if (tempEntry) {
+      // Update the temp entry to use the real ID
+      tempEntry.id = realId;
+      tempEntry.timestamp = Date.now();
+      localStorage.setItem(LOCAL_MESSAGES_KEY, JSON.stringify(messages));
+      console.log(`[LocalMessages] Updated temp ID ${tempId} to real ID ${realId}`);
+    }
+  } catch (err) {
+    console.warn("[LocalMessages] Failed to update message ID:", err);
+  }
+}
+
+/**
+ * Clean up old temp_ entries from the cache
+ * Call this periodically or on init to remove stale temp IDs
+ */
+export function cleanupTempMessages(): void {
+  if (typeof window === "undefined") return;
+
+  try {
+    const stored = localStorage.getItem(LOCAL_MESSAGES_KEY);
+    if (!stored) return;
+
+    const messages: LocalMessageEntry[] = JSON.parse(stored);
+    const originalLength = messages.length;
+
+    // Remove entries that still have temp_ IDs (they were never confirmed)
+    const cleaned = messages.filter((m) => !m.id.startsWith("temp_"));
+
+    if (cleaned.length !== originalLength) {
+      localStorage.setItem(LOCAL_MESSAGES_KEY, JSON.stringify(cleaned));
+      console.log(`[LocalMessages] Cleaned up ${originalLength - cleaned.length} stale temp entries`);
+    }
+  } catch (err) {
+    console.warn("[LocalMessages] Failed to cleanup temp messages:", err);
+  }
+}
+
 // ===== useE2EEKeys Hook =====
 
-interface UseE2EEKeysReturn {
+// Interface kept for documentation/future use
+interface _UseE2EEKeysReturn {
   keyPair: E2EEKeyPair | null;
   isInitialized: boolean;
   isLoading: boolean;
@@ -231,7 +366,7 @@ export const useConversation = (
 
   // Signal Protocol client
   const token = getAccessToken() || "";
-  const { signalClient, isRegistered: signalReady, encryptMessage: signalEncrypt, decryptMessage: signalDecrypt } = useSignal(token);
+  const { isRegistered: signalReady, encryptMessage: signalEncrypt, decryptMessage: signalDecrypt } = useSignal(token);
 
   // Refs for shared key and recipient
   const sharedKeyRef = useRef<CryptoKey | null>(null);
@@ -331,15 +466,45 @@ export const useConversation = (
   );
 
   // Decrypt a message (supports both Signal Protocol and legacy ECDH)
+  // Key insight: Signal Protocol messages can only be decrypted ONCE because the
+  // ratchet advances. We MUST cache decrypted plaintext locally.
+  // Industry standard: Both sent and received messages are stored after decryption.
   const decryptMessageContent = useCallback(
     async (
       msg: Message,
       sharedKey: CryptoKey | null,
-      targetUserId: string
+      _targetUserId: string  // Kept for interface compatibility
     ): Promise<DecryptedMessage> => {
-      // 1. Try Signal Protocol decryption first (for newer messages)
+      const isOwnMessage = msg.sender_id === currentUserId;
+
+      // CRITICAL: Check local cache FIRST for ALL messages
+      // Signal Protocol messages can only be decrypted once, so we cache plaintext
+      const cachedPlaintext = getLocalMessagePlaintext(msg.id);
+      if (cachedPlaintext) {
+        console.log(`[Decrypt] Using cached plaintext for message ${msg.id}`);
+        return { ...msg, decryptedContent: cachedPlaintext, decryptionFailed: false };
+      }
+
+      // For own messages without cached plaintext
+      if (isOwnMessage) {
+        console.log(`[Decrypt] Own message ${msg.id} not in cache`);
+
+        // Own encrypted message - we can't decrypt it (session is keyed by recipient)
+        if (msg.signal_ciphertext || msg.encrypted_content) {
+          return {
+            ...msg,
+            decryptedContent: "[Your encrypted message]",
+            decryptionFailed: false  // Not a failure - just can't decrypt own messages
+          };
+        }
+
+        // Plain text own message
+        return { ...msg, decryptedContent: msg.content, decryptionFailed: false };
+      }
+
+      // 1. Try Signal Protocol decryption first (for newer messages from others)
       if (msg.signal_ciphertext && msg.signal_message_type && signalReady) {
-        console.log(`[Signal] Decrypting message ${msg.id} with Signal Protocol`);
+        console.log(`[Signal] Decrypting message ${msg.id} from ${msg.sender_id}`);
         try {
           const decryptedContent = await signalDecrypt(
             msg.sender_id,
@@ -347,6 +512,12 @@ export const useConversation = (
             msg.signal_ciphertext,
             msg.signal_message_type
           );
+
+          // CRITICAL: Cache the decrypted plaintext for future page loads
+          // Signal Protocol messages can only be decrypted once!
+          storeLocalMessagePlaintext(msg.id, decryptedContent);
+          console.log(`[Signal] Cached decrypted message ${msg.id}`);
+
           return { ...msg, decryptedContent, decryptionFailed: false };
         } catch (err) {
           console.error("[Signal] Failed to decrypt message:", err);
@@ -354,10 +525,9 @@ export const useConversation = (
         }
       }
 
-      // 2. Try legacy ECDH decryption (for older messages)
+      // 2. Try legacy ECDH decryption (for older messages from others)
       if (msg.encrypted_content && msg.nonce && sharedKey) {
         console.log(`[E2EE] Decrypting message ${msg.id} with legacy ECDH`);
-        console.log(`[E2EE] Message is from: ${msg.sender_id === currentUserId ? 'me' : 'other user'}`);
 
         try {
           const decryptedContent = await decryptMessage(
@@ -365,13 +535,16 @@ export const useConversation = (
             msg.nonce,
             sharedKey
           );
+
+          // Cache legacy decrypted messages too
+          storeLocalMessagePlaintext(msg.id, decryptedContent);
+
           return { ...msg, decryptedContent, decryptionFailed: false };
         } catch (err) {
           console.error("[E2EE] Failed to decrypt message:", err);
           console.error("[E2EE] Message details:", {
             id: msg.id,
             sender_id: msg.sender_id,
-            isFromCurrentUser: msg.sender_id === currentUserId,
             encrypted_content_length: msg.encrypted_content?.length,
             nonce: msg.nonce,
           });
@@ -395,8 +568,12 @@ export const useConversation = (
   );
 
   // Fetch conversation and messages
+  // Don't wait for Signal - load data first, then decrypt when ready
   useEffect(() => {
     if (!conversationId || !keysReady || !currentUserId) return;
+
+    // Clean up stale temp entries from previous sessions
+    cleanupTempMessages();
 
     const fetchData = async () => {
       try {
@@ -470,10 +647,55 @@ export const useConversation = (
     };
 
     fetchData();
-    // Only re-run when conversationId or keysReady changes
+    // Re-run when conversationId, keysReady, or currentUserId changes
     // deriveKey and decryptMessageContent are stable (use refs)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId, keysReady, currentUserId]);
+
+  // Track if we've already attempted re-decryption after Signal became ready
+  const hasReDecryptedRef = useRef(false);
+  const lastConversationIdRef = useRef<string | null>(null);
+
+  // Re-decrypt messages when Signal becomes ready (for messages that failed to decrypt)
+  useEffect(() => {
+    // Reset re-decryption flag when conversation changes
+    if (lastConversationIdRef.current !== conversationId) {
+      hasReDecryptedRef.current = false;
+      lastConversationIdRef.current = conversationId;
+    }
+  }, [conversationId]);
+
+  useEffect(() => {
+    if (!signalReady || !recipientId || hasReDecryptedRef.current) return;
+
+    // Check if any messages need re-decryption (have signal_ciphertext but decryptionFailed)
+    const needsReDecryption = messages.some(
+      (msg) => msg.decryptionFailed && msg.signal_ciphertext && msg.sender_id !== currentUserId
+    );
+
+    if (!needsReDecryption) {
+      hasReDecryptedRef.current = true;
+      return;
+    }
+
+    const reDecryptMessages = async () => {
+      console.log("[Signal] Re-decrypting messages now that Signal is ready");
+      const reDecrypted = await Promise.all(
+        messages.map(async (msg) => {
+          // Only re-decrypt messages from others that failed
+          if (msg.decryptionFailed && msg.signal_ciphertext && msg.sender_id !== currentUserId) {
+            return decryptMessageContent(msg, sharedKeyRef.current, recipientId);
+          }
+          return msg;
+        })
+      );
+      setMessages(reDecrypted);
+      hasReDecryptedRef.current = true;
+    };
+
+    reDecryptMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signalReady, recipientId, currentUserId, messages]);
 
   // Connect to WebSocket room
   useEffect(() => {
@@ -500,15 +722,64 @@ export const useConversation = (
 
         // Subscribe to new messages
         unsubMessage = onMessage(roomId, async (msg: Message) => {
-          console.log("[WebSocket] New message received:", msg.id);
+          console.log("[WebSocket] New message received:", msg.id, "from:", msg.sender_id);
 
+          // Check if this is our own message (already handled via optimistic update)
+          const isOwnMessage = msg.sender_id === currentUserId;
+
+          if (isOwnMessage) {
+            // For own messages, just update the existing optimistic message if needed
+            // We already have this message in state from the optimistic update
+            console.log("[WebSocket] Received own message echo, updating if needed");
+
+            // Check if message already exists in state - use functional update to avoid stale closure
+            setMessages((prev) => {
+              const exists = prev.some((m) => m.id === msg.id);
+              const hasTempVersion = prev.some((m) => m.id.startsWith("temp_"));
+
+              if (exists) {
+                console.log("[WebSocket] Message already exists, skipping duplicate");
+                return prev;
+              }
+
+              // If we have temp messages, the optimistic update is handling this
+              if (hasTempVersion) {
+                console.log("[WebSocket] Own message already in state via optimistic update");
+                return prev;
+              }
+
+              // Message not in state - this is a message sent from another device
+              // or a reload scenario - add it with local plaintext if available
+              const plaintext = getLocalMessagePlaintext(msg.id);
+              return [
+                ...prev,
+                {
+                  ...msg,
+                  decryptedContent: plaintext || "[Your encrypted message]",
+                  decryptionFailed: false,
+                },
+              ];
+            });
+            return;
+          }
+
+          // For messages from others, decrypt and add
           const targetUser = recipientId || "";
           const decrypted = await decryptMessageContent(
             msg,
             sharedKeyRef.current,
             targetUser
           );
-          setMessages((prev) => [...prev, decrypted]);
+
+          // Avoid duplicates
+          setMessages((prev) => {
+            const exists = prev.some((m) => m.id === msg.id);
+            if (exists) {
+              console.log("[WebSocket] Message already exists, skipping duplicate");
+              return prev;
+            }
+            return [...prev, decrypted];
+          });
         });
 
         // Subscribe to room closure
@@ -541,7 +812,7 @@ export const useConversation = (
     };
     // decryptMessageContent is stable (no dependencies)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [conversation, keysReady, loading]);
+  }, [conversation, keysReady, loading, currentUserId, recipientId]);
 
   // Send encrypted message (using Signal Protocol)
   const sendMessageHandler = useCallback(
@@ -565,6 +836,27 @@ export const useConversation = (
       // Get the actual conversation ID
       const actualConversationId = conversation.id;
 
+      // Generate temporary ID for optimistic update
+      const tempId = `temp_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+
+      // Create optimistic message to show immediately
+      const optimisticMessage: DecryptedMessage = {
+        id: tempId,
+        sender_id: currentUserId!,
+        conversation_id: actualConversationId,
+        decryptedContent: content,
+        decryptionFailed: false,
+        inserted_at: new Date().toISOString(),
+        signal_ciphertext: "pending", // Mark as encrypted
+        signal_message_type: 2,
+      };
+
+      // Store plaintext locally for future retrieval
+      storeLocalMessageWithTempId(tempId, content);
+
+      // Add optimistic message to UI immediately
+      setMessages((prev) => [...prev, optimisticMessage]);
+
       try {
         // Use Signal Protocol for encryption via the hook
         const encrypted = await signalEncrypt(
@@ -573,13 +865,32 @@ export const useConversation = (
           content
         );
 
-        await socketSendMessage(actualConversationId, {
+        const serverMessage = await socketSendMessage(actualConversationId, {
           signal_ciphertext: encrypted.ciphertext,
           signal_message_type: encrypted.messageType as 1 | 2,
           encrypted_content: "", // Legacy fields empty
           nonce: "",
         });
+
+        // Update the temporary message ID to the real server ID in cache
+        updateLocalMessageId(tempId, serverMessage.id);
+
+        // Update optimistic message with server response
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === tempId
+              ? {
+                  ...serverMessage,
+                  decryptedContent: content,
+                  decryptionFailed: false,
+                }
+              : msg
+          )
+        );
       } catch (err: unknown) {
+        // Remove optimistic message on failure
+        setMessages((prev) => prev.filter((msg) => msg.id !== tempId));
+
         const errorMessage = err instanceof Error ? err.message : String(err);
 
         // Check if the error is about recipient not being registered
@@ -590,7 +901,7 @@ export const useConversation = (
         throw err;
       }
     },
-    [conversation, recipientId, isClosed, signalReady, signalEncrypt]
+    [conversation, recipientId, isClosed, signalReady, signalEncrypt, currentUserId]
   );
 
   // Send media message
@@ -608,7 +919,8 @@ export const useConversation = (
 
       if (encrypt && sharedKeyRef.current) {
         // Encrypt file before upload
-        const { encrypted, nonce } = await encryptFile(
+        // Note: nonce is embedded in the encrypted blob, not needed separately
+        const { encrypted } = await encryptFile(
           file,
           sharedKeyRef.current
         );

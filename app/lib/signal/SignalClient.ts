@@ -138,14 +138,29 @@ export class SignalClient {
         }
 
         let session = await this.keyStore.getSession(senderId, conversationId);
+        console.log(`[Signal] decryptMessage: Looking for session ${senderId}:${conversationId}`, session ? 'FOUND' : 'NOT FOUND');
+        if (session) {
+            console.log(`[Signal] Session details: isInitiator=${session.isInitiator}, messageCounter=${session.messageCounter}, createdAt=${session.createdAt}`);
+        }
 
         if (messageType === 1) {
-            // Always process PreKeyMessage (establishes or re-establishes session)
-            session = await this.processPreKeyMessage(
-                senderId,
-                conversationId,
-                envelope
-            );
+            // PreKeyMessage - only process if we don't have an existing session
+            // or if this is a newer message (to handle session re-establishment)
+            // IMPORTANT: Re-processing old PreKeyMessages will overwrite the current
+            // session and break decryption of messages encrypted with the newer session
+            if (!session) {
+                console.log(`[Signal] Processing PreKeyMessage - no existing session for ${senderId}:${conversationId}`);
+                session = await this.processPreKeyMessage(
+                    senderId,
+                    conversationId,
+                    envelope
+                );
+            } else {
+                // Session exists - check if this PreKeyMessage is newer
+                // For now, just use the existing session and try to decrypt
+                // This handles the case of re-loading old PreKeyMessages from history
+                console.log(`[Signal] Skipping PreKeyMessage processing - session already exists for ${senderId}:${conversationId}`);
+            }
         } else if (!session) {
             // messageType === 2 but no session = error
             throw new Error('Cannot decrypt message: no session established. Sender must send PreKeyMessage first.');
@@ -157,6 +172,8 @@ export class SignalClient {
 
         // Derive message key
         const sharedSecret = SignalCrypto.base64ToArrayBuffer(session.sharedSecret);
+        console.log(`[Signal] Deriving message key with counter=${envelope.counter}, sharedSecret length=${sharedSecret.byteLength}`);
+
         const counterBytes = new Uint32Array([envelope.counter]);
         const info = SignalCrypto.concat(
             SignalCrypto.stringToArrayBuffer('Message'),
@@ -166,6 +183,9 @@ export class SignalClient {
         const messageKey = await SignalCrypto.deriveAesKey(sharedSecret, info as unknown as BufferSource);
         const ciphertext = SignalCrypto.base64ToArrayBuffer(envelope.ciphertext);
         const iv = new Uint8Array(SignalCrypto.base64ToArrayBuffer(envelope.iv));
+
+        console.log(`[Signal] Attempting decrypt: ciphertext=${ciphertext.byteLength} bytes, iv=${iv.length} bytes`);
+
         const plaintextBuffer = await SignalCrypto.decrypt(
             messageKey,
             ciphertext,

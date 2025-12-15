@@ -10,6 +10,7 @@ import {
     isConnected as socketIsConnected
 } from '@/app/lib/socket';
 import { Message, SendMessagePayload } from '@/app/lib/types/messaging';
+import { storeLocalMessagePlaintext, getLocalMessagePlaintext } from './useMessaging';
 
 interface UseChatOptions {
     token: string;
@@ -91,6 +92,17 @@ export function useChat({
             }
 
             if (msg.signal_ciphertext && msg.signal_message_type) {
+                // Check cache first - Signal messages can only be decrypted once
+                const cachedPlaintext = getLocalMessagePlaintext(msg.id);
+                if (cachedPlaintext) {
+                    console.log(`[useChat] Using cached plaintext for message ${msg.id}`);
+                    setMessages(prev => {
+                        if (prev.some(m => m.id === msg.id)) return prev;
+                        return [...prev, { ...msg, content: cachedPlaintext }];
+                    });
+                    return;
+                }
+
                 try {
                     const decrypted = await decryptMessage(
                         msg.sender_id,
@@ -98,6 +110,10 @@ export function useChat({
                         msg.signal_ciphertext,
                         msg.signal_message_type
                     );
+
+                    // Cache the decrypted plaintext for future page loads
+                    storeLocalMessagePlaintext(msg.id, decrypted);
+                    console.log(`[useChat] Cached decrypted message ${msg.id}`);
 
                     setMessages(prev => {
                         // Avoid duplicates
@@ -155,6 +171,8 @@ export function useChat({
 
         try {
             const response = await socketSendMessage(conversationId, payload);
+            // Cache the sent message plaintext for future page loads
+            storeLocalMessagePlaintext(response.id, content);
             // Replace optimistic message with real one
             setMessages(prev => prev.map(m => m.id === tempId ? { ...response, content } : m));
             return response;

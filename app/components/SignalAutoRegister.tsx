@@ -97,13 +97,18 @@ export function SignalAutoRegister() {
                 const isLocallyRegistered = await client.isRegistered();
                 console.log("[SignalAutoRegister] Local registration status:", isLocallyRegistered);
 
-                // Check if registered on server by trying to fetch our own bundle
+                // Check if registered on server by checking prekey count
+                // Note: Cannot fetch own bundle - server rejects with "Cannot request your own pre-key bundle"
                 let isServerRegistered = false;
                 try {
-                    const response = await fetch(`${API_GATEWAY_URL}/messaging/api/signal/bundle/${user.id}`, {
+                    const response = await fetch(`${API_GATEWAY_URL}/messaging/api/signal/prekeys/count`, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
-                    isServerRegistered = response.ok;
+                    if (response.ok) {
+                        const data = await response.json();
+                        // If we have prekeys on server, we're registered
+                        isServerRegistered = data.count > 0 || data.has_signed_prekey === true;
+                    }
                     console.log("[SignalAutoRegister] Server registration status:", isServerRegistered);
                 } catch (e) {
                     console.log("[SignalAutoRegister] Server check failed:", e);
