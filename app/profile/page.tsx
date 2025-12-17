@@ -98,9 +98,9 @@ export default function ProfilePage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#DDDDDD] to-zinc-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-tyrian-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">Loading profile...</p>
         </div>
       </div>
@@ -109,12 +109,12 @@ export default function ProfilePage() {
 
   if (showCreateProfile) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#DDDDDD] to-zinc-50">
         <div className="max-w-2xl mx-auto px-4 py-16">
           <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-brand-100 to-tyrian-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-20 h-20 bg-gradient-to-br from-gray-200 to-tyrian-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg
-                className="w-10 h-10 text-brand-600"
+                className="w-10 h-10 text-tyrian-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -137,7 +137,7 @@ export default function ProfilePage() {
 
             <Link
               href="/profile/edit"
-              className="inline-block px-8 py-4 bg-gradient-to-r from-tyrian-800 to-brand-600 text-white rounded-xl hover:from-tyrian-900 hover:to-brand-700 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1"
+              className="inline-block px-8 py-4 bg-gradient-to-r from-tyrian-800 to-tyrian-600 text-white rounded-xl hover:from-tyrian-900 hover:to-tyrian-700 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1"
             >
               Create Profile
             </Link>
@@ -170,7 +170,7 @@ export default function ProfilePage() {
           <p className="text-gray-600 mb-6">{error}</p>
           <button
             onClick={loadProfile}
-            className="px-6 py-2 bg-tyrian-800 text-white rounded-lg hover:bg-tyrian-900 transition-colors"
+            className="px-6 py-2 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-colors"
           >
             Try Again
           </button>
@@ -184,13 +184,13 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#DDDDDD] to-zinc-50">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-tyrian-800 to-brand-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+              <div className="w-10 h-10 bg-gradient-to-br from-tyrian-800 to-tyrian-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
                 <svg
                   className="w-6 h-6 text-white"
                   fill="none"
@@ -205,7 +205,7 @@ export default function ProfilePage() {
                   />
                 </svg>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-tyrian-800 to-brand-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-tyrian-800 to-tyrian-600 bg-clip-text text-transparent">
                 Lycusa
               </span>
             </Link>
@@ -213,19 +213,19 @@ export default function ProfilePage() {
             <div className="flex gap-3">
               <Link
                 href="/orders"
-                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all text-sm font-medium shadow-md hover:shadow-lg"
+                className="px-4 py-2 bg-gradient-to-r from-tyrian-700 to-pink-700 text-white rounded-xl hover:from-tyrian-800 hover:to-pink-800 transition-all text-sm font-medium shadow-md hover:shadow-lg"
               >
                 My Orders
               </Link>
               <Link
                 href="/kyc"
-                className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all text-sm font-medium shadow-md hover:shadow-lg"
+                className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all text-sm font-medium shadow-md hover:shadow-lg"
               >
                 KYC Verification
               </Link>
               <Link
                 href="/profile/edit"
-                className="px-4 py-2 bg-gradient-to-r from-tyrian-800 to-brand-600 text-white rounded-lg hover:from-tyrian-900 hover:to-brand-700 transition-all text-sm font-medium shadow-md hover:shadow-lg"
+                className="px-4 py-2 bg-gradient-to-r from-tyrian-800 to-tyrian-600 text-white rounded-xl hover:from-tyrian-900 hover:to-tyrian-700 transition-all text-sm font-medium shadow-md hover:shadow-lg"
               >
                 Edit Profile
               </Link>
@@ -239,7 +239,7 @@ export default function ProfilePage() {
         {/* Profile Header Card */}
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden mb-8">
           {/* Cover */}
-          <div className="h-48 bg-gradient-to-r from-tyrian-800 via-brand-600 to-purple-600"></div>
+          <div className="h-48 bg-gradient-to-r from-tyrian-800 via-tyrian-600 to-neutral-600"></div>
 
           {/* Profile Info */}
           <div className="relative px-8 pb-8">
@@ -345,10 +345,10 @@ export default function ProfilePage() {
                   className="group cursor-pointer"
                 >
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900 group-hover:text-brand-600 transition-colors">
+                    <div className="text-2xl font-bold text-gray-900 group-hover:text-tyrian-600 transition-colors">
                       0
                     </div>
-                    <div className="text-sm text-gray-600 group-hover:text-brand-600 transition-colors">
+                    <div className="text-sm text-gray-600 group-hover:text-tyrian-600 transition-colors">
                       Followers
                     </div>
                   </div>
@@ -359,10 +359,10 @@ export default function ProfilePage() {
                   className="group cursor-pointer"
                 >
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900 group-hover:text-brand-600 transition-colors">
+                    <div className="text-2xl font-bold text-gray-900 group-hover:text-tyrian-600 transition-colors">
                       0
                     </div>
-                    <div className="text-sm text-gray-600 group-hover:text-brand-600 transition-colors">
+                    <div className="text-sm text-gray-600 group-hover:text-tyrian-600 transition-colors">
                       Following
                     </div>
                   </div>
@@ -380,9 +380,9 @@ export default function ProfilePage() {
 
           <div className="space-y-4">
             <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
-              <div className="w-10 h-10 bg-brand-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 bg-zinc-100 rounded-lg flex items-center justify-center flex-shrink-0">
                 <svg
-                  className="w-5 h-5 text-brand-600"
+                  className="w-5 h-5 text-zinc-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -476,7 +476,7 @@ export default function ProfilePage() {
                         <span className="text-gray-900 font-medium">Not Verified</span>
                         <Link
                           href="/kyc"
-                          className="text-brand-600 hover:text-brand-700 text-sm underline"
+                          className="text-tyrian-600 hover:text-tyrian-700 text-sm underline"
                         >
                           Verify Now
                         </Link>

@@ -69,11 +69,10 @@ export default function SignUpPage() {
             <div className="flex gap-2 bg-gray-100/80 p-1.5 rounded-xl backdrop-blur-sm">
               <button
                 onClick={() => setAuthMethod("email")}
-                className={`relative flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
-                  authMethod === "email"
+                className={`relative flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${authMethod === "email"
                     ? "bg-white text-tyrian-800 shadow-md"
                     : "text-gray-600 hover:text-gray-900"
-                }`}
+                  }`}
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   <svg
@@ -94,11 +93,10 @@ export default function SignUpPage() {
               </button>
               <button
                 onClick={() => setAuthMethod("wallet")}
-                className={`relative flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
-                  authMethod === "wallet"
-                    ? "bg-white text-brand-500 shadow-md"
+                className={`relative flex-1 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${authMethod === "wallet"
+                    ? "bg-white text-tyrian-600 shadow-md"
                     : "text-gray-600 hover:text-gray-900"
-                }`}
+                  }`}
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   <svg

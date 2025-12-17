@@ -98,7 +98,7 @@ export default function OrdersPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#DDDDDD] flex items-center justify-center">
         <div className="flex items-center gap-3 text-gray-500">
           <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -112,7 +112,7 @@ export default function OrdersPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-[#DDDDDD]">
         <div className="max-w-lg mx-auto px-4 py-16">
           <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
             <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
@@ -124,7 +124,7 @@ export default function OrdersPage() {
             <p className="text-sm text-gray-600 mb-6">Please sign in to view your orders.</p>
             <Link
               href="/signin"
-              className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors"
+              className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-tyrian-800 rounded-xl hover:bg-tyrian-900 transition-colors"
             >
               Sign In
             </Link>
@@ -135,9 +135,9 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#DDDDDD]">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-200">
+      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">

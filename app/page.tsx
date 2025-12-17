@@ -32,7 +32,7 @@ export default function Home() {
   }, [isAuthenticated, user]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-tyrian-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#DDDDDD] to-tyrian-50">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -51,55 +51,55 @@ export default function Home() {
             <nav className="flex items-center gap-3">
               <Link
                 href="/products"
-                className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-lg"
+                className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-xl"
               >
                 Browse
               </Link>
               {loading ? (
                 <div className="flex items-center gap-3">
-                  <div className="w-24 h-9 bg-gray-200 animate-pulse rounded-lg"></div>
-                  <div className="w-20 h-9 bg-gray-200 animate-pulse rounded-lg"></div>
+                  <div className="w-24 h-9 bg-gray-200 animate-pulse rounded-xl"></div>
+                  <div className="w-20 h-9 bg-gray-200 animate-pulse rounded-xl"></div>
                 </div>
               ) : isAuthenticated ? (
                 <>
                   <Link
                     href="/my-products"
-                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-lg"
+                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-xl"
                   >
                     My Products
                   </Link>
                   <Link
                     href="/orders"
-                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-lg"
+                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-xl"
                   >
                     Orders
                   </Link>
                   <Link
                     href="/messages"
-                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-lg"
+                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-xl"
                   >
                     Messages
                   </Link>
-                  <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-tyrian-50 to-brand-50 rounded-lg border border-tyrian-200/50">
+                  <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-tyrian-50 to-gray-100 rounded-xl border border-tyrian-200/50">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-sm font-medium text-gray-700 max-w-[150px] truncate">
                       {user?.email ||
                         `${user?.walletAddress?.slice(0, 6)}...${user?.walletAddress?.slice(-4)}`}
                     </span>
                   </div>
-                  <LogoutButton className="px-4 py-2 bg-tyrian-800 text-white rounded-lg hover:bg-tyrian-900 transition-all text-sm font-medium shadow-md hover:shadow-lg" />
+                  <LogoutButton className="px-4 py-2 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all text-sm font-medium shadow-md hover:shadow-lg" />
                 </>
               ) : (
                 <>
                   <Link
                     href="/signin"
-                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-lg"
+                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-xl"
                   >
                     Sign In
                   </Link>
                   <Link
                     href="/signup"
-                    className="px-5 py-2 bg-tyrian-800 text-white rounded-lg hover:bg-tyrian-900 transition-all text-sm font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                    className="px-5 py-2 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all text-sm font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5"
                   >
                     Get Started
                   </Link>
@@ -121,7 +121,7 @@ export default function Home() {
           <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
             Sustainable Fashion
             <br />
-            <span className="bg-gradient-to-r from-tyrian-800 via-tyrian-600 to-brand-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-tyrian-800 via-tyrian-600 to-gray-500 bg-clip-text text-transparent">
               For Everyone
             </span>
           </h1>
@@ -216,7 +216,7 @@ export default function Home() {
                       </Link>
                       <Link
                         href="/orders"
-                        className="px-8 py-4 bg-brand-500 text-white rounded-xl hover:bg-brand-600 transition-all font-semibold shadow-lg shadow-brand-500/30 hover:shadow-xl hover:shadow-brand-500/40 hover:-translate-y-1 text-center"
+                        className="px-8 py-4 bg-zinc-800 text-white rounded-xl hover:bg-zinc-900 transition-all font-semibold shadow-lg shadow-zinc-800/30 hover:shadow-xl hover:shadow-zinc-800/40 hover:-translate-y-1 text-center"
                       >
                         My Orders
                       </Link>
@@ -228,7 +228,7 @@ export default function Home() {
                       </Link>
                       <Link
                         href="/kyc"
-                        className="px-8 py-4 border-2 border-brand-500 text-brand-500 rounded-xl hover:bg-brand-50 transition-all font-semibold hover:-translate-y-1 text-center"
+                        className="px-8 py-4 border-2 border-tyrian-600 text-tyrian-700 rounded-xl hover:bg-tyrian-50 transition-all font-semibold hover:-translate-y-1 text-center"
                       >
                         KYC Verification
                       </Link>
@@ -246,7 +246,7 @@ export default function Home() {
                     </Link>
                     <Link
                       href="/signup"
-                      className="px-10 py-4 bg-brand-500 text-white rounded-xl hover:bg-brand-600 transition-all font-semibold text-lg shadow-lg shadow-brand-500/30 hover:shadow-xl hover:shadow-brand-500/40 hover:-translate-y-1"
+                      className="px-10 py-4 bg-zinc-800 text-white rounded-xl hover:bg-zinc-900 transition-all font-semibold text-lg shadow-lg shadow-zinc-800/30 hover:shadow-xl hover:shadow-zinc-800/40 hover:-translate-y-1"
                     >
                       Get Started Free
                     </Link>
@@ -301,8 +301,8 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-brand-200 hover:-translate-y-2">
-              <div className="w-14 h-14 bg-gradient-to-br from-brand-100 to-brand-50 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform text-brand-500">
+            <div className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-gray-300 hover:-translate-y-2">
+              <div className="w-14 h-14 bg-gradient-to-br from-gray-200 to-gray-100 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform text-gray-700">
                 <svg
                   className="w-7 h-7"
                   fill="none"
@@ -326,7 +326,7 @@ export default function Home() {
             </div>
 
             <div className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-green-200 hover:-translate-y-2">
-              <div className="w-14 h-14 bg-gradient-to-br from-green-100 to-green-50 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform text-green-600">
+              <div className="w-14 h-14 bg-gradient-to-br from-zinc-100 to-zinc-50 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform text-zinc-600">
                 <svg
                   className="w-7 h-7"
                   fill="none"

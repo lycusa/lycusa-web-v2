@@ -46,7 +46,7 @@ export default function OrderCard({ order, currentUserId }: OrderCardProps) {
     <Link href={`/orders/${order.id}`} className="block group">
       <div
         className={`
-          bg-white rounded-lg border transition-all duration-200
+          bg-white rounded-xl border transition-all duration-200
           ${isActiveOrder ? "border-gray-200 hover:border-gray-300" : "border-gray-100"}
           hover:shadow-md
         `}

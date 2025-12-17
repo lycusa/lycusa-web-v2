@@ -74,15 +74,15 @@ export default function MyProductsPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-brand-600 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#DDDDDD] to-zinc-50 flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-tyrian-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (!isAuthenticated || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#DDDDDD] to-zinc-50">
         <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-12 text-center">
             <svg
@@ -120,13 +120,13 @@ export default function MyProductsPage() {
   const inactiveProducts = products.filter((p) => p.status === ProductStatus.INACTIVE);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#DDDDDD] to-zinc-50">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-tyrian-800 to-brand-600 rounded-xl flex items-center justify-center shadow-md">
+              <div className="w-10 h-10 bg-gradient-to-br from-tyrian-800 to-tyrian-600 rounded-xl flex items-center justify-center shadow-md">
                 <svg
                   className="w-6 h-6 text-white"
                   fill="none"
@@ -141,7 +141,7 @@ export default function MyProductsPage() {
                   />
                 </svg>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-tyrian-800 to-brand-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-tyrian-800 to-tyrian-600 bg-clip-text text-transparent">
                 Lycusa
               </span>
             </Link>
@@ -149,13 +149,13 @@ export default function MyProductsPage() {
             <nav className="flex items-center gap-3">
               <Link
                 href="/products"
-                className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium hover:bg-gray-100 rounded-lg"
+                className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium hover:bg-gray-100 rounded-xl"
               >
                 Browse Products
               </Link>
               <Link
                 href="/products/new"
-                className="px-5 py-2 bg-gradient-to-r from-tyrian-800 to-brand-600 text-white rounded-lg hover:from-tyrian-900 hover:to-brand-700 transition-all text-sm font-semibold shadow-md hover:shadow-lg"
+                className="px-5 py-2 bg-gradient-to-r from-tyrian-800 to-tyrian-600 text-white rounded-xl hover:from-tyrian-900 hover:to-tyrian-700 transition-all text-sm font-semibold shadow-md hover:shadow-lg"
               >
                 List New Product
               </Link>
@@ -178,9 +178,9 @@ export default function MyProductsPage() {
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-zinc-100 rounded-xl flex items-center justify-center">
                 <svg
-                  className="w-6 h-6 text-brand-600"
+                  className="w-6 h-6 text-zinc-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -298,7 +298,7 @@ export default function MyProductsPage() {
             </p>
             <Link
               href="/products/new"
-              className="inline-block px-6 py-3 bg-tyrian-800 text-white rounded-lg hover:bg-tyrian-900 transition-colors font-medium"
+              className="inline-block px-6 py-3 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-colors font-medium"
             >
               List Your First Product
             </Link>
@@ -333,7 +333,7 @@ export default function MyProductsPage() {
                   {/* Product Info */}
                   <div className="md:col-span-2 space-y-2">
                     <div className="flex items-start gap-2">
-                      <span className="px-2 py-1 bg-brand-50 text-brand-700 text-xs font-semibold rounded">
+                      <span className="px-2 py-1 bg-zinc-100 text-zinc-700 text-xs font-semibold rounded">
                         {product.category}
                       </span>
                       {product.status === ProductStatus.ACTIVE ? (
@@ -389,20 +389,20 @@ export default function MyProductsPage() {
                   <div className="flex flex-col gap-2">
                     <Link
                       href={`/products/${product.id}`}
-                      className="px-4 py-2 bg-tyrian-800 text-white rounded-lg hover:bg-tyrian-900 transition-colors text-sm font-medium text-center"
+                      className="px-4 py-2 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-colors text-sm font-medium text-center"
                     >
                       View
                     </Link>
                     <Link
                       href={`/products/${product.id}/edit`}
-                      className="px-4 py-2 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium text-center"
+                      className="px-4 py-2 bg-gray-100 text-gray-900 rounded-xl hover:bg-gray-200 transition-colors text-sm font-medium text-center"
                     >
                       Edit
                     </Link>
                     <button
                       onClick={() => handleDelete(product.id)}
                       disabled={deletingId === product.id}
-                      className="px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium disabled:opacity-50"
+                      className="px-4 py-2 bg-red-50 text-red-700 rounded-xl hover:bg-red-100 transition-colors text-sm font-medium disabled:opacity-50"
                     >
                       {deletingId === product.id ? "Deleting..." : "Delete"}
                     </button>
