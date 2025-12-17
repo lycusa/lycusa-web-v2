@@ -6,6 +6,7 @@ import { useAuth } from "./components/auth/AuthGuard";
 import LogoutButton from "./components/auth/LogoutButton";
 import { useState, useEffect } from "react";
 import { getUserProfile } from "./lib/api";
+import { AppBackground } from "./components/layout";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -32,7 +33,7 @@ export default function Home() {
   }, [isAuthenticated, user]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#DDDDDD] to-tyrian-50">
+    <AppBackground>
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -387,6 +388,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-    </div>
+    </AppBackground>
   );
 }

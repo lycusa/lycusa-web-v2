@@ -11,6 +11,7 @@ import {
   PaymentMethod,
   PlaceOrderRequest,
 } from "@/app/lib/types/order";
+import { AppBackground, Header } from "@/app/components/layout";
 
 function CheckoutContent() {
   const searchParams = useSearchParams();
@@ -158,15 +159,11 @@ function CheckoutContent() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
-        <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <h1 className="text-xl font-bold text-gray-900">Checkout</h1>
-          </div>
-        </header>
+      <AppBackground>
+        <Header />
         <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse space-y-6">
-            <div className="bg-white rounded-2xl p-6">
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6">
               <div className="h-6 w-48 bg-gray-200 rounded mb-4" />
               <div className="flex gap-4">
                 <div className="w-24 h-24 bg-gray-200 rounded-lg" />
@@ -178,51 +175,18 @@ function CheckoutContent() {
             </div>
           </div>
         </main>
-      </div>
+      </AppBackground>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-xl p-12 text-center max-w-md">
-          <svg
-            className="w-16 h-16 text-gray-400 mx-auto mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-            />
-          </svg>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Sign in to checkout
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Please sign in to complete your purchase.
-          </p>
-          <Link
-            href={`/signin?redirect=/checkout?productId=${productId}&quantity=${quantity}`}
-            className="inline-block px-6 py-3 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-colors font-medium"
-          >
-            Sign In
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (success && orderId) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-xl p-12 text-center max-w-md">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+      <AppBackground>
+        <Header />
+        <div className="flex items-center justify-center min-h-[80vh]">
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl p-12 text-center max-w-md">
             <svg
-              className="w-10 h-10 text-green-600"
+              className="w-16 h-16 text-gray-400 mx-auto mb-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -231,47 +195,36 @@ function CheckoutContent() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M5 13l4 4L19 7"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
               />
             </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Order Placed Successfully!
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Your order has been placed and is awaiting confirmation from the
-            seller.
-          </p>
-          <p className="text-sm text-gray-500 mb-6">
-            Order ID: <span className="font-mono">{orderId.slice(0, 12)}...</span>
-          </p>
-          <div className="flex gap-3">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Sign in to checkout
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Please sign in to complete your purchase.
+            </p>
             <Link
-              href={`/orders/${orderId}`}
-              className="flex-1 px-6 py-3 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-colors font-medium"
+              href={`/signin?redirect=/checkout?productId=${productId}&quantity=${quantity}`}
+              className="inline-block px-6 py-3 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-colors font-medium"
             >
-              View Order
-            </Link>
-            <Link
-              href="/products"
-              className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
-            >
-              Continue Shopping
+              Sign In
             </Link>
           </div>
         </div>
-      </div>
+      </AppBackground>
     );
   }
 
-  if (error && !product) {
+  if (success && orderId) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
-        <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <Link href="/products" className="flex items-center gap-2">
+      <AppBackground>
+        <Header />
+        <div className="flex items-center justify-center min-h-[80vh]">
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl p-12 text-center max-w-md">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg
-                className="w-5 h-5"
+                className="w-10 h-10 text-green-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -280,15 +233,46 @@ function CheckoutContent() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
+                  d="M5 13l4 4L19 7"
                 />
               </svg>
-              <span className="text-sm font-medium">Back to Products</span>
-            </Link>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              Order Placed Successfully!
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Your order has been placed and is awaiting confirmation from the
+              seller.
+            </p>
+            <p className="text-sm text-gray-500 mb-6">
+              Order ID: <span className="font-mono">{orderId.slice(0, 12)}...</span>
+            </p>
+            <div className="flex gap-3">
+              <Link
+                href={`/orders/${orderId}`}
+                className="flex-1 px-6 py-3 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-colors font-medium"
+              >
+                View Order
+              </Link>
+              <Link
+                href="/products"
+                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+              >
+                Continue Shopping
+              </Link>
+            </div>
           </div>
-        </header>
+        </div>
+      </AppBackground>
+    );
+  }
+
+  if (error && !product) {
+    return (
+      <AppBackground>
+        <Header />
         <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-red-50 border border-red-200 rounded-2xl p-12 text-center">
+          <div className="bg-red-50/80 backdrop-blur-xl border border-red-200 rounded-2xl p-12 text-center">
             <svg
               className="w-16 h-16 text-red-500 mx-auto mb-4"
               fill="none"
@@ -314,40 +298,14 @@ function CheckoutContent() {
             </Link>
           </div>
         </main>
-      </div>
+      </AppBackground>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
+    <AppBackground>
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center gap-4">
-            <Link
-              href={productId ? `/products/${productId}` : "/products"}
-              className="flex items-center gap-2 group"
-            >
-              <svg
-                className="w-5 h-5 group-hover:-translate-x-1 transition-transform"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              <span className="text-sm font-medium">Back</span>
-            </Link>
-            <div className="h-6 w-px bg-gray-300" />
-            <h1 className="text-xl font-bold text-gray-900">Checkout</h1>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -682,7 +640,7 @@ function CheckoutContent() {
           </div>
         </form>
       </main>
-    </div>
+    </AppBackground>
   );
 }
 
@@ -690,9 +648,12 @@ export default function CheckoutPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600" />
-        </div>
+        <AppBackground>
+          <Header />
+          <div className="flex items-center justify-center min-h-[80vh]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-tyrian-600" />
+          </div>
+        </AppBackground>
       }
     >
       <CheckoutContent />

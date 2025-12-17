@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { searchProducts } from "@/app/lib/api";
 import ProductCard from "@/app/components/products/ProductCard";
 import SearchBar from "@/app/components/products/SearchBar";
 import ProductFilters from "@/app/components/products/ProductFilters";
+import { AppBackground, Header } from "@/app/components/layout";
 import type { SearchQuery, SearchResult } from "@/app/lib/types/product";
 import { ProductType, ProductStatus } from "@/app/lib/types/product";
 
@@ -81,38 +81,9 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-tyrian-50">
+    <AppBackground>
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center gap-2 group">
-              <Image
-                src="/logos/tyrian-purple-with-word.svg"
-                alt="Lycusa"
-                width={140}
-                height={40}
-                className="h-10 w-auto"
-              />
-            </Link>
-
-            <nav className="flex items-center gap-3">
-              <Link
-                href="/my-products"
-                className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-lg"
-              >
-                My Products
-              </Link>
-              <Link
-                href="/products/new"
-                className="px-5 py-2 bg-tyrian-800 text-white rounded-lg hover:bg-tyrian-900 transition-all text-sm font-semibold shadow-md hover:shadow-lg"
-              >
-                Sell Product
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -288,11 +259,10 @@ export default function ProductsPage() {
                         <button
                           key={pageNum}
                           onClick={() => handlePageChange(pageNum)}
-                          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                            searchResult.page === pageNum
-                              ? "bg-tyrian-800 text-white"
-                              : "bg-white border border-gray-300 hover:bg-gray-50"
-                          }`}
+                          className={`px-4 py-2 rounded-lg font-medium transition-colors ${searchResult.page === pageNum
+                            ? "bg-tyrian-800 text-white"
+                            : "bg-white border border-gray-300 hover:bg-gray-50"
+                            }`}
                         >
                           {pageNum}
                         </button>
@@ -329,6 +299,6 @@ export default function ProductsPage() {
           </div>
         </div>
       </main>
-    </div>
+    </AppBackground>
   );
 }

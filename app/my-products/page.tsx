@@ -7,6 +7,7 @@ import { useAuth } from "@/app/components/auth/AuthGuard";
 import { searchProducts, deleteProduct } from "@/app/lib/api";
 import type { SearchResultItem } from "@/app/lib/types/product";
 import { ProductType, ProductStatus, ModerationStatus } from "@/app/lib/types/product";
+import { AppBackground, Header } from "@/app/components/layout";
 
 export default function MyProductsPage() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -74,17 +75,21 @@ export default function MyProductsPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#DDDDDD] to-zinc-50 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-tyrian-600 border-t-transparent rounded-full animate-spin"></div>
-      </div>
+      <AppBackground>
+        <Header />
+        <div className="flex items-center justify-center min-h-[80vh]">
+          <div className="w-12 h-12 border-4 border-tyrian-600 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      </AppBackground>
     );
   }
 
   if (!isAuthenticated || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#DDDDDD] to-zinc-50">
+      <AppBackground>
+        <Header />
         <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-12 text-center">
+          <div className="bg-yellow-50/80 backdrop-blur-xl border border-yellow-200 rounded-2xl p-12 text-center">
             <svg
               className="w-16 h-16 text-yellow-600 mx-auto mb-4"
               fill="none"
@@ -112,7 +117,7 @@ export default function MyProductsPage() {
             </Link>
           </div>
         </main>
-      </div>
+      </AppBackground>
     );
   }
 
@@ -120,49 +125,9 @@ export default function MyProductsPage() {
   const inactiveProducts = products.filter((p) => p.status === ProductStatus.INACTIVE);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#DDDDDD] to-zinc-50">
+    <AppBackground>
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-tyrian-800 to-tyrian-600 rounded-xl flex items-center justify-center shadow-md">
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-tyrian-800 to-tyrian-600 bg-clip-text text-transparent">
-                Lycusa
-              </span>
-            </Link>
-
-            <nav className="flex items-center gap-3">
-              <Link
-                href="/products"
-                className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium hover:bg-gray-100 rounded-xl"
-              >
-                Browse Products
-              </Link>
-              <Link
-                href="/products/new"
-                className="px-5 py-2 bg-gradient-to-r from-tyrian-800 to-tyrian-600 text-white rounded-xl hover:from-tyrian-900 hover:to-tyrian-700 transition-all text-sm font-semibold shadow-md hover:shadow-lg"
-              >
-                List New Product
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -413,6 +378,6 @@ export default function MyProductsPage() {
           </div>
         )}
       </main>
-    </div>
+    </AppBackground>
   );
 }

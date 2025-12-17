@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/app/components/auth/AuthGuard";
 import { getUserProfile, createUserProfile, getUserKycStatus, getUserByEmail, getUserByAddress } from "@/app/lib/api";
+import { AppBackground, Header } from "@/app/components/layout";
 
 interface UserProfile {
   userId: string;
@@ -98,20 +99,24 @@ export default function ProfilePage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#DDDDDD] to-zinc-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-tyrian-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading profile...</p>
+      <AppBackground>
+        <Header />
+        <div className="flex items-center justify-center min-h-[80vh]">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-tyrian-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading profile...</p>
+          </div>
         </div>
-      </div>
+      </AppBackground>
     );
   }
 
   if (showCreateProfile) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#DDDDDD] to-zinc-50">
+      <AppBackground>
+        <Header />
         <div className="max-w-2xl mx-auto px-4 py-16">
-          <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 text-center">
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 md:p-12 text-center">
             <div className="w-20 h-20 bg-gradient-to-br from-gray-200 to-tyrian-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg
                 className="w-10 h-10 text-tyrian-600"
@@ -143,39 +148,42 @@ export default function ProfilePage() {
             </Link>
           </div>
         </div>
-      </div>
+      </AppBackground>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md mx-4 text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg
-              className="w-8 h-8 text-red-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+      <AppBackground>
+        <Header />
+        <div className="flex items-center justify-center min-h-[80vh]">
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl p-8 max-w-md mx-4 text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg
+                className="w-8 h-8 text-red-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Error</h2>
+            <p className="text-gray-600 mb-6">{error}</p>
+            <button
+              onClick={loadProfile}
+              className="px-6 py-2 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-colors"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+              Try Again
+            </button>
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Error</h2>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <button
-            onClick={loadProfile}
-            className="px-6 py-2 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-colors"
-          >
-            Try Again
-          </button>
         </div>
-      </div>
+      </AppBackground>
     );
   }
 
@@ -184,55 +192,9 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-[#DDDDDD] to-zinc-50">
+    <AppBackground>
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-tyrian-800 to-tyrian-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-tyrian-800 to-tyrian-600 bg-clip-text text-transparent">
-                Lycusa
-              </span>
-            </Link>
-
-            <div className="flex gap-3">
-              <Link
-                href="/orders"
-                className="px-4 py-2 bg-gradient-to-r from-tyrian-700 to-pink-700 text-white rounded-xl hover:from-tyrian-800 hover:to-pink-800 transition-all text-sm font-medium shadow-md hover:shadow-lg"
-              >
-                My Orders
-              </Link>
-              <Link
-                href="/kyc"
-                className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all text-sm font-medium shadow-md hover:shadow-lg"
-              >
-                KYC Verification
-              </Link>
-              <Link
-                href="/profile/edit"
-                className="px-4 py-2 bg-gradient-to-r from-tyrian-800 to-tyrian-600 text-white rounded-xl hover:from-tyrian-900 hover:to-tyrian-700 transition-all text-sm font-medium shadow-md hover:shadow-lg"
-              >
-                Edit Profile
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -489,6 +451,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </main>
-    </div>
+    </AppBackground>
   );
 }
