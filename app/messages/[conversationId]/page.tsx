@@ -1,6 +1,7 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/components/auth/AuthGuard";
 import { useConversation, useE2EEKeys } from "@/app/hooks/useMessaging";
 import { useUserProfile } from "@/app/hooks/useUser";
@@ -15,7 +16,8 @@ interface PageProps {
 }
 
 export default function ChatPage({ params }: PageProps) {
-    const { conversationId } = use(params);
+    const { conversationId: urlParam } = use(params);
+    const router = useRouter();
     const { user, isAuthenticated } = useAuth();
     const {
         conversation,
@@ -27,7 +29,19 @@ export default function ChatPage({ params }: PageProps) {
         sendMessage,
         sendMedia,
         isConnected,
-    } = useConversation(conversationId);
+    } = useConversation(urlParam);
+
+    // Redirect if URL contains order_id instead of conversation_id
+    // This ensures the URL always reflects the actual conversation ID
+    useEffect(() => {
+        if (conversation && conversation.id !== urlParam) {
+            // URL has order_id, redirect to proper conversation_id URL
+            router.replace(`/messages/${conversation.id}`);
+        }
+    }, [conversation, urlParam, router]);
+
+    // Use actual conversation ID for components (handles both direct access and order_id access)
+    const conversationId = conversation?.id || urlParam;
 
     const { isInitialized: keysInitialized, error: keysError } = useE2EEKeys();
 
