@@ -104,9 +104,9 @@ export default function UpdateStatusModal({
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-tyrian-100 flex items-center justify-center">
                 <svg
-                  className="w-5 h-5 text-blue-600"
+                  className="w-5 h-5 text-tyrian-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -242,7 +242,7 @@ export default function UpdateStatusModal({
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Add any notes about this update..."
                     rows={2}
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none transition-colors"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-tyrian-500/20 focus:border-tyrian-500 resize-none transition-colors"
                     disabled={loading}
                   />
                 </div>
@@ -281,7 +281,7 @@ export default function UpdateStatusModal({
                 <button
                   type="submit"
                   disabled={loading || !selectedStatus}
-                  className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-tyrian-800 rounded-lg hover:bg-tyrian-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>

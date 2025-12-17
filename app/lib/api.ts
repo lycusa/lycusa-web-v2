@@ -428,6 +428,44 @@ export const getConversationByOrderId = async (
   }
 };
 
+// Get conversation by order ID with retry logic
+// Useful when conversation might not be created yet (Kafka event processing delay)
+export const getConversationByOrderIdWithRetry = async (
+  orderId: string,
+  maxRetries: number = 3,
+  retryDelayMs: number = 1000
+): Promise<Conversation | null> => {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    // Force refresh on retry attempts to bypass cache
+    const forceRefresh = attempt > 0;
+
+    try {
+      if (forceRefresh) {
+        // Force refresh the conversations list
+        const conversations = await listConversations(true);
+        const conv = conversations.find((c) => c.order_id === orderId);
+        if (conv) {
+          return conv;
+        }
+      } else {
+        const conv = await getConversationByOrderId(orderId);
+        if (conv) {
+          return conv;
+        }
+      }
+    } catch (error) {
+      console.error(`Attempt ${attempt + 1} failed to get conversation:`, error);
+    }
+
+    // Wait before retrying (except on last attempt)
+    if (attempt < maxRetries) {
+      await new Promise(resolve => setTimeout(resolve, retryDelayMs));
+    }
+  }
+
+  return null;
+};
+
 // ===== Public Key API =====
 
 // Upload user's public key for E2EE

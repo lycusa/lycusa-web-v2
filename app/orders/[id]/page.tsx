@@ -12,7 +12,7 @@ import {
   getUserProfile,
   getProduct,
   submitRating,
-  getConversationByOrderId,
+  getConversationByOrderIdWithRetry,
 } from "@/app/lib/api";
 import {
   Order,
@@ -57,6 +57,8 @@ export default function OrderDetailPage() {
   const [hasRated, setHasRated] = useState(false);
   const [submittedRating, setSubmittedRating] = useState<number | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [contactLoading, setContactLoading] = useState(false);
+  const [contactError, setContactError] = useState<string | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
@@ -78,9 +80,9 @@ export default function OrderDetailPage() {
       if (response) {
         setOrder(response);
 
-        // Fetch conversation
+        // Fetch conversation (single attempt, no retry needed on initial load)
         try {
-          const conv = await getConversationByOrderId(response.id);
+          const conv = await getConversationByOrderIdWithRetry(response.id, 0, 0);
           if (conv) {
             setConversationId(conv.id);
           }
@@ -205,10 +207,28 @@ export default function OrderDetailPage() {
       return;
     }
 
-    // Fallback: Use Order ID as Conversation ID (channel: room:<order_id>)
-    // The backend should handle handling the room join via WebSocket
-    if (order) {
-      router.push(`/messages/${order.id}`);
+    if (!order) return;
+
+    // Try to find conversation with retry logic
+    // This handles cases where the Kafka event hasn't been processed yet
+    setContactLoading(true);
+    setContactError(null);
+
+    try {
+      const conv = await getConversationByOrderIdWithRetry(order.id, 3, 1000);
+
+      if (conv) {
+        setConversationId(conv.id);
+        router.push(`/messages/${conv.id}`);
+      } else {
+        // Conversation not found after retries - show error
+        setContactError("Chat not available yet. Please try again in a moment.");
+      }
+    } catch (err) {
+      console.error("Error finding conversation:", err);
+      setContactError("Failed to open chat. Please try again.");
+    } finally {
+      setContactLoading(false);
     }
   };
 
@@ -240,7 +260,7 @@ export default function OrderDetailPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50 flex items-center justify-center">
         <div className="bg-white rounded-xl border border-gray-200 p-8 text-center max-w-sm">
           <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
             <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -425,7 +445,7 @@ export default function OrderDetailPage() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <Link href={`/products/${item.product_id}`} className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors">
+                          <Link href={`/products/${item.product_id}`} className="text-sm font-medium text-gray-900 hover:text-tyrian-600 transition-colors">
                             {product?.name || `Product #${item.product_id.slice(0, 8)}`}
                           </Link>
                           <p className="text-xs text-gray-500 mt-0.5">
@@ -509,7 +529,7 @@ export default function OrderDetailPage() {
                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93s3.05-7.44 7-7.93v15.86zm2-15.86c1.03.13 2 .45 2.87.93H13v-.93zM13 7h5.24c.25.31.48.65.68 1H13V7zm0 3h6.74c.08.33.15.66.19 1H13v-1zm0 9.93V19h2.87c-.87.48-1.84.8-2.87.93zM18.24 17H13v-1h5.92c-.2.35-.43.69-.68 1zm1.5-3H13v-1h6.93c-.04.34-.11.67-.19 1z" />
                         </svg>
                       ) : (
-                        <svg className="w-4 h-4 text-indigo-500" viewBox="0 0 24 24" fill="currentColor">
+                        <svg className="w-4 h-4 text-brand-500" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
                         </svg>
                       )}
@@ -556,13 +576,36 @@ export default function OrderDetailPage() {
                     {/* Message Button - Always visible */}
                     <button
                       onClick={handleContact}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors"
+                      disabled={contactLoading}
+                      className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${contactLoading
+                        ? "text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed"
+                        : "text-brand-700 bg-brand-50 border border-brand-200 hover:bg-brand-100"
+                        }`}
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
-                      {conversationId ? "Continue Chat" : (isBuyer ? "Contact Seller" : "Contact Buyer")}
+                      {contactLoading ? (
+                        <>
+                          <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                          Opening chat...
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                          </svg>
+                          {conversationId ? "Continue Chat" : (isBuyer ? "Contact Seller" : "Contact Buyer")}
+                        </>
+                      )}
                     </button>
+
+                    {/* Contact Error Message */}
+                    {contactError && (
+                      <div className="px-3 py-2 text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg">
+                        {contactError}
+                      </div>
+                    )}
 
                     {/* Rate Order Button - only for buyer when order is completed */}
                     {isBuyer && order.status === OrderStatus.COMPLETED && !hasRated && (
@@ -605,16 +648,16 @@ export default function OrderDetailPage() {
                 <div className="p-4 space-y-4">
                   {/* Buyer */}
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium text-sm">
+                    <div className="w-10 h-10 bg-tyrian-100 rounded-full flex items-center justify-center text-tyrian-600 font-medium text-sm">
                       {buyerProfile?.username?.[0]?.toUpperCase() || "B"}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <Link href={`/users/${order.buyer_id}`} className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors truncate">
+                        <Link href={`/users/${order.buyer_id}`} className="text-sm font-medium text-gray-900 hover:text-tyrian-600 transition-colors truncate">
                           {buyerProfile?.username || "Buyer"}
                         </Link>
                         {isBuyer && (
-                          <span className="px-1.5 py-0.5 text-xs font-medium text-blue-700 bg-blue-100 rounded">You</span>
+                          <span className="px-1.5 py-0.5 text-xs font-medium text-tyrian-700 bg-tyrian-100 rounded">You</span>
                         )}
                       </div>
                       <p className="text-xs text-gray-500">Buyer</p>
@@ -628,7 +671,7 @@ export default function OrderDetailPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <Link href={`/users/${order.seller_id}`} className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors truncate">
+                        <Link href={`/users/${order.seller_id}`} className="text-sm font-medium text-gray-900 hover:text-brand-600 transition-colors truncate">
                           {sellerProfile?.username || "Seller"}
                         </Link>
                         {isSeller && (

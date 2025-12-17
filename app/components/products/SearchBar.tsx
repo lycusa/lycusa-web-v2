@@ -76,7 +76,7 @@ export default function SearchBar({ onSearch, initialQuery = "" }: SearchBarProp
             }}
             onFocus={() => setShowSuggestions(true)}
             placeholder="Search for clothing, shoes, accessories..."
-            className="w-full px-5 py-4 pl-14 pr-14 text-gray-900 bg-white border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all shadow-sm"
+            className="w-full px-5 py-4 pl-14 pr-14 text-gray-900 bg-white border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-tyrian-500 focus:ring-2 focus:ring-tyrian-200 transition-all shadow-sm"
           />
 
           {/* Search Icon */}
@@ -99,7 +99,7 @@ export default function SearchBar({ onSearch, initialQuery = "" }: SearchBarProp
           {/* Loading Spinner */}
           {isLoading && (
             <div className="absolute right-14 top-1/2 -translate-y-1/2">
-              <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-5 h-5 border-2 border-tyrian-800 border-t-transparent rounded-full animate-spin"></div>
             </div>
           )}
 
@@ -143,10 +143,10 @@ export default function SearchBar({ onSearch, initialQuery = "" }: SearchBarProp
               key={index}
               type="button"
               onClick={() => handleSuggestionClick(suggestion)}
-              className="w-full px-5 py-3 text-left hover:bg-blue-50 transition-colors flex items-center gap-3 group"
+              className="w-full px-5 py-3 text-left hover:bg-tyrian-50 transition-colors flex items-center gap-3 group"
             >
               <svg
-                className="w-4 h-4 text-gray-400 group-hover:text-blue-600"
+                className="w-4 h-4 text-gray-400 group-hover:text-tyrian-800"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

@@ -37,7 +37,7 @@ export default function MessageBubble({ message, isOwn, isFirstInGroup, isLastIn
                         relative px-4 py-3 overflow-hidden shadow-sm
                         ${roundedClass}
                         ${isOwn
-                            ? "bg-gradient-to-br from-indigo-600 to-indigo-700 text-white"
+                            ? "bg-gradient-to-br from-tyrian-700 to-tyrian-800 text-white"
                             : "bg-white text-gray-900 border border-gray-100"
                         }
                     `}
@@ -71,7 +71,7 @@ export default function MessageBubble({ message, isOwn, isFirstInGroup, isLastIn
 
                     {/* Text Content */}
                     {message.decryptedContent ? (
-                        <p className={`text-[15px] leading-relaxed break-words whitespace-pre-wrap ${isOwn ? "text-indigo-50" : "text-gray-800"}`}>
+                        <p className={`text-[15px] leading-relaxed break-words whitespace-pre-wrap ${isOwn ? "text-tyrian-50" : "text-gray-800"}`}>
                             {message.decryptedContent}
                         </p>
                     ) : message.decryptionFailed ? (

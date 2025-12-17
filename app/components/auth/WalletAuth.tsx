@@ -242,9 +242,9 @@ export default function WalletAuth({ onSuccess, onError }: WalletAuthProps) {
       )}
 
       {walletAddress && !loading && (
-        <div className="p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="p-4 bg-gradient-to-r from-brand-50 to-tyrian-50 border border-brand-200 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shrink-0">
               <svg
                 className="w-5 h-5 text-white"
                 fill="none"
@@ -260,10 +260,10 @@ export default function WalletAuth({ onSuccess, onError }: WalletAuthProps) {
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-purple-900 mb-0.5">
+              <p className="text-xs font-medium text-brand-900 mb-0.5">
                 Connected Wallet
               </p>
-              <p className="text-sm font-mono text-purple-700 truncate">
+              <p className="text-sm font-mono text-brand-700 truncate">
                 {walletAddress}
               </p>
             </div>
@@ -289,9 +289,9 @@ export default function WalletAuth({ onSuccess, onError }: WalletAuthProps) {
       )}
 
       {message && !error && (
-        <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="p-4 bg-brand-50 border border-brand-200 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
           <svg
-            className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"
+            className="w-5 h-5 text-brand-600 mt-0.5 flex-shrink-0"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -301,7 +301,7 @@ export default function WalletAuth({ onSuccess, onError }: WalletAuthProps) {
               clipRule="evenodd"
             />
           </svg>
-          <p className="text-sm text-blue-800 font-medium">{message}</p>
+          <p className="text-sm text-brand-800 font-medium">{message}</p>
         </div>
       )}
 
@@ -309,7 +309,7 @@ export default function WalletAuth({ onSuccess, onError }: WalletAuthProps) {
         <button
           onClick={handleWalletAuth}
           disabled={loading}
-          className="relative w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3.5 px-6 rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 hover:-translate-y-0.5 active:translate-y-0 disabled:shadow-none disabled:translate-y-0 group"
+          className="relative w-full bg-tyrian-800 text-white py-3.5 px-6 rounded-xl font-semibold hover:bg-tyrian-900 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-tyrian-900/30 hover:shadow-xl hover:shadow-tyrian-900/40 hover:-translate-y-0.5 active:translate-y-0 disabled:shadow-none disabled:translate-y-0 group"
         >
           {loading ? (
             <span className="flex items-center justify-center gap-3">

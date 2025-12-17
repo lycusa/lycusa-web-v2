@@ -148,11 +148,10 @@ export default function RatingModal({
                       disabled={loading}
                     >
                       <svg
-                        className={`w-12 h-12 transition-colors ${
-                          star <= displayRating
+                        className={`w-12 h-12 transition-colors ${star <= displayRating
                             ? "text-amber-400 fill-amber-400"
                             : "text-gray-300 fill-gray-300"
-                        }`}
+                          }`}
                         viewBox="0 0 24 24"
                       >
                         <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
@@ -164,15 +163,14 @@ export default function RatingModal({
                 {/* Rating Text */}
                 <div className="text-center min-h-[28px]">
                   <p
-                    className={`text-lg font-semibold transition-colors ${
-                      displayRating > 0
+                    className={`text-lg font-semibold transition-colors ${displayRating > 0
                         ? displayRating >= 4
                           ? "text-emerald-600"
                           : displayRating >= 3
-                          ? "text-blue-600"
-                          : "text-amber-600"
+                            ? "text-brand-600"
+                            : "text-amber-600"
                         : "text-gray-400"
-                    }`}
+                      }`}
                   >
                     {getRatingText(displayRating)}
                   </p>

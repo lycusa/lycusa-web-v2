@@ -126,9 +126,9 @@ export default function EditProfilePage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
@@ -136,13 +136,13 @@ export default function EditProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+              <div className="w-10 h-10 bg-gradient-to-br from-tyrian-800 to-brand-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
                 <svg
                   className="w-6 h-6 text-white"
                   fill="none"
@@ -157,7 +157,7 @@ export default function EditProfilePage() {
                   />
                 </svg>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-tyrian-800 to-brand-600 bg-clip-text text-transparent">
                 Lycusa
               </span>
             </Link>
@@ -189,7 +189,7 @@ export default function EditProfilePage() {
             {isNewProfile && (
               <div className="flex items-center gap-4 pt-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold">
+                  <div className="w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center text-sm font-bold">
                     1
                   </div>
                   <span className="text-sm font-medium text-gray-900">
@@ -303,7 +303,7 @@ export default function EditProfilePage() {
                 value={formData.username}
                 onChange={handleInputChange}
                 placeholder="Enter your username"
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
                 required
               />
             </div>
@@ -323,7 +323,7 @@ export default function EditProfilePage() {
                 onChange={handleInputChange}
                 placeholder="Tell us about yourself..."
                 rows={4}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500 resize-none"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500 resize-none"
               />
               <p className="text-xs text-gray-500 mt-1">
                 {formData.bio.length} characters
@@ -345,7 +345,7 @@ export default function EditProfilePage() {
                 value={formData.avatarUrl}
                 onChange={handleInputChange}
                 placeholder="https://example.com/avatar.jpg"
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
               />
               <p className="text-xs text-gray-500 mt-1">
                 Enter a URL to your profile picture
@@ -357,7 +357,7 @@ export default function EditProfilePage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex-1 px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                className="flex-1 px-6 py-4 bg-gradient-to-r from-tyrian-800 to-brand-600 text-white rounded-xl hover:from-tyrian-900 hover:to-brand-700 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
               >
                 {saving ? (
                   <span className="flex items-center justify-center gap-2">

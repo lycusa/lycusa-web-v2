@@ -57,7 +57,7 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
         <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <Link href="/products" className="flex items-center gap-2">
@@ -98,7 +98,7 @@ export default function ProductDetailPage() {
 
   if (error || !product) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
         <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <Link href="/products" className="flex items-center gap-2">
@@ -141,7 +141,7 @@ export default function ProductDetailPage() {
             <p className="text-gray-600 mb-6">{error}</p>
             <Link
               href="/products"
-              className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              className="inline-block px-6 py-3 bg-tyrian-800 text-white rounded-lg hover:bg-tyrian-900 transition-colors font-medium"
             >
               Browse Products
             </Link>
@@ -158,7 +158,7 @@ export default function ProductDetailPage() {
   const isActive = product.status === ProductStatus.ACTIVE;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -183,7 +183,7 @@ export default function ProductDetailPage() {
             {isOwner && (
               <Link
                 href={`/products/${productId}/edit`}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                className="px-4 py-2 bg-tyrian-800 text-white rounded-lg hover:bg-tyrian-900 transition-colors text-sm font-medium"
               >
                 Edit Product
               </Link>
@@ -240,11 +240,10 @@ export default function ProductDetailPage() {
                   <button
                     key={media.id}
                     onClick={() => setSelectedImageIndex(index)}
-                    className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                      selectedImageIndex === index
-                        ? "border-blue-600 shadow-lg"
+                    className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${selectedImageIndex === index
+                        ? "border-brand-600 shadow-lg"
                         : "border-gray-200 hover:border-gray-300"
-                    }`}
+                      }`}
                   >
                     <Image
                       src={media.url}
@@ -263,7 +262,7 @@ export default function ProductDetailPage() {
           <div className="space-y-6">
             {/* Category */}
             <div>
-              <span className="inline-block px-3 py-1 bg-blue-50 text-blue-700 text-sm font-semibold rounded-lg border border-blue-200">
+              <span className="inline-block px-3 py-1 bg-brand-50 text-brand-700 text-sm font-semibold rounded-lg border border-brand-200">
                 {product.category}
               </span>
             </div>
@@ -340,13 +339,13 @@ export default function ProductDetailPage() {
             <div className="border-t border-gray-200 pt-6">
               <h2 className="text-lg font-bold text-gray-900 mb-3">Seller</h2>
               <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                <div className="w-12 h-12 bg-gradient-to-br from-tyrian-800 to-brand-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
                   {sellerProfile?.username?.[0]?.toUpperCase() || "S"}
                 </div>
                 <div className="flex-1">
                   <Link
                     href={`/users/${product.seller_id}`}
-                    className="font-semibold text-gray-900 hover:text-blue-600 transition-colors"
+                    className="font-semibold text-gray-900 hover:text-brand-600 transition-colors"
                   >
                     {sellerProfile?.username || "Seller"}
                   </Link>
@@ -381,7 +380,7 @@ export default function ProductDetailPage() {
                   </svg>
                   Buy Now
                 </button>
-                <button className="w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                <button className="w-full px-8 py-4 bg-gradient-to-r from-tyrian-800 to-brand-600 text-white rounded-xl hover:from-tyrian-900 hover:to-brand-700 transition-all font-semibold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5">
                   Contact Seller
                 </button>
                 <button className="w-full px-8 py-4 bg-white text-gray-900 border-2 border-gray-300 rounded-xl hover:border-gray-400 hover:bg-gray-50 transition-all font-semibold">

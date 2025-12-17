@@ -22,18 +22,18 @@ export default function ConversationCard({ conversation, currentUserId }: Props)
 
     // Get the OTHER user's ID (not the current user)
     const otherUserId = isUserOne ? conversation.user_two_id :
-                        isUserTwo ? conversation.user_one_id :
-                        // Fallback: if current user doesn't match either, default to user_two
-                        conversation.user_two_id;
+        isUserTwo ? conversation.user_one_id :
+            // Fallback: if current user doesn't match either, default to user_two
+            conversation.user_two_id;
 
     const { profile, loading } = useUserProfile(otherUserId);
 
     // Generate avatar gradient based on user ID
     const gradientIndex = otherUserId.charCodeAt(0) % 5;
     const gradients = [
-        'from-indigo-500 to-purple-600',
+        'from-brand-500 to-tyrian-600',
         'from-pink-500 to-rose-600',
-        'from-cyan-500 to-blue-600',
+        'from-cyan-500 to-brand-600',
         'from-emerald-500 to-teal-600',
         'from-amber-500 to-orange-600',
     ];
@@ -60,7 +60,7 @@ export default function ConversationCard({ conversation, currentUserId }: Props)
                 {/* Content */}
                 <div className="flex-1 min-w-0 py-0.5">
                     <div className="flex justify-between items-start mb-0.5">
-                        <h3 className="text-sm font-bold text-gray-900 truncate pr-2 group-hover:text-indigo-600 transition-colors">
+                        <h3 className="text-sm font-bold text-gray-900 truncate pr-2 group-hover:text-brand-600 transition-colors">
                             {displayName}
                         </h3>
                         {conversation.last_message_at && (
@@ -72,7 +72,7 @@ export default function ConversationCard({ conversation, currentUserId }: Props)
 
                     {/* Order Badge */}
                     <div className="flex items-center gap-1.5 mb-1.5">
-                        <span className="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded text-[10px] font-bold border border-indigo-100 uppercase tracking-wide">
+                        <span className="px-1.5 py-0.5 bg-brand-50 text-brand-700 rounded text-[10px] font-bold border border-brand-100 uppercase tracking-wide">
                             Order #{conversation.order_id.slice(0, 8)}
                         </span>
                     </div>
@@ -82,7 +82,7 @@ export default function ConversationCard({ conversation, currentUserId }: Props)
                             <span className="text-gray-300 mr-1">•</span>
                             Tap to view message
                         </p>
-                        <ChevronRightIcon className="w-3.5 h-3.5 text-gray-300 group-hover:text-indigo-400 transition-colors flex-shrink-0" />
+                        <ChevronRightIcon className="w-3.5 h-3.5 text-gray-300 group-hover:text-brand-400 transition-colors flex-shrink-0" />
                     </div>
                 </div>
             </div>

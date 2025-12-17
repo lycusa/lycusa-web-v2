@@ -86,7 +86,7 @@ export default function MessageInput({ onSendMessage, onSendMedia, disabled }: P
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={disabled || sending || !!mediaFile}
-                        className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all disabled:opacity-50"
+                        className="p-2 text-gray-400 hover:text-tyrian-600 hover:bg-tyrian-50 rounded-full transition-all disabled:opacity-50"
                         title="Attach image or video"
                     >
                         <PhotoIcon className="w-6 h-6" />
@@ -101,7 +101,7 @@ export default function MessageInput({ onSendMessage, onSendMedia, disabled }: P
                 </div>
 
                 {/* Input Area */}
-                <div className="flex-1 relative bg-gray-50 rounded-2xl border border-gray-200 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500 transition-all">
+                <div className="flex-1 relative bg-gray-50 rounded-2xl border border-gray-200 focus-within:border-tyrian-500 focus-within:ring-1 focus-within:ring-tyrian-500 transition-all">
                     <textarea
                         ref={textareaRef}
                         value={message}
@@ -127,7 +127,7 @@ export default function MessageInput({ onSendMessage, onSendMedia, disabled }: P
                         mb-1.5 p-2.5 rounded-full shadow-sm transition-all duration-200
                         ${(!message.trim() && !mediaFile) || disabled || sending
                             ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                            : "bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-md hover:scale-105 active:scale-95"
+                            : "bg-tyrian-600 text-white hover:bg-tyrian-700 hover:shadow-md hover:scale-105 active:scale-95"
                         }
                     `}
                 >

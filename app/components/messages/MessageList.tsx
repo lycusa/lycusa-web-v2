@@ -24,8 +24,8 @@ export default function MessageList({ messages, currentUserId }: Props) {
         >
             {messages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center p-8 opacity-0 animate-in fade-in duration-500 fill-mode-forwards delay-150">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-indigo-50 to-white shadow-sm border border-indigo-100 flex items-center justify-center mb-6">
-                        <ChatBubbleLeftEllipsisIcon className="w-10 h-10 text-indigo-300" />
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-brand-50 to-white shadow-sm border border-brand-100 flex items-center justify-center mb-6">
+                        <ChatBubbleLeftEllipsisIcon className="w-10 h-10 text-brand-300" />
                     </div>
                     <h3 className="text-gray-900 font-semibold mb-2 text-lg">Start the conversation</h3>
                     <p className="text-gray-500 text-sm text-center max-w-[280px] mb-8 leading-relaxed">

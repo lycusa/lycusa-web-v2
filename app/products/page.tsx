@@ -6,6 +6,7 @@ import { searchProducts } from "@/app/lib/api";
 import ProductCard from "@/app/components/products/ProductCard";
 import SearchBar from "@/app/components/products/SearchBar";
 import ProductFilters from "@/app/components/products/ProductFilters";
+import { AppBackground, Header } from "@/app/components/layout";
 import type { SearchQuery, SearchResult } from "@/app/lib/types/product";
 import { ProductType, ProductStatus } from "@/app/lib/types/product";
 
@@ -80,49 +81,9 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <AppBackground>
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Lycusa
-              </span>
-            </Link>
-
-            <nav className="flex items-center gap-3">
-              <Link
-                href="/my-products"
-                className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium hover:bg-gray-100 rounded-lg"
-              >
-                My Products
-              </Link>
-              <Link
-                href="/products/new"
-                className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all text-sm font-semibold shadow-md hover:shadow-lg"
-              >
-                Sell Product
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -253,7 +214,7 @@ export default function ProductsPage() {
                       sort_order: "desc",
                     });
                   }}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  className="px-6 py-3 bg-tyrian-800 text-white rounded-lg hover:bg-tyrian-900 transition-colors font-medium"
                 >
                   Clear All Filters
                 </button>
@@ -298,11 +259,10 @@ export default function ProductsPage() {
                         <button
                           key={pageNum}
                           onClick={() => handlePageChange(pageNum)}
-                          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                            searchResult.page === pageNum
-                              ? "bg-blue-600 text-white"
-                              : "bg-white border border-gray-300 hover:bg-gray-50"
-                          }`}
+                          className={`px-4 py-2 rounded-lg font-medium transition-colors ${searchResult.page === pageNum
+                            ? "bg-tyrian-800 text-white"
+                            : "bg-white border border-gray-300 hover:bg-gray-50"
+                            }`}
                         >
                           {pageNum}
                         </button>
@@ -339,6 +299,6 @@ export default function ProductsPage() {
           </div>
         </div>
       </main>
-    </div>
+    </AppBackground>
   );
 }

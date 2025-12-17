@@ -7,6 +7,7 @@ import { useAuth } from "@/app/components/auth/AuthGuard";
 import { searchProducts, deleteProduct } from "@/app/lib/api";
 import type { SearchResultItem } from "@/app/lib/types/product";
 import { ProductType, ProductStatus, ModerationStatus } from "@/app/lib/types/product";
+import { AppBackground, Header } from "@/app/components/layout";
 
 export default function MyProductsPage() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -74,17 +75,21 @@ export default function MyProductsPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-      </div>
+      <AppBackground>
+        <Header />
+        <div className="flex items-center justify-center min-h-[80vh]">
+          <div className="w-12 h-12 border-4 border-tyrian-600 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      </AppBackground>
     );
   }
 
   if (!isAuthenticated || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <AppBackground>
+        <Header />
         <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-12 text-center">
+          <div className="bg-yellow-50/80 backdrop-blur-xl border border-yellow-200 rounded-2xl p-12 text-center">
             <svg
               className="w-16 h-16 text-yellow-600 mx-auto mb-4"
               fill="none"
@@ -106,13 +111,13 @@ export default function MyProductsPage() {
             </p>
             <Link
               href="/signin"
-              className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              className="inline-block px-6 py-3 bg-tyrian-800 text-white rounded-lg hover:bg-tyrian-900 transition-colors font-medium"
             >
               Sign In
             </Link>
           </div>
         </main>
-      </div>
+      </AppBackground>
     );
   }
 
@@ -120,49 +125,9 @@ export default function MyProductsPage() {
   const inactiveProducts = products.filter((p) => p.status === ProductStatus.INACTIVE);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <AppBackground>
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Lycusa
-              </span>
-            </Link>
-
-            <nav className="flex items-center gap-3">
-              <Link
-                href="/products"
-                className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium hover:bg-gray-100 rounded-lg"
-              >
-                Browse Products
-              </Link>
-              <Link
-                href="/products/new"
-                className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all text-sm font-semibold shadow-md hover:shadow-lg"
-              >
-                List New Product
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -178,9 +143,9 @@ export default function MyProductsPage() {
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-zinc-100 rounded-xl flex items-center justify-center">
                 <svg
-                  className="w-6 h-6 text-blue-600"
+                  className="w-6 h-6 text-zinc-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -298,7 +263,7 @@ export default function MyProductsPage() {
             </p>
             <Link
               href="/products/new"
-              className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              className="inline-block px-6 py-3 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-colors font-medium"
             >
               List Your First Product
             </Link>
@@ -333,7 +298,7 @@ export default function MyProductsPage() {
                   {/* Product Info */}
                   <div className="md:col-span-2 space-y-2">
                     <div className="flex items-start gap-2">
-                      <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded">
+                      <span className="px-2 py-1 bg-zinc-100 text-zinc-700 text-xs font-semibold rounded">
                         {product.category}
                       </span>
                       {product.status === ProductStatus.ACTIVE ? (
@@ -389,20 +354,20 @@ export default function MyProductsPage() {
                   <div className="flex flex-col gap-2">
                     <Link
                       href={`/products/${product.id}`}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium text-center"
+                      className="px-4 py-2 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-colors text-sm font-medium text-center"
                     >
                       View
                     </Link>
                     <Link
                       href={`/products/${product.id}/edit`}
-                      className="px-4 py-2 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium text-center"
+                      className="px-4 py-2 bg-gray-100 text-gray-900 rounded-xl hover:bg-gray-200 transition-colors text-sm font-medium text-center"
                     >
                       Edit
                     </Link>
                     <button
                       onClick={() => handleDelete(product.id)}
                       disabled={deletingId === product.id}
-                      className="px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium disabled:opacity-50"
+                      className="px-4 py-2 bg-red-50 text-red-700 rounded-xl hover:bg-red-100 transition-colors text-sm font-medium disabled:opacity-50"
                     >
                       {deletingId === product.id ? "Deleting..." : "Delete"}
                     </button>
@@ -413,6 +378,6 @@ export default function MyProductsPage() {
           </div>
         )}
       </main>
-    </div>
+    </AppBackground>
   );
 }

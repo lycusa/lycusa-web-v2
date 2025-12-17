@@ -81,7 +81,7 @@ export default function ProductFilters({
         <span className="flex items-center gap-2">
           Filters
           {activeFilterCount > 0 && (
-            <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded-full">
+            <span className="px-2 py-1 bg-tyrian-800 text-white text-xs rounded-full">
               {activeFilterCount}
             </span>
           )}
@@ -109,7 +109,7 @@ export default function ProductFilters({
           {activeFilterCount > 0 && (
             <button
               onClick={resetFilters}
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              className="text-sm text-tyrian-800 hover:text-tyrian-900 font-medium"
             >
               Clear All
             </button>
@@ -124,7 +124,7 @@ export default function ProductFilters({
           <select
             value={filters.sort_by}
             onChange={(e) => updateFilter("sort_by", e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tyrian-500"
           >
             <option value="relevance">Relevance</option>
             <option value="created_at">Date Added</option>
@@ -143,7 +143,7 @@ export default function ProductFilters({
               onClick={() => updateFilter("sort_order", "desc")}
               className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
                 filters.sort_order === "desc"
-                  ? "bg-blue-600 text-white"
+                  ? "bg-tyrian-800 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
@@ -153,7 +153,7 @@ export default function ProductFilters({
               onClick={() => updateFilter("sort_order", "asc")}
               className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
                 filters.sort_order === "asc"
-                  ? "bg-blue-600 text-white"
+                  ? "bg-tyrian-800 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
@@ -177,7 +177,7 @@ export default function ProductFilters({
                   type="checkbox"
                   checked={filters.categories.includes(category)}
                   onChange={() => toggleCategory(category)}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                  className="w-4 h-4 text-tyrian-800 rounded focus:ring-2 focus:ring-tyrian-500"
                 />
                 <span className="text-sm text-gray-700 group-hover:text-gray-900">
                   {category}
@@ -197,7 +197,7 @@ export default function ProductFilters({
               <select
                 value={filters.currency}
                 onChange={(e) => updateFilter("currency", e.target.value)}
-                className="w-24 px-2 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-24 px-2 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tyrian-500"
               >
                 {CURRENCIES.map((curr) => (
                   <option key={curr} value={curr}>
@@ -215,7 +215,7 @@ export default function ProductFilters({
                     e.target.value ? parseFloat(e.target.value) : undefined
                   )
                 }
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tyrian-500"
               />
             </div>
             <input
@@ -228,7 +228,7 @@ export default function ProductFilters({
                   e.target.value ? parseFloat(e.target.value) : undefined
                 )
               }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-tyrian-500"
             />
           </div>
         </div>
@@ -245,7 +245,7 @@ export default function ProductFilters({
                 name="product_type"
                 checked={!filters.product_type}
                 onChange={() => updateFilter("product_type", undefined)}
-                className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                className="w-4 h-4 text-tyrian-800 focus:ring-2 focus:ring-tyrian-500"
               />
               <span className="text-sm text-gray-700">All</span>
             </label>
@@ -255,7 +255,7 @@ export default function ProductFilters({
                 name="product_type"
                 checked={filters.product_type === ProductType.READY_TO_SELL}
                 onChange={() => updateFilter("product_type", ProductType.READY_TO_SELL)}
-                className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                className="w-4 h-4 text-tyrian-800 focus:ring-2 focus:ring-tyrian-500"
               />
               <span className="text-sm text-gray-700">Ready to Sell</span>
             </label>
@@ -265,7 +265,7 @@ export default function ProductFilters({
                 name="product_type"
                 checked={filters.product_type === ProductType.PRE_ORDER}
                 onChange={() => updateFilter("product_type", ProductType.PRE_ORDER)}
-                className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                className="w-4 h-4 text-tyrian-800 focus:ring-2 focus:ring-tyrian-500"
               />
               <span className="text-sm text-gray-700">Pre-Order</span>
             </label>
@@ -284,7 +284,7 @@ export default function ProductFilters({
                 name="status"
                 checked={!filters.status}
                 onChange={() => updateFilter("status", undefined)}
-                className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                className="w-4 h-4 text-tyrian-800 focus:ring-2 focus:ring-tyrian-500"
               />
               <span className="text-sm text-gray-700">All</span>
             </label>
@@ -294,7 +294,7 @@ export default function ProductFilters({
                 name="status"
                 checked={filters.status === ProductStatus.ACTIVE}
                 onChange={() => updateFilter("status", ProductStatus.ACTIVE)}
-                className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                className="w-4 h-4 text-tyrian-800 focus:ring-2 focus:ring-tyrian-500"
               />
               <span className="text-sm text-gray-700">Active</span>
             </label>
@@ -304,7 +304,7 @@ export default function ProductFilters({
                 name="status"
                 checked={filters.status === ProductStatus.INACTIVE}
                 onChange={() => updateFilter("status", ProductStatus.INACTIVE)}
-                className="w-4 h-4 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                className="w-4 h-4 text-tyrian-800 focus:ring-2 focus:ring-tyrian-500"
               />
               <span className="text-sm text-gray-700">Inactive</span>
             </label>

@@ -90,12 +90,12 @@ export default function ProductForm({
                     prev.map((p) =>
                       p.fileName === file.name
                         ? {
-                            ...p,
-                            status: "rejected",
-                            reason:
-                              result.reason ||
-                              "Media rejected by content moderation.",
-                          }
+                          ...p,
+                          status: "rejected",
+                          reason:
+                            result.reason ||
+                            "Media rejected by content moderation.",
+                        }
                         : p
                     )
                   );
@@ -234,7 +234,7 @@ export default function ProductForm({
           value={formData.name}
           onChange={handleInputChange}
           required
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
           placeholder="e.g., Vintage Denim Jacket"
         />
       </div>
@@ -254,7 +254,7 @@ export default function ProductForm({
           onChange={handleInputChange}
           required
           rows={6}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
           placeholder="Describe your product in detail..."
         />
       </div>
@@ -277,7 +277,7 @@ export default function ProductForm({
             required
             min="0"
             step="0.01"
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
             placeholder="0.00"
           />
         </div>
@@ -294,7 +294,7 @@ export default function ProductForm({
             value={formData.price_currency}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
           >
             <option value="USD">USD</option>
             <option value="EUR">EUR</option>
@@ -318,7 +318,7 @@ export default function ProductForm({
           value={formData.category}
           onChange={handleInputChange}
           required
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
         >
           <option value="">Select a category</option>
           <option value="T-Shirts">T-Shirts</option>
@@ -348,7 +348,7 @@ export default function ProductForm({
           name="tags"
           value={formData.tags}
           onChange={handleInputChange}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
           placeholder="vintage, denim, oversized"
         />
         <p className="mt-1 text-sm text-gray-500">
@@ -369,7 +369,7 @@ export default function ProductForm({
               value={ProductType.READY_TO_SELL}
               checked={formData.product_type === ProductType.READY_TO_SELL}
               onChange={handleInputChange}
-              className="w-4 h-4 text-blue-600"
+              className="w-4 h-4 text-brand-600"
             />
             <div>
               <p className="font-medium text-gray-900">Ready to Sell</p>
@@ -385,7 +385,7 @@ export default function ProductForm({
               value={ProductType.PRE_ORDER}
               checked={formData.product_type === ProductType.PRE_ORDER}
               onChange={handleInputChange}
-              className="w-4 h-4 text-blue-600"
+              className="w-4 h-4 text-brand-600"
             />
             <div>
               <p className="font-medium text-gray-900">Pre-Order</p>
@@ -414,7 +414,7 @@ export default function ProductForm({
             onChange={handleInputChange}
             required
             min={new Date().toISOString().split("T")[0]}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
           />
         </div>
       )}
@@ -424,7 +424,7 @@ export default function ProductForm({
         <label className="block text-sm font-semibold text-gray-700 mb-3">
           Product Images
         </label>
-        <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-500 transition-colors">
+        <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-brand-500 transition-colors">
           <input
             type="file"
             accept="image/*"
@@ -439,7 +439,7 @@ export default function ProductForm({
             className="cursor-pointer flex flex-col items-center"
           >
             {uploadingMedia ? (
-              <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+              <div className="w-12 h-12 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mb-4"></div>
             ) : (
               <svg
                 className="w-12 h-12 text-gray-400 mb-4"
@@ -507,7 +507,7 @@ export default function ProductForm({
                   >
                     <div className="flex items-center gap-3">
                       {p.status === "uploading" && (
-                        <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-5 h-5 border-2 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
                       )}
                       {p.status === "success" && (
                         <svg
@@ -613,7 +613,7 @@ export default function ProductForm({
         <button
           type="submit"
           disabled={loading || uploadingMedia}
-          className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 px-6 py-3 bg-gradient-to-r from-tyrian-800 to-brand-600 text-white rounded-xl hover:from-tyrian-900 hover:to-brand-700 transition-all font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? "Saving..." : submitLabel}
         </button>

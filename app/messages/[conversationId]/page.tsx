@@ -1,6 +1,7 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/components/auth/AuthGuard";
 import { useConversation, useE2EEKeys } from "@/app/hooks/useMessaging";
 import { useUserProfile } from "@/app/hooks/useUser";
@@ -15,7 +16,8 @@ interface PageProps {
 }
 
 export default function ChatPage({ params }: PageProps) {
-    const { conversationId } = use(params);
+    const { conversationId: urlParam } = use(params);
+    const router = useRouter();
     const { user, isAuthenticated } = useAuth();
     const {
         conversation,
@@ -27,7 +29,19 @@ export default function ChatPage({ params }: PageProps) {
         sendMessage,
         sendMedia,
         isConnected,
-    } = useConversation(conversationId);
+    } = useConversation(urlParam);
+
+    // Redirect if URL contains order_id instead of conversation_id
+    // This ensures the URL always reflects the actual conversation ID
+    useEffect(() => {
+        if (conversation && conversation.id !== urlParam) {
+            // URL has order_id, redirect to proper conversation_id URL
+            router.replace(`/messages/${conversation.id}`);
+        }
+    }, [conversation, urlParam, router]);
+
+    // Use actual conversation ID for components (handles both direct access and order_id access)
+    const conversationId = conversation?.id || urlParam;
 
     const { isInitialized: keysInitialized, error: keysError } = useE2EEKeys();
 
@@ -52,7 +66,7 @@ export default function ChatPage({ params }: PageProps) {
         return (
             <div className="h-screen bg-white flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
-                    <div className="w-10 h-10 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+                    <div className="w-10 h-10 rounded-full border-2 border-brand-600 border-t-transparent animate-spin" />
                     <span className="text-sm text-gray-500">Loading conversation...</span>
                 </div>
             </div>
@@ -63,14 +77,14 @@ export default function ChatPage({ params }: PageProps) {
         return (
             <div className="h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
                 <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 text-center max-w-md w-full">
-                    <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <ShieldCheckIcon className="w-8 h-8 text-indigo-600" />
+                    <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <ShieldCheckIcon className="w-8 h-8 text-brand-600" />
                     </div>
                     <h2 className="text-xl font-bold text-gray-900 mb-2">Sign in required</h2>
                     <p className="text-gray-500 mb-8">Please sign in to view this conversation.</p>
                     <Link
                         href="/signin"
-                        className="inline-flex items-center justify-center w-full px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors"
+                        className="inline-flex items-center justify-center w-full px-6 py-3 bg-tyrian-800 text-white font-semibold rounded-xl hover:bg-tyrian-900 transition-colors"
                     >
                         Sign In
                     </Link>
@@ -86,9 +100,9 @@ export default function ChatPage({ params }: PageProps) {
     // Generate avatar gradient
     const gradientIndex = otherUserId ? otherUserId.charCodeAt(0) % 5 : 0;
     const gradients = [
-        'from-indigo-500 to-purple-600',
+        'from-brand-500 to-tyrian-600',
         'from-pink-500 to-rose-600',
-        'from-cyan-500 to-blue-600',
+        'from-cyan-500 to-brand-600',
         'from-emerald-500 to-teal-600',
         'from-amber-500 to-orange-600',
     ];
@@ -166,7 +180,7 @@ export default function ChatPage({ params }: PageProps) {
                         {conversation && (
                             <Link
                                 href={`/orders/${conversation.order_id}`}
-                                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
                             >
                                 <span className="hidden sm:inline">Order Details</span>
                                 <ArrowTopRightOnSquareIcon className="w-4 h-4" />

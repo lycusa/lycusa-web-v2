@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/app/components/auth/AuthGuard";
 import { listOrders } from "@/app/lib/api";
 import { OrderListItem, OrderStatus, ORDER_STATUS_CONFIG } from "@/app/lib/types/order";
 import OrderCard from "@/app/components/orders/OrderCard";
+import { AppBackground, Header } from "@/app/components/layout";
 
 type TabType = "all" | "buying" | "selling";
 
@@ -98,23 +100,27 @@ export default function OrdersPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex items-center gap-3 text-gray-500">
-          <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-          </svg>
-          <span className="text-sm">Loading...</span>
+      <AppBackground>
+        <Header />
+        <div className="flex items-center justify-center min-h-[80vh]">
+          <div className="flex items-center gap-3 text-gray-500">
+            <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            <span className="text-sm">Loading...</span>
+          </div>
         </div>
-      </div>
+      </AppBackground>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <AppBackground>
+        <Header />
         <div className="max-w-lg mx-auto px-4 py-16">
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
+          <div className="bg-white/80 backdrop-blur-xl rounded-xl border border-gray-200/50 p-8 text-center shadow-xl">
             <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
               <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -124,50 +130,20 @@ export default function OrdersPage() {
             <p className="text-sm text-gray-600 mb-6">Please sign in to view your orders.</p>
             <Link
               href="/signin"
-              className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors"
+              className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-tyrian-800 rounded-xl hover:bg-tyrian-900 transition-colors"
             >
               Sign In
             </Link>
           </div>
         </div>
-      </div>
+      </AppBackground>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <AppBackground>
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/"
-                className="p-2 -ml-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
-                </svg>
-              </Link>
-              <div className="flex items-center gap-4">
-                <div>
-                  <h1 className="text-lg font-semibold text-gray-900">Orders</h1>
-                  {!loading && totalCount > 0 && (
-                    <p className="text-xs text-gray-500">{totalCount} total</p>
-                  )}
-                </div>
-                <div className="h-6 w-px bg-gray-200" />
-                <Link
-                  href="/messages"
-                  className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-                >
-                  Messages
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Filters Bar */}
       <div className="bg-white border-b border-gray-200">
@@ -316,6 +292,6 @@ export default function OrdersPage() {
           </>
         )}
       </main>
-    </div>
+    </AppBackground>
   );
 }
