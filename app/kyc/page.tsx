@@ -38,7 +38,7 @@ export default function KycPage() {
     } catch (err: any) {
       setError(
         err.response?.data?.message ||
-          "Failed to initiate KYC verification. Please try again."
+        "Failed to initiate KYC verification. Please try again."
       );
     } finally {
       setLoading(false);
@@ -47,9 +47,9 @@ export default function KycPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
@@ -57,13 +57,13 @@ export default function KycPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+              <div className="w-10 h-10 bg-gradient-to-br from-tyrian-800 to-brand-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
                 <svg
                   className="w-6 h-6 text-white"
                   fill="none"
@@ -78,7 +78,7 @@ export default function KycPage() {
                   />
                 </svg>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-tyrian-800 to-brand-600 bg-clip-text text-transparent">
                 Lycusa
               </span>
             </Link>
@@ -125,10 +125,10 @@ export default function KycPage() {
 
               {/* Info Cards */}
               <div className="space-y-4 mb-8">
-                <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-xl">
-                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="flex items-start gap-4 p-4 bg-brand-50 rounded-xl">
+                  <div className="w-8 h-8 bg-brand-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <svg
-                      className="w-5 h-5 text-blue-600"
+                      className="w-5 h-5 text-brand-600"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -230,7 +230,7 @@ export default function KycPage() {
               <button
                 onClick={handleStartVerification}
                 disabled={loading}
-                className="w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                className="w-full px-8 py-4 bg-gradient-to-r from-tyrian-800 to-brand-600 text-white rounded-xl hover:from-tyrian-900 hover:to-brand-700 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -281,10 +281,10 @@ export default function KycPage() {
                   </div>
                 )}
 
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-8">
+                <div className="bg-brand-50 border border-brand-200 rounded-xl p-4 mb-8">
                   <div className="flex items-start gap-3">
                     <svg
-                      className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"
+                      className="w-5 h-5 text-brand-600 flex-shrink-0 mt-0.5"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -296,7 +296,7 @@ export default function KycPage() {
                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    <p className="text-blue-800 text-sm text-left">
+                    <p className="text-brand-800 text-sm text-left">
                       You will be notified once your verification is complete.
                       This typically takes a few moments.
                     </p>
@@ -305,7 +305,7 @@ export default function KycPage() {
 
                 <Link
                   href="/profile"
-                  className="inline-block px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1"
+                  className="inline-block px-8 py-4 bg-gradient-to-r from-tyrian-800 to-brand-600 text-white rounded-xl hover:from-tyrian-900 hover:to-brand-700 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1"
                 >
                   Back to Profile
                 </Link>

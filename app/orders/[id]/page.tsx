@@ -260,7 +260,7 @@ export default function OrderDetailPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50 flex items-center justify-center">
         <div className="bg-white rounded-xl border border-gray-200 p-8 text-center max-w-sm">
           <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
             <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -445,7 +445,7 @@ export default function OrderDetailPage() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <Link href={`/products/${item.product_id}`} className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors">
+                          <Link href={`/products/${item.product_id}`} className="text-sm font-medium text-gray-900 hover:text-tyrian-600 transition-colors">
                             {product?.name || `Product #${item.product_id.slice(0, 8)}`}
                           </Link>
                           <p className="text-xs text-gray-500 mt-0.5">
@@ -529,7 +529,7 @@ export default function OrderDetailPage() {
                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93s3.05-7.44 7-7.93v15.86zm2-15.86c1.03.13 2 .45 2.87.93H13v-.93zM13 7h5.24c.25.31.48.65.68 1H13V7zm0 3h6.74c.08.33.15.66.19 1H13v-1zm0 9.93V19h2.87c-.87.48-1.84.8-2.87.93zM18.24 17H13v-1h5.92c-.2.35-.43.69-.68 1zm1.5-3H13v-1h6.93c-.04.34-.11.67-.19 1z" />
                         </svg>
                       ) : (
-                        <svg className="w-4 h-4 text-indigo-500" viewBox="0 0 24 24" fill="currentColor">
+                        <svg className="w-4 h-4 text-brand-500" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
                         </svg>
                       )}
@@ -577,11 +577,10 @@ export default function OrderDetailPage() {
                     <button
                       onClick={handleContact}
                       disabled={contactLoading}
-                      className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${
-                        contactLoading
-                          ? "text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed"
-                          : "text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100"
-                      }`}
+                      className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${contactLoading
+                        ? "text-gray-400 bg-gray-100 border border-gray-200 cursor-not-allowed"
+                        : "text-brand-700 bg-brand-50 border border-brand-200 hover:bg-brand-100"
+                        }`}
                     >
                       {contactLoading ? (
                         <>
@@ -649,16 +648,16 @@ export default function OrderDetailPage() {
                 <div className="p-4 space-y-4">
                   {/* Buyer */}
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium text-sm">
+                    <div className="w-10 h-10 bg-tyrian-100 rounded-full flex items-center justify-center text-tyrian-600 font-medium text-sm">
                       {buyerProfile?.username?.[0]?.toUpperCase() || "B"}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <Link href={`/users/${order.buyer_id}`} className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors truncate">
+                        <Link href={`/users/${order.buyer_id}`} className="text-sm font-medium text-gray-900 hover:text-tyrian-600 transition-colors truncate">
                           {buyerProfile?.username || "Buyer"}
                         </Link>
                         {isBuyer && (
-                          <span className="px-1.5 py-0.5 text-xs font-medium text-blue-700 bg-blue-100 rounded">You</span>
+                          <span className="px-1.5 py-0.5 text-xs font-medium text-tyrian-700 bg-tyrian-100 rounded">You</span>
                         )}
                       </div>
                       <p className="text-xs text-gray-500">Buyer</p>
@@ -672,7 +671,7 @@ export default function OrderDetailPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <Link href={`/users/${order.seller_id}`} className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors truncate">
+                        <Link href={`/users/${order.seller_id}`} className="text-sm font-medium text-gray-900 hover:text-brand-600 transition-colors truncate">
                           {sellerProfile?.username || "Seller"}
                         </Link>
                         {isSeller && (

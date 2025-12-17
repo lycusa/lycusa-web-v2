@@ -15,8 +15,8 @@ export default function ConnectionStatus() {
 
     if (status === ConnectionState.CONNECTING) {
         return (
-            <div className="flex items-center text-xs text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100">
-                <div className="w-3.5 h-3.5 rounded-full border-2 border-blue-600 border-t-transparent animate-spin mr-1.5" />
+            <div className="flex items-center text-xs text-brand-600 bg-brand-50 px-3 py-1.5 rounded-full border border-brand-100">
+                <div className="w-3.5 h-3.5 rounded-full border-2 border-brand-600 border-t-transparent animate-spin mr-1.5" />
                 <span>Connecting...</span>
             </div>
         );

@@ -158,7 +158,7 @@ function CheckoutContent() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
         <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <h1 className="text-xl font-bold text-gray-900">Checkout</h1>
@@ -184,7 +184,7 @@ function CheckoutContent() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-xl p-12 text-center max-w-md">
           <svg
             className="w-16 h-16 text-gray-400 mx-auto mb-4"
@@ -207,7 +207,7 @@ function CheckoutContent() {
           </p>
           <Link
             href={`/signin?redirect=/checkout?productId=${productId}&quantity=${quantity}`}
-            className="inline-block px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
+            className="inline-block px-6 py-3 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-colors font-medium"
           >
             Sign In
           </Link>
@@ -218,7 +218,7 @@ function CheckoutContent() {
 
   if (success && orderId) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50 flex items-center justify-center">
         <div className="bg-white rounded-2xl shadow-xl p-12 text-center max-w-md">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg
@@ -248,7 +248,7 @@ function CheckoutContent() {
           <div className="flex gap-3">
             <Link
               href={`/orders/${orderId}`}
-              className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
+              className="flex-1 px-6 py-3 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-colors font-medium"
             >
               View Order
             </Link>
@@ -266,7 +266,7 @@ function CheckoutContent() {
 
   if (error && !product) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
         <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <Link href="/products" className="flex items-center gap-2">
@@ -308,7 +308,7 @@ function CheckoutContent() {
             <p className="text-gray-600 mb-6">{error}</p>
             <Link
               href="/products"
-              className="inline-block px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
+              className="inline-block px-6 py-3 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-colors font-medium"
             >
               Browse Products
             </Link>
@@ -319,7 +319,7 @@ function CheckoutContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -413,11 +413,10 @@ function CheckoutContent() {
                 </h2>
                 <div className="space-y-3">
                   <label
-                    className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${
-                      deliveryMethod === DeliveryMethod.STANDARD
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
+                    className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${deliveryMethod === DeliveryMethod.STANDARD
+                      ? "border-brand-500 bg-brand-50"
+                      : "border-gray-200 hover:border-gray-300"
+                      }`}
                   >
                     <input
                       type="radio"
@@ -441,11 +440,10 @@ function CheckoutContent() {
                   </label>
 
                   <label
-                    className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${
-                      deliveryMethod === DeliveryMethod.EXPRESS
-                        ? "border-purple-500 bg-purple-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
+                    className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${deliveryMethod === DeliveryMethod.EXPRESS
+                      ? "border-tyrian-500 bg-tyrian-50"
+                      : "border-gray-200 hover:border-gray-300"
+                      }`}
                   >
                     <input
                       type="radio"
@@ -460,7 +458,7 @@ function CheckoutContent() {
                     <div className="flex-1">
                       <p className="font-medium text-gray-900 flex items-center gap-2">
                         <svg
-                          className="w-4 h-4 text-purple-600"
+                          className="w-4 h-4 text-tyrian-600"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -477,7 +475,7 @@ function CheckoutContent() {
                       <p className="text-sm text-gray-500">1-2 business days</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium text-purple-600">+$9.99</p>
+                      <p className="font-medium text-tyrian-600">+$9.99</p>
                     </div>
                   </label>
                 </div>
@@ -501,7 +499,7 @@ function CheckoutContent() {
                     onChange={(e) => setDeliveryAddress(e.target.value)}
                     placeholder="Street address, City, State/Province, ZIP/Postal Code, Country"
                     rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"
                     required
                   />
                   <p className="text-xs text-gray-500 mt-1">
@@ -517,11 +515,10 @@ function CheckoutContent() {
                 </h2>
                 <div className="space-y-3">
                   <label
-                    className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${
-                      paymentMethod === PaymentMethod.STRIPE
-                        ? "border-indigo-500 bg-indigo-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
+                    className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === PaymentMethod.STRIPE
+                      ? "border-brand-500 bg-brand-50"
+                      : "border-gray-200 hover:border-gray-300"
+                      }`}
                   >
                     <input
                       type="radio"
@@ -534,7 +531,7 @@ function CheckoutContent() {
                       className="sr-only"
                     />
                     <svg
-                      className="w-8 h-8 text-indigo-600 mr-3"
+                      className="w-8 h-8 text-brand-600 mr-3"
                       viewBox="0 0 24 24"
                       fill="currentColor"
                     >
@@ -551,11 +548,10 @@ function CheckoutContent() {
                   </label>
 
                   <label
-                    className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${
-                      paymentMethod === PaymentMethod.CRYPTO
-                        ? "border-orange-500 bg-orange-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
+                    className={`flex items-center p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === PaymentMethod.CRYPTO
+                      ? "border-orange-500 bg-orange-50"
+                      : "border-gray-200 hover:border-gray-300"
+                      }`}
                   >
                     <input
                       type="radio"
@@ -632,7 +628,7 @@ function CheckoutContent() {
                 <button
                   type="submit"
                   disabled={submitting || !product}
-                  className="w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full px-6 py-4 bg-gradient-to-r from-tyrian-800 to-brand-600 text-white rounded-xl hover:from-tyrian-900 hover:to-brand-700 transition-all font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {submitting ? (
                     <>
@@ -694,8 +690,8 @@ export default function CheckoutPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-600" />
         </div>
       }
     >

@@ -25,7 +25,7 @@ export default function MessagesLayout({
         return (
             <div className="h-screen bg-white flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
-                    <div className="w-10 h-10 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+                    <div className="w-10 h-10 rounded-full border-2 border-brand-600 border-t-transparent animate-spin" />
                     <span className="text-sm text-gray-500">Loading messages...</span>
                 </div>
             </div>
@@ -44,7 +44,7 @@ export default function MessagesLayout({
                 <div className="h-16 px-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
                     <div className="flex items-center gap-2">
                         <div className="relative">
-                            <div className="w-9 h-9 bg-gradient-to-tr from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center shadow-sm">
+                            <div className="w-9 h-9 bg-gradient-to-tr from-tyrian-800 to-brand-600 rounded-xl flex items-center justify-center shadow-sm">
                                 <SparklesIcon className="w-5 h-5 text-white" />
                             </div>
                             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center">
@@ -55,10 +55,10 @@ export default function MessagesLayout({
                     </div>
 
                     <div className="flex items-center gap-1">
-                        <Link href="/orders" className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="View Orders">
+                        <Link href="/orders" className="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-all" title="View Orders">
                             <ShoppingBagIcon className="w-6 h-6" />
                         </Link>
-                        <Link href="/" className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Go Home">
+                        <Link href="/" className="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-all" title="Go Home">
                             <HomeIcon className="w-6 h-6" />
                         </Link>
                     </div>
@@ -70,9 +70,9 @@ export default function MessagesLayout({
                         <input
                             type="text"
                             placeholder="Search messages..."
-                            className="w-full pl-10 pr-4 py-2.5 bg-gray-100 border-transparent focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 rounded-xl text-sm transition-all"
+                            className="w-full pl-10 pr-4 py-2.5 bg-gray-100 border-transparent focus:bg-white focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 rounded-xl text-sm transition-all"
                         />
-                        <MagnifyingGlassIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
+                        <MagnifyingGlassIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-brand-500 transition-colors" />
                     </div>
                 </div>
 
