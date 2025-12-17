@@ -38,7 +38,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             return null;
           } else if (part) {
             return isHighlighted ? (
-              <span key={i} className="bg-yellow-200 font-semibold">{part}</span>
+              <span key={i} className="bg-tyrian-100 text-tyrian-800 font-semibold">{part}</span>
             ) : (
               <span key={i}>{part}</span>
             );
@@ -51,7 +51,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/products/${product.id}`}>
-      <div className="group relative bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-gray-200 hover:-translate-y-1">
+      <div className="group relative bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-tyrian-200 hover:-translate-y-1">
         {/* Image Container */}
         <div className="relative aspect-square overflow-hidden bg-gray-100">
           <Image
@@ -65,7 +65,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Status Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
             {isPreOrder && (
-              <span className="px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full shadow-lg">
+              <span className="px-3 py-1 bg-brand-500 text-white text-xs font-semibold rounded-full shadow-lg">
                 Pre-Order
               </span>
             )}
@@ -101,13 +101,13 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="p-5">
           {/* Category */}
           <div className="mb-2">
-            <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
+            <span className="text-xs font-medium text-tyrian-800 bg-tyrian-50 px-2 py-1 rounded-md">
               {product.category}
             </span>
           </div>
 
           {/* Product Name */}
-          <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+          <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-tyrian-800 transition-colors">
             {renderHighlightedText(product.name, product.highlights?.name)}
           </h3>
 
@@ -146,7 +146,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* Due Date for Pre-orders */}
           {isPreOrder && product.due_date && (
-            <div className="mt-3 flex items-center gap-1 text-xs text-purple-600">
+            <div className="mt-3 flex items-center gap-1 text-xs text-brand-500">
               <svg
                 className="w-4 h-4"
                 fill="none"

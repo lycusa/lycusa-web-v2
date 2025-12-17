@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "./components/auth/AuthGuard";
 import LogoutButton from "./components/auth/LogoutButton";
 import { useState, useEffect } from "react";
@@ -31,36 +32,26 @@ export default function Home() {
   }, [isAuthenticated, user]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-tyrian-50">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Lycusa
-              </span>
+              <Image
+                src="/logos/tyrian-purple-with-word.svg"
+                alt="Lycusa"
+                width={140}
+                height={40}
+                className="h-10 w-auto"
+                priority
+              />
             </Link>
 
             <nav className="flex items-center gap-3">
               <Link
                 href="/products"
-                className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium hover:bg-gray-100 rounded-lg"
+                className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-lg"
               >
                 Browse
               </Link>
@@ -73,42 +64,42 @@ export default function Home() {
                 <>
                   <Link
                     href="/my-products"
-                    className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium hover:bg-gray-100 rounded-lg"
+                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-lg"
                   >
                     My Products
                   </Link>
                   <Link
                     href="/orders"
-                    className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium hover:bg-gray-100 rounded-lg"
+                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-lg"
                   >
                     Orders
                   </Link>
                   <Link
                     href="/messages"
-                    className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium hover:bg-gray-100 rounded-lg"
+                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-lg"
                   >
                     Messages
                   </Link>
-                  <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200/50">
+                  <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-tyrian-50 to-brand-50 rounded-lg border border-tyrian-200/50">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-sm font-medium text-gray-700 max-w-[150px] truncate">
                       {user?.email ||
                         `${user?.walletAddress?.slice(0, 6)}...${user?.walletAddress?.slice(-4)}`}
                     </span>
                   </div>
-                  <LogoutButton className="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all text-sm font-medium shadow-md hover:shadow-lg" />
+                  <LogoutButton className="px-4 py-2 bg-tyrian-800 text-white rounded-lg hover:bg-tyrian-900 transition-all text-sm font-medium shadow-md hover:shadow-lg" />
                 </>
               ) : (
                 <>
                   <Link
                     href="/signin"
-                    className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium hover:bg-gray-100 rounded-lg"
+                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-lg"
                   >
                     Sign In
                   </Link>
                   <Link
                     href="/signup"
-                    className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all text-sm font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                    className="px-5 py-2 bg-tyrian-800 text-white rounded-lg hover:bg-tyrian-900 transition-all text-sm font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5"
                   >
                     Get Started
                   </Link>
@@ -122,15 +113,15 @@ export default function Home() {
       {/* Hero Section */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-full mb-6 text-sm font-medium text-blue-700">
-            <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-tyrian-50 border border-tyrian-200 rounded-full mb-6 text-sm font-medium text-tyrian-800">
+            <span className="w-2 h-2 bg-tyrian-800 rounded-full animate-pulse"></span>
             Second-hand clothing marketplace
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
             Sustainable Fashion
             <br />
-            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-tyrian-800 via-tyrian-600 to-brand-500 bg-clip-text text-transparent">
               For Everyone
             </span>
           </h1>
@@ -189,7 +180,7 @@ export default function Home() {
                         {/* Progress Steps */}
                         <div className="flex items-center justify-center gap-4 mb-8">
                           <div className="flex items-center gap-2">
-                            <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
+                            <div className="w-10 h-10 rounded-full bg-tyrian-800 text-white flex items-center justify-center font-bold">
                               1
                             </div>
                             <span className="text-sm font-medium text-gray-900">
@@ -209,7 +200,7 @@ export default function Home() {
 
                         <Link
                           href="/profile/edit"
-                          className="block w-full px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1 text-center"
+                          className="block w-full px-8 py-4 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1 text-center"
                         >
                           Create Profile
                         </Link>
@@ -219,25 +210,25 @@ export default function Home() {
                     <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
                       <Link
                         href="/products"
-                        className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all font-semibold shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 hover:-translate-y-1 text-center"
+                        className="px-8 py-4 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all font-semibold shadow-lg shadow-tyrian-800/30 hover:shadow-xl hover:shadow-tyrian-800/40 hover:-translate-y-1 text-center"
                       >
                         Browse Products
                       </Link>
                       <Link
                         href="/orders"
-                        className="px-8 py-4 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-xl hover:from-orange-700 hover:to-amber-700 transition-all font-semibold shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 hover:-translate-y-1 text-center"
+                        className="px-8 py-4 bg-brand-500 text-white rounded-xl hover:bg-brand-600 transition-all font-semibold shadow-lg shadow-brand-500/30 hover:shadow-xl hover:shadow-brand-500/40 hover:-translate-y-1 text-center"
                       >
                         My Orders
                       </Link>
                       <Link
                         href="/profile"
-                        className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-1 text-center"
+                        className="px-8 py-4 border-2 border-tyrian-800 text-tyrian-800 rounded-xl hover:bg-tyrian-50 transition-all font-semibold hover:-translate-y-1 text-center"
                       >
                         View Profile
                       </Link>
                       <Link
                         href="/kyc"
-                        className="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all font-semibold shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 hover:-translate-y-1 text-center"
+                        className="px-8 py-4 border-2 border-brand-500 text-brand-500 rounded-xl hover:bg-brand-50 transition-all font-semibold hover:-translate-y-1 text-center"
                       >
                         KYC Verification
                       </Link>
@@ -249,13 +240,13 @@ export default function Home() {
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Link
                       href="/products"
-                      className="px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all font-semibold text-lg shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 hover:-translate-y-1"
+                      className="px-10 py-4 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all font-semibold text-lg shadow-lg shadow-tyrian-800/30 hover:shadow-xl hover:shadow-tyrian-800/40 hover:-translate-y-1"
                     >
                       Browse Products
                     </Link>
                     <Link
                       href="/signup"
-                      className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all font-semibold text-lg shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-1"
+                      className="px-10 py-4 bg-brand-500 text-white rounded-xl hover:bg-brand-600 transition-all font-semibold text-lg shadow-lg shadow-brand-500/30 hover:shadow-xl hover:shadow-brand-500/40 hover:-translate-y-1"
                     >
                       Get Started Free
                     </Link>
@@ -263,7 +254,7 @@ export default function Home() {
                   <div className="text-center">
                     <Link
                       href="/signin"
-                      className="text-gray-600 hover:text-gray-900 font-medium underline"
+                      className="text-gray-600 hover:text-tyrian-800 font-medium underline"
                     >
                       Already have an account? Sign In
                     </Link>
@@ -286,93 +277,82 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: (
-                  <svg
-                    className="w-7 h-7"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                ),
-                color: "blue",
-                title: "Easy Shopping",
-                description:
-                  "Browse thousands of curated pre-loved items from verified sellers",
-              },
-              {
-                icon: (
-                  <svg
-                    className="w-7 h-7"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                    />
-                  </svg>
-                ),
-                color: "purple",
-                title: "Secure Payments",
-                description:
-                  "Multiple authentication options including email OTP and Web3 wallet",
-              },
-              {
-                icon: (
-                  <svg
-                    className="w-7 h-7"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                    />
-                  </svg>
-                ),
-                color: "green",
-                title: "Sustainable Impact",
-                description:
-                  "Reduce fashion waste and give quality clothing a second life",
-              },
-            ].map((feature, i) => (
-              <div
-                key={i}
-                className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-gray-200 hover:-translate-y-2"
-              >
-                <div
-                  className={`w-14 h-14 bg-gradient-to-br from-${feature.color}-100 to-${feature.color}-50 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform text-${feature.color}-600`}
+            <div className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-tyrian-200 hover:-translate-y-2">
+              <div className="w-14 h-14 bg-gradient-to-br from-tyrian-100 to-tyrian-50 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform text-tyrian-800">
+                <svg
+                  className="w-7 h-7"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {feature.description}
-                </p>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
               </div>
-            ))}
+              <h3 className="text-xl font-bold text-gray-900 mb-3">
+                Easy Shopping
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                Browse thousands of curated pre-loved items from verified sellers
+              </p>
+            </div>
+
+            <div className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-brand-200 hover:-translate-y-2">
+              <div className="w-14 h-14 bg-gradient-to-br from-brand-100 to-brand-50 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform text-brand-500">
+                <svg
+                  className="w-7 h-7"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">
+                Secure Payments
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                Multiple authentication options including email OTP and Web3 wallet
+              </p>
+            </div>
+
+            <div className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-green-200 hover:-translate-y-2">
+              <div className="w-14 h-14 bg-gradient-to-br from-green-100 to-green-50 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform text-green-600">
+                <svg
+                  className="w-7 h-7"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">
+                Sustainable Impact
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                Reduce fashion waste and give quality clothing a second life
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Stats Section */}
-        <div className="mt-24 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-12 shadow-2xl">
+        <div className="mt-24 bg-tyrian-800 rounded-3xl p-12 shadow-2xl">
           <div className="grid md:grid-cols-3 gap-8 text-center text-white">
             {[
               { value: "10K+", label: "Active Users" },
@@ -383,7 +363,7 @@ export default function Home() {
                 <div className="text-4xl md:text-5xl font-bold">
                   {stat.value}
                 </div>
-                <div className="text-blue-100 text-sm md:text-base">
+                <div className="text-tyrian-200 text-sm md:text-base">
                   {stat.label}
                 </div>
               </div>
@@ -393,10 +373,17 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12 mt-24">
+      <footer className="bg-tyrian-950 text-gray-400 py-12 mt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <p className="text-sm">© 2024 Lycusa. All rights reserved.</p>
+            <Image
+              src="/logos/white-with-name.svg"
+              alt="Lycusa"
+              width={120}
+              height={35}
+              className="h-8 w-auto mx-auto mb-4 opacity-80"
+            />
+            <p className="text-sm">© 2025 Lycusa. All rights reserved.</p>
           </div>
         </div>
       </footer>

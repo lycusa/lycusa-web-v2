@@ -169,7 +169,7 @@ export default function EmailAuth({ onSuccess, onError }: EmailAuthProps) {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="w-full pl-12 pr-4 py-3.5 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm"
+                className="w-full pl-12 pr-4 py-3.5 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-tyrian-500 focus:border-transparent transition-all duration-200 shadow-sm"
                 disabled={loading}
               />
             </div>
@@ -195,7 +195,7 @@ export default function EmailAuth({ onSuccess, onError }: EmailAuthProps) {
           <button
             type="submit"
             disabled={loading}
-            className="relative w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3.5 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 disabled:shadow-none disabled:translate-y-0"
+            className="relative w-full bg-tyrian-800 text-white py-3.5 px-6 rounded-xl font-semibold hover:bg-tyrian-900 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-tyrian-800/30 hover:shadow-xl hover:shadow-tyrian-800/40 hover:-translate-y-0.5 active:translate-y-0 disabled:shadow-none disabled:translate-y-0"
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
@@ -229,9 +229,9 @@ export default function EmailAuth({ onSuccess, onError }: EmailAuthProps) {
         <form onSubmit={handleVerifyOtp} className="space-y-6">
           <div className="space-y-4">
             <div className="text-center space-y-2">
-              <div className="mx-auto w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+              <div className="mx-auto w-14 h-14 bg-tyrian-100 rounded-full flex items-center justify-center mb-3">
                 <svg
-                  className="w-7 h-7 text-blue-600"
+                  className="w-7 h-7 text-tyrian-800"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -265,7 +265,7 @@ export default function EmailAuth({ onSuccess, onError }: EmailAuthProps) {
                   value={digit}
                   onChange={(e) => handleOtpChange(index, e.target.value)}
                   onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                  className="w-12 h-14 text-center text-2xl font-bold bg-white border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-200 outline-none"
+                  className="w-12 h-14 text-center text-2xl font-bold bg-white border-2 border-gray-300 rounded-xl focus:border-tyrian-500 focus:ring-4 focus:ring-tyrian-500/10 transition-all duration-200 outline-none"
                   disabled={loading}
                 />
               ))}
@@ -310,7 +310,7 @@ export default function EmailAuth({ onSuccess, onError }: EmailAuthProps) {
             <button
               type="submit"
               disabled={loading || otp.some((d) => !d)}
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3.5 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 disabled:shadow-none disabled:translate-y-0"
+              className="w-full bg-tyrian-800 text-white py-3.5 px-6 rounded-xl font-semibold hover:bg-tyrian-900 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-tyrian-800/30 hover:shadow-xl hover:shadow-tyrian-800/40 hover:-translate-y-0.5 active:translate-y-0 disabled:shadow-none disabled:translate-y-0"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -353,7 +353,7 @@ export default function EmailAuth({ onSuccess, onError }: EmailAuthProps) {
                 type="button"
                 onClick={handleRequestOtp}
                 disabled={loading || resendCooldown > 0}
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="text-sm text-tyrian-800 hover:text-tyrian-900 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {resendCooldown > 0
                   ? `Resend in ${resendCooldown}s`
