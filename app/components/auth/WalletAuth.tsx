@@ -309,7 +309,7 @@ export default function WalletAuth({ onSuccess, onError }: WalletAuthProps) {
         <button
           onClick={handleWalletAuth}
           disabled={loading}
-          className="relative w-full bg-brand-500 text-white py-3.5 px-6 rounded-xl font-semibold hover:bg-brand-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-brand-500/30 hover:shadow-xl hover:shadow-brand-500/40 hover:-translate-y-0.5 active:translate-y-0 disabled:shadow-none disabled:translate-y-0 group"
+          className="relative w-full bg-tyrian-800 text-white py-3.5 px-6 rounded-xl font-semibold hover:bg-tyrian-900 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-tyrian-900/30 hover:shadow-xl hover:shadow-tyrian-900/40 hover:-translate-y-0.5 active:translate-y-0 disabled:shadow-none disabled:translate-y-0 group"
         >
           {loading ? (
             <span className="flex items-center justify-center gap-3">
