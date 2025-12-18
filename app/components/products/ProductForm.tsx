@@ -1,16 +1,158 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { uploadMedia, getMediaInfo } from "@/app/lib/api";
 import api from "@/app/lib/api";
 import type { Product, Media } from "@/app/lib/types/product";
-import { ProductType, MediaType } from "@/app/lib/types/product";
+import { ProductType } from "@/app/lib/types/product";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  rectSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import Image from "next/image";
+
+// DraggableMediaItem component
+interface DraggableMediaItemProps {
+  media: Media;
+  index: number;
+  onRemove: (index: number) => void;
+}
+
+function DraggableMediaItem({
+  media,
+  index,
+  onRemove,
+}: DraggableMediaItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: media.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 10 : "auto",
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      className="relative group aspect-square"
+    >
+      <Image
+        src={media.url}
+        alt={`Product ${index + 1}`}
+        width={100}
+        height={100}
+        className="w-full h-full object-cover rounded-lg border border-gray-200"
+      />
+      <div
+        {...listeners}
+        className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab"
+      ></div>
+      <button
+        type="button"
+        onClick={() => onRemove(index)}
+        className="absolute top-2 right-2 w-8 h-8 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-red-700"
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+      <div className="absolute bottom-2 left-2 px-2 py-1 bg-black/70 text-white text-xs rounded">
+        {index + 1}
+      </div>
+    </div>
+  );
+}
+
+// DraggableMediaList component
+interface DraggableMediaListProps {
+  media: Media[];
+  setMedia: React.Dispatch<React.SetStateAction<Media[]>>;
+  onRemove: (index: number) => void;
+}
+
+function DraggableMediaList({
+  media,
+  setMedia,
+  onRemove,
+}: DraggableMediaListProps) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setMedia((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        const newItems = arrayMove(items, oldIndex, newIndex);
+        return newItems.map((item, index) => ({ ...item, order: index }));
+      });
+    }
+  };
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
+      <SortableContext items={media} strategy={rectSortingStrategy}>
+        <div className="grid grid-cols-4 gap-4">
+          {media.map((item, index) => (
+            <DraggableMediaItem
+              key={item.id}
+              media={item}
+              index={index}
+              onRemove={onRemove}
+            />
+          ))}
+        </div>
+      </SortableContext>
+    </DndContext>
+  );
+}
 
 interface ProductFormProps {
   product?: Product;
   sellerId: string;
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: Partial<Product>) => Promise<void>;
   submitLabel?: string;
 }
 
@@ -81,7 +223,18 @@ export default function ProductForm({
                 "/api/v1/",
                 "/product/api/v1/"
               );
-              const statusResponse = await api.get(urlPath);
+              const statusResponse = await api.get<{
+                data: {
+                  status: string;
+                  result?: {
+                    rejected?: boolean;
+                    reason?: string;
+                    success?: boolean;
+                    media_id?: string;
+                    error?: string;
+                  };
+                };
+              }>(urlPath);
               const { status, result } = statusResponse.data.data;
 
               if (status === "SUCCESS") {
@@ -90,17 +243,19 @@ export default function ProductForm({
                     prev.map((p) =>
                       p.fileName === file.name
                         ? {
-                          ...p,
-                          status: "rejected",
-                          reason:
-                            result.reason ||
-                            "Media rejected by content moderation.",
-                        }
+                            ...p,
+                            status: "rejected",
+                            reason:
+                              result.reason ||
+                              "Media rejected by content moderation.",
+                          }
                         : p
                     )
                   );
                 } else if (result?.success && result?.media_id) {
-                  const mediaInfoResponse = await getMediaInfo(result.media_id);
+                  const mediaInfoResponse = await getMediaInfo(
+                    result.media_id
+                  );
                   if (mediaInfoResponse.success && mediaInfoResponse.data) {
                     const mediaInfo = mediaInfoResponse.data;
                     const url = new URL(mediaInfo.url);
@@ -131,10 +286,12 @@ export default function ProductForm({
               } else if (status === "FAILURE") {
                 throw new Error(result?.error || "Media upload failed");
               }
-            } catch (pollError: any) {
+            } catch (pollError) {
               console.error("Polling error:", pollError);
               if (attempts >= maxAttempts - 1) {
-                throw new Error(`Polling failed for ${file.name}: ${pollError.message}`);
+                throw new Error(
+                  `Polling failed for ${file.name}: ${(pollError as Error).message}`
+                );
               }
             }
             attempts++;
@@ -143,12 +300,16 @@ export default function ProductForm({
             throw new Error(`Upload timed out for ${file.name}`);
           }
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error(`Upload error for ${file.name}:`, err);
         setUploadProgress((prev) =>
           prev.map((p) =>
             p.fileName === file.name
-              ? { ...p, status: "failed", reason: err.message }
+              ? {
+                  ...p,
+                  status: "failed",
+                  reason: (err as Error).message,
+                }
               : p
           )
         );
@@ -158,7 +319,10 @@ export default function ProductForm({
   };
 
   const removeMedia = (index: number) => {
-    setMedia((prev) => prev.filter((_, i) => i !== index));
+    setMedia((prev) => {
+      const newMedia = prev.filter((_, i) => i !== index);
+      return newMedia.map((m, i) => ({ ...m, order: i }));
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -172,7 +336,7 @@ export default function ProductForm({
         .map((tag) => tag.trim())
         .filter((tag) => tag.length > 0);
 
-      const data = {
+      const data: Partial<Product> = {
         seller_id: sellerId,
         name: formData.name,
         description: formData.description,
@@ -188,9 +352,9 @@ export default function ProductForm({
       };
 
       await onSubmit(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error("Submit error:", err);
-      setError(err.message || "Failed to save product");
+      setError((err as Error).message || "Failed to save product");
       setLoading(false);
     }
   };
@@ -424,6 +588,9 @@ export default function ProductForm({
         <label className="block text-sm font-semibold text-gray-700 mb-3">
           Product Images
         </label>
+        <p className="text-sm text-gray-500 mb-4">
+          The first image in the list will be used as the main product photo. Drag and drop to reorder.
+        </p>
         <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-brand-500 transition-colors">
           <input
             type="file"
@@ -565,38 +732,12 @@ export default function ProductForm({
 
         {/* Media Preview */}
         {media.length > 0 && (
-          <div className="mt-4 grid grid-cols-4 gap-4">
-            {media.map((item, index) => (
-              <div key={item.id || index} className="relative group">
-                <img
-                  src={item.url}
-                  alt={`Product ${index + 1}`}
-                  className="w-full aspect-square object-cover rounded-lg border border-gray-200"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeMedia(index)}
-                  className="absolute top-2 right-2 w-8 h-8 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-red-700"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-                <div className="absolute bottom-2 left-2 px-2 py-1 bg-black/70 text-white text-xs rounded">
-                  {index + 1}
-                </div>
-              </div>
-            ))}
+          <div className="mt-4">
+            <DraggableMediaList
+              media={media}
+              setMedia={setMedia}
+              onRemove={removeMedia}
+            />
           </div>
         )}
       </div>
