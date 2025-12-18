@@ -175,6 +175,18 @@ export const blockUser = async (targetUserId: string) => {
   return response.data;
 };
 
+// Unblock a user
+export const unblockUser = async (targetUserId: string) => {
+  const response = await api.delete(`/user/users/${targetUserId}/block`);
+  return response.data;
+};
+
+// Get blocked users
+export const getBlockedUsers = async () => {
+  const response = await api.get(`/user/users/get-blocked-users`);
+  return response.data;
+};
+
 // Check relationship with a user
 export const checkUserRelationship = async (targetUserId: string) => {
   const response = await api.get(`/user/users/${targetUserId}/relationship`);

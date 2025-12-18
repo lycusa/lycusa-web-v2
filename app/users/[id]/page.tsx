@@ -11,6 +11,7 @@ import {
   followUser,
   unfollowUser,
   blockUser,
+  unblockUser,
   getUserFollowers,
   getUserFollowing,
   searchProducts,
@@ -217,6 +218,24 @@ export default function UserProfilePage() {
       }
     } catch (err: any) {
       alert(err.response?.data?.message || "Failed to block user");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUnblock = async () => {
+    try {
+      setActionLoading(true);
+      const response = await unblockUser(userId);
+
+      if (response.success) {
+        setRelationship((prev) => ({
+          ...prev!,
+          isBlocking: false,
+        }));
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || "Failed to unblock user");
     } finally {
       setActionLoading(false);
     }
@@ -472,7 +491,11 @@ export default function UserProfilePage() {
                 {isAuthenticated && !isOwnProfile && (
                   <div className="flex gap-3">
                     {relationship?.isBlocking ? (
-                      <div className="px-6 py-2 bg-red-100 text-red-700 rounded-xl font-medium flex items-center gap-2">
+                      <button
+                        onClick={handleUnblock}
+                        disabled={actionLoading}
+                        className="px-6 py-2 bg-red-100 text-red-700 rounded-xl hover:bg-red-200 transition-all font-medium disabled:opacity-50 flex items-center gap-2"
+                      >
                         <svg
                           className="w-4 h-4"
                           fill="none"
@@ -486,8 +509,8 @@ export default function UserProfilePage() {
                             d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
                           />
                         </svg>
-                        Blocked
-                      </div>
+                        {actionLoading ? "Unblocking..." : "Unblock"}
+                      </button>
                     ) : relationship?.isBlockedBy ? (
                       <div className="px-6 py-2 bg-gray-100 text-gray-500 rounded-xl font-medium">
                         You've been blocked

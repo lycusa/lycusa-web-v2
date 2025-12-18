@@ -223,7 +223,10 @@ export default function SettingsPage() {
 
           <div className="divide-y divide-gray-100">
             {/* Blocked Users */}
-            <div className="p-6">
+            <Link
+              href="/settings/blocked"
+              className="flex items-center justify-between p-6 hover:bg-gray-50 transition-colors group"
+            >
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
                   <svg
@@ -246,9 +249,21 @@ export default function SettingsPage() {
                     Manage users you've blocked
                   </p>
                 </div>
-                <span className="text-sm text-gray-400">Coming soon</span>
+                <svg
+                  className="w-5 h-5 text-gray-400 group-hover:text-tyrian-600 group-hover:translate-x-1 transition-all"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
               </div>
-            </div>
+            </Link>
 
             {/* End-to-End Encryption */}
             <div className="p-6">

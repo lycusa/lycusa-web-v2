@@ -3,7 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/app/components/auth/AuthGuard";
-import { followUser, unfollowUser, checkUserRelationship } from "@/app/lib/api";
+import {
+  followUser,
+  unfollowUser,
+  unblockUser,
+  checkUserRelationship,
+} from "@/app/lib/api";
 import type { RelatedUser, RelationshipStatus } from "@/app/lib/types/user";
 
 interface UserCardProps {
@@ -32,7 +37,12 @@ export default function UserCard({
 
   // Check relationship on mount if not provided
   useState(() => {
-    if (showFollowButton && !initialRelationship && isAuthenticated && !isOwnProfile) {
+    if (
+      showFollowButton &&
+      !initialRelationship &&
+      isAuthenticated &&
+      !isOwnProfile
+    ) {
       checkUserRelationship(user.id)
         .then((response) => {
           if (response.success && response.data) {
@@ -87,6 +97,29 @@ export default function UserCard({
       }
     } catch (err: any) {
       console.error("Failed to unfollow user:", err);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUnblock = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) return;
+
+    try {
+      setActionLoading(true);
+      const response = await unblockUser(user.id);
+
+      if (response.success) {
+        setRelationship((prev) => ({
+          ...prev!,
+          isBlocking: false,
+        }));
+      }
+    } catch (err: any) {
+      console.error("Failed to unblock user:", err);
     } finally {
       setActionLoading(false);
     }
@@ -152,9 +185,13 @@ export default function UserCard({
           {checkingRelationship ? (
             <div className="w-24 h-9 bg-gray-200 animate-pulse rounded-lg"></div>
           ) : relationship?.isBlocking ? (
-            <span className="px-3 py-1.5 text-sm text-red-600 bg-red-50 rounded-lg">
-              Blocked
-            </span>
+            <button
+              onClick={handleUnblock}
+              disabled={actionLoading}
+              className="px-4 py-1.5 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all font-medium disabled:opacity-50"
+            >
+              {actionLoading ? "Unblocking..." : "Unblock"}
+            </button>
           ) : relationship?.isBlockedBy ? (
             <span className="px-3 py-1.5 text-sm text-gray-500 bg-gray-100 rounded-lg">
               Unavailable
