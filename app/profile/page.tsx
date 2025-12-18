@@ -4,22 +4,27 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/app/components/auth/AuthGuard";
-import { getUserProfile, createUserProfile, getUserKycStatus, getUserByEmail, getUserByAddress } from "@/app/lib/api";
+import {
+  getUserProfile,
+  getUserKycStatus,
+  getUserByEmail,
+  getUserByAddress,
+  getUserFollowers,
+  getUserFollowing,
+  searchProducts,
+} from "@/app/lib/api";
 import { AppBackground, Header } from "@/app/components/layout";
-
-interface UserProfile {
-  userId: string;
-  username: string;
-  bio: string;
-  avatarUrl: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { UserProfile, UserStats } from "@/app/lib/types/user";
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, loading: authLoading, isAuthenticated } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [stats, setStats] = useState<UserStats>({
+    followersCount: 0,
+    followingCount: 0,
+    productsCount: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateProfile, setShowCreateProfile] = useState(false);
@@ -33,31 +38,81 @@ export default function ProfilePage() {
     }
 
     if (user?.id) {
-      loadProfile();
-      loadKycStatus();
+      loadAllData();
     }
   }, [user, authLoading, isAuthenticated]);
 
-  const loadProfile = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await getUserProfile(user!.id);
+  const loadAllData = async () => {
+    setLoading(true);
+    setError(null);
 
-      if (response.success && response.data) {
-        setProfile(response.data);
+    try {
+      // Load profile
+      const profileResponse = await getUserProfile(user!.id);
+      if (profileResponse.success && profileResponse.data) {
+        setProfile(profileResponse.data);
       } else {
         setShowCreateProfile(true);
+        setLoading(false);
+        return;
       }
     } catch (err: any) {
       if (err.response?.status === 404) {
         setShowCreateProfile(true);
-      } else {
-        setError(err.response?.data?.message || "Failed to load profile");
+        setLoading(false);
+        return;
       }
-    } finally {
+      setError(err.response?.data?.message || "Failed to load profile");
       setLoading(false);
+      return;
     }
+
+    // Load stats in parallel
+    try {
+      const [followersRes, followingRes, productsRes, kycRes] =
+        await Promise.allSettled([
+          getUserFollowers(user!.id),
+          getUserFollowing(user!.id),
+          searchProducts({ query: "", seller_id: user!.id, page: 1, size: 1 }),
+          loadKycStatus(),
+        ]);
+
+      const newStats: UserStats = {
+        followersCount: 0,
+        followingCount: 0,
+        productsCount: 0,
+      };
+
+      if (
+        followersRes.status === "fulfilled" &&
+        followersRes.value.success &&
+        followersRes.value.data
+      ) {
+        newStats.followersCount = Array.isArray(followersRes.value.data)
+          ? followersRes.value.data.length
+          : 0;
+      }
+
+      if (
+        followingRes.status === "fulfilled" &&
+        followingRes.value.success &&
+        followingRes.value.data
+      ) {
+        newStats.followingCount = Array.isArray(followingRes.value.data)
+          ? followingRes.value.data.length
+          : 0;
+      }
+
+      if (productsRes.status === "fulfilled" && productsRes.value.total) {
+        newStats.productsCount = productsRes.value.total;
+      }
+
+      setStats(newStats);
+    } catch (err) {
+      console.error("Failed to load stats:", err);
+    }
+
+    setLoading(false);
   };
 
   const loadKycStatus = async () => {
@@ -80,8 +135,13 @@ export default function ProfilePage() {
 
       const kycStatusValue = userData?.kycStatus ?? userData?.kyc_status;
 
-      if (userData && kycStatusValue !== undefined && kycStatusValue !== null) {
-        const booleanStatus = kycStatusValue === "true" || kycStatusValue === true;
+      if (
+        userData &&
+        kycStatusValue !== undefined &&
+        kycStatusValue !== null
+      ) {
+        const booleanStatus =
+          kycStatusValue === "true" || kycStatusValue === true;
         setKycStatus(booleanStatus);
       } else {
         const response = await getUserKycStatus(user!.id);
@@ -176,7 +236,7 @@ export default function ProfilePage() {
             <h2 className="text-xl font-bold text-gray-900 mb-2">Error</h2>
             <p className="text-gray-600 mb-6">{error}</p>
             <button
-              onClick={loadProfile}
+              onClick={loadAllData}
               className="px-6 py-2 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-colors"
             >
               Try Again
@@ -193,15 +253,61 @@ export default function ProfilePage() {
 
   return (
     <AppBackground>
-      {/* Header */}
       <Header />
 
-      {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Profile Header Card */}
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden mb-8">
           {/* Cover */}
-          <div className="h-48 bg-gradient-to-r from-tyrian-800 via-tyrian-600 to-neutral-600"></div>
+          <div className="h-48 bg-gradient-to-r from-tyrian-800 via-tyrian-600 to-neutral-600 relative">
+            {/* Edit Profile Button - positioned on cover */}
+            <div className="absolute top-4 right-4 flex gap-2">
+              <Link
+                href="/settings"
+                className="px-4 py-2 bg-white/20 backdrop-blur-md text-white rounded-xl hover:bg-white/30 transition-all font-medium text-sm flex items-center gap-2"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                Settings
+              </Link>
+              <Link
+                href="/profile/edit"
+                className="px-4 py-2 bg-white/20 backdrop-blur-md text-white rounded-xl hover:bg-white/30 transition-all font-medium text-sm flex items-center gap-2"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+                Edit Profile
+              </Link>
+            </div>
+          </div>
 
           {/* Profile Info */}
           <div className="relative px-8 pb-8">
@@ -253,11 +359,13 @@ export default function ProfilePage() {
               )}
 
               {/* KYC Status Badge */}
-              <div className="mb-4">
+              <div className="mb-6">
                 {kycLoading ? (
                   <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg">
                     <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-                    <span className="text-sm text-gray-600">Loading KYC status...</span>
+                    <span className="text-sm text-gray-600">
+                      Loading KYC status...
+                    </span>
                   </div>
                 ) : kycStatus ? (
                   <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 rounded-lg">
@@ -279,7 +387,10 @@ export default function ProfilePage() {
                     </span>
                   </div>
                 ) : (
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-100 rounded-lg">
+                  <Link
+                    href="/kyc"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-100 hover:bg-yellow-200 rounded-lg transition-colors group"
+                  >
                     <svg
                       className="w-5 h-5 text-yellow-600"
                       fill="none"
@@ -296,42 +407,139 @@ export default function ProfilePage() {
                     <span className="text-sm font-medium text-yellow-700">
                       KYC Not Verified
                     </span>
-                  </div>
+                    <span className="text-sm text-yellow-600 group-hover:text-yellow-700">
+                      - Click to verify
+                    </span>
+                  </Link>
                 )}
               </div>
 
               {/* Stats */}
-              <div className="flex gap-6 pt-6 border-t border-gray-200">
+              <div className="flex gap-8 pt-6 border-t border-gray-200">
                 <Link
                   href={`/users/${user?.id}/followers`}
-                  className="group cursor-pointer"
+                  className="group cursor-pointer text-center"
                 >
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900 group-hover:text-tyrian-600 transition-colors">
-                      0
-                    </div>
-                    <div className="text-sm text-gray-600 group-hover:text-tyrian-600 transition-colors">
-                      Followers
-                    </div>
+                  <div className="text-2xl font-bold text-gray-900 group-hover:text-tyrian-600 transition-colors">
+                    {stats.followersCount}
+                  </div>
+                  <div className="text-sm text-gray-600 group-hover:text-tyrian-600 transition-colors">
+                    Followers
                   </div>
                 </Link>
 
                 <Link
                   href={`/users/${user?.id}/following`}
-                  className="group cursor-pointer"
+                  className="group cursor-pointer text-center"
                 >
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-gray-900 group-hover:text-tyrian-600 transition-colors">
-                      0
-                    </div>
-                    <div className="text-sm text-gray-600 group-hover:text-tyrian-600 transition-colors">
-                      Following
-                    </div>
+                  <div className="text-2xl font-bold text-gray-900 group-hover:text-tyrian-600 transition-colors">
+                    {stats.followingCount}
+                  </div>
+                  <div className="text-sm text-gray-600 group-hover:text-tyrian-600 transition-colors">
+                    Following
+                  </div>
+                </Link>
+
+                <Link
+                  href="/my-products"
+                  className="group cursor-pointer text-center"
+                >
+                  <div className="text-2xl font-bold text-gray-900 group-hover:text-tyrian-600 transition-colors">
+                    {stats.productsCount}
+                  </div>
+                  <div className="text-sm text-gray-600 group-hover:text-tyrian-600 transition-colors">
+                    Products
                   </div>
                 </Link>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <Link
+            href="/my-products"
+            className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl hover:-translate-y-1 transition-all group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-tyrian-100 rounded-xl flex items-center justify-center group-hover:bg-tyrian-200 transition-colors">
+                <svg
+                  className="w-6 h-6 text-tyrian-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">My Products</h3>
+                <p className="text-sm text-gray-600">
+                  Manage your listings
+                </p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/orders"
+            className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl hover:-translate-y-1 transition-all group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                <svg
+                  className="w-6 h-6 text-purple-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Orders</h3>
+                <p className="text-sm text-gray-600">View your orders</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/messages"
+            className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl hover:-translate-y-1 transition-all group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                <svg
+                  className="w-6 h-6 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Messages</h3>
+                <p className="text-sm text-gray-600">Chat with users</p>
+              </div>
+            </div>
+          </Link>
         </div>
 
         {/* Profile Details Card */}
@@ -420,7 +628,9 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-2">
                     {kycStatus ? (
                       <>
-                        <span className="text-gray-900 font-medium">Verified</span>
+                        <span className="text-gray-900 font-medium">
+                          Verified
+                        </span>
                         <svg
                           className="w-5 h-5 text-green-600"
                           fill="currentColor"
@@ -435,7 +645,9 @@ export default function ProfilePage() {
                       </>
                     ) : (
                       <>
-                        <span className="text-gray-900 font-medium">Not Verified</span>
+                        <span className="text-gray-900 font-medium">
+                          Not Verified
+                        </span>
                         <Link
                           href="/kyc"
                           className="text-tyrian-600 hover:text-tyrian-700 text-sm underline"
@@ -448,6 +660,58 @@ export default function ProfilePage() {
                 )}
               </div>
             </div>
+
+            {user?.email && (
+              <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg
+                    className="w-5 h-5 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm text-gray-600 mb-1">Email</div>
+                  <div className="text-gray-900 font-medium">{user.email}</div>
+                </div>
+              </div>
+            )}
+
+            {user?.walletAddress && (
+              <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl">
+                <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg
+                    className="w-5 h-5 text-orange-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm text-gray-600 mb-1">
+                    Wallet Address
+                  </div>
+                  <div className="text-gray-900 font-medium font-mono text-sm">
+                    {user.walletAddress}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </main>

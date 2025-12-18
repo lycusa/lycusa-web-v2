@@ -67,6 +67,12 @@ export default function Header({ showNav = true, className = "" }: HeaderProps) 
                                         Messages
                                     </Link>
                                     <Link
+                                        href="/profile"
+                                        className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-xl"
+                                    >
+                                        Profile
+                                    </Link>
+                                    <Link
                                         href="/products/new"
                                         className="px-4 py-2 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all text-sm font-semibold shadow-md hover:shadow-lg"
                                     >

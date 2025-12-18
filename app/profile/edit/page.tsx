@@ -9,15 +9,8 @@ import {
   createUserProfile,
   updateUserProfile,
 } from "@/app/lib/api";
-
-interface UserProfile {
-  userId: string;
-  username: string;
-  bio: string;
-  avatarUrl: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { AppBackground, Header } from "@/app/components/layout";
+import type { UserProfile } from "@/app/lib/types/user";
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -126,54 +119,46 @@ export default function EditProfilePage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-brand-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+      <AppBackground>
+        <Header />
+        <div className="flex items-center justify-center min-h-[80vh]">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-tyrian-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
         </div>
-      </div>
+      </AppBackground>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-tyrian-800 to-brand-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
-                <svg
-                  className="w-6 h-6 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-tyrian-800 to-brand-600 bg-clip-text text-transparent">
-                Lycusa
-              </span>
-            </Link>
-
-            <Link
-              href="/profile"
-              className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors text-sm font-medium hover:bg-gray-100 rounded-lg"
-            >
-              Cancel
-            </Link>
-          </div>
-        </div>
-      </header>
+    <AppBackground>
+      <Header />
 
       {/* Main Content */}
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Back Button */}
+        <div className="mb-6">
+          <Link
+            href="/profile"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Back to Profile
+          </Link>
+        </div>
         <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -383,6 +368,6 @@ export default function EditProfilePage() {
           </form>
         </div>
       </main>
-    </div>
+    </AppBackground>
   );
 }

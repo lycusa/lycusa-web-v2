@@ -159,7 +159,7 @@ export const updateUserProfile = async (data: {
 
 // Follow a user
 export const followUser = async (targetUserId: string) => {
-  const response = await api.post(`/user/users/${targetUserId}/follow`);
+  const response = await api.post(`/user/users/${targetUserId}/follow`, {});
   return response.data;
 };
 
@@ -171,7 +171,7 @@ export const unfollowUser = async (targetUserId: string) => {
 
 // Block a user
 export const blockUser = async (targetUserId: string) => {
-  const response = await api.post(`/user/users/${targetUserId}/block`);
+  const response = await api.post(`/user/users/${targetUserId}/block`, {});
   return response.data;
 };
 
