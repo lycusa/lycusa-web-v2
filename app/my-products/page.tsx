@@ -9,12 +9,16 @@ import type { SearchResultItem } from "@/app/lib/types/product";
 import { ProductType, ProductStatus, ModerationStatus } from "@/app/lib/types/product";
 import { AppBackground, Header } from "@/app/components/layout";
 
+import ConfirmationModal from "@/app/components/shared/ConfirmationModal";
+
 export default function MyProductsPage() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [products, setProducts] = useState<SearchResultItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [productToDeleteId, setProductToDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchMyProducts = async () => {
@@ -51,25 +55,31 @@ export default function MyProductsPage() {
     }
   }, [user, isAuthenticated, authLoading]);
 
-  const handleDelete = async (productId: string) => {
-    if (!confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
-      return;
-    }
+  const handleDeleteClick = (productId: string) => {
+    setProductToDeleteId(productId);
+    setDeleteModalOpen(true);
+  };
 
-    setDeletingId(productId);
+  const handleConfirmDelete = async () => {
+    if (!productToDeleteId) return;
+
+    setDeletingId(productToDeleteId);
+    setDeleteModalOpen(false);
+
     try {
-      const response = await deleteProduct(productId);
+      const response = await deleteProduct(productToDeleteId);
 
       if (response.success) {
-        setProducts((prev) => prev.filter((p) => p.id !== productId));
+        setProducts((prev) => prev.filter((p) => p.id !== productToDeleteId));
       } else {
-        alert(response.message || "Failed to delete product");
+        setError(response.message || "Failed to delete product");
       }
     } catch (err: any) {
       console.error("Delete error:", err);
-      alert(err.message || "Failed to delete product");
+      setError(err.message || "Failed to delete product");
     } finally {
       setDeletingId(null);
+      setProductToDeleteId(null);
     }
   };
 
@@ -365,7 +375,7 @@ export default function MyProductsPage() {
                       Edit
                     </Link>
                     <button
-                      onClick={() => handleDelete(product.id)}
+                      onClick={() => handleDeleteClick(product.id)}
                       disabled={deletingId === product.id}
                       className="px-4 py-2 bg-red-50 text-red-700 rounded-xl hover:bg-red-100 transition-colors text-sm font-medium disabled:opacity-50"
                     >
@@ -378,6 +388,17 @@ export default function MyProductsPage() {
           </div>
         )}
       </main>
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title="Confirm Deletion"
+        message="Are you sure you want to delete this product? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        loading={deletingId !== null}
+      />
     </AppBackground>
   );
 }
