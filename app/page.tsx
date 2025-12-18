@@ -50,12 +50,6 @@ export default function Home() {
             </Link>
 
             <nav className="flex items-center gap-3">
-              <Link
-                href="/products"
-                className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-colors text-sm font-medium hover:bg-tyrian-50 rounded-xl"
-              >
-                Browse
-              </Link>
               {loading ? (
                 <div className="flex items-center gap-3">
                   <div className="w-24 h-9 bg-gray-200 animate-pulse rounded-xl"></div>
@@ -116,20 +110,20 @@ export default function Home() {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-tyrian-50 border border-tyrian-200 rounded-full mb-6 text-sm font-medium text-tyrian-800">
             <span className="w-2 h-2 bg-tyrian-800 rounded-full animate-pulse"></span>
-            Second-hand clothing marketplace
+            Privacy-focused marketplace
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-            Sustainable Fashion
+            Discreet Shopping
             <br />
             <span className="bg-gradient-to-r from-tyrian-800 via-tyrian-600 to-gray-500 bg-clip-text text-transparent">
-              For Everyone
+              Your Privacy Matters
             </span>
           </h1>
 
           <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Buy and sell pre-loved clothing with ease. Join our community of
-            conscious shoppers making fashion sustainable.
+            Buy and sell pre-loved intimate items with complete privacy and discretion.
+            A trusted marketplace where your identity is protected.
           </p>
 
           {!loading && !profileLoading && (
@@ -240,14 +234,8 @@ export default function Home() {
                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Link
-                      href="/products"
-                      className="px-10 py-4 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all font-semibold text-lg shadow-lg shadow-tyrian-800/30 hover:shadow-xl hover:shadow-tyrian-800/40 hover:-translate-y-1"
-                    >
-                      Browse Products
-                    </Link>
-                    <Link
                       href="/signup"
-                      className="px-10 py-4 bg-zinc-800 text-white rounded-xl hover:bg-zinc-900 transition-all font-semibold text-lg shadow-lg shadow-zinc-800/30 hover:shadow-xl hover:shadow-zinc-800/40 hover:-translate-y-1"
+                      className="px-10 py-4 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all font-semibold text-lg shadow-lg shadow-tyrian-800/30 hover:shadow-xl hover:shadow-tyrian-800/40 hover:-translate-y-1"
                     >
                       Get Started Free
                     </Link>
@@ -352,25 +340,172 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Stats Section */}
-        <div className="mt-24 bg-tyrian-800 rounded-3xl p-12 shadow-2xl">
-          <div className="grid md:grid-cols-3 gap-8 text-center text-white">
-            {[
-              { value: "10K+", label: "Active Users" },
-              { value: "50K+", label: "Items Listed" },
-              { value: "95%", label: "Satisfaction" },
-            ].map((stat, i) => (
-              <div key={i} className="space-y-2">
-                <div className="text-4xl md:text-5xl font-bold">
-                  {stat.value}
-                </div>
-                <div className="text-tyrian-200 text-sm md:text-base">
-                  {stat.label}
+        {/* How It Works Section */}
+        <div className="mt-32 relative">
+          {/* Decorative background elements */}
+          <div className="absolute inset-0 -z-10 overflow-hidden">
+            <div className="absolute top-1/4 -left-20 w-96 h-96 bg-tyrian-100/30 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-gray-100/50 rounded-full blur-3xl"></div>
+          </div>
+
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-tyrian-50 border border-tyrian-200 rounded-full mb-4 text-sm font-medium text-tyrian-800">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Simple Process
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              How It Works
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum at eros.
+            </p>
+          </div>
+
+          <div className="relative max-w-6xl mx-auto">
+            {/* Connection line */}
+            <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-tyrian-200 via-tyrian-300 to-tyrian-200 -translate-y-1/2 -z-10"></div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
+              {/* Step 1 */}
+              <div className="relative group">
+                <div className="bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 border-2 border-transparent hover:border-tyrian-200 h-full flex flex-col">
+                  {/* Step number with gradient background */}
+                  <div className="relative mb-6">
+                    <div className="w-20 h-20 mx-auto bg-gradient-to-br from-tyrian-800 to-tyrian-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg shadow-tyrian-800/30">
+                      <span className="text-3xl font-bold text-white">1</span>
+                    </div>
+                    {/* Floating badge */}
+                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-tyrian-100 rounded-full flex items-center justify-center border-2 border-white shadow-md">
+                      <svg className="w-4 h-4 text-tyrian-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
+                    Create Account
+                  </h3>
+                  <p className="text-gray-600 text-center leading-relaxed flex-grow">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt.
+                  </p>
+
+                  {/* Decorative dot */}
+                  <div className="mt-6 flex justify-center gap-1">
+                    <div className="w-2 h-2 bg-tyrian-800 rounded-full"></div>
+                    <div className="w-2 h-2 bg-tyrian-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-tyrian-200 rounded-full"></div>
+                  </div>
                 </div>
               </div>
-            ))}
+
+              {/* Step 2 */}
+              <div className="relative group lg:mt-8">
+                <div className="bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 border-2 border-transparent hover:border-gray-300 h-full flex flex-col">
+                  <div className="relative mb-6">
+                    <div className="w-20 h-20 mx-auto bg-gradient-to-br from-gray-700 to-gray-500 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg shadow-gray-700/30">
+                      <span className="text-3xl font-bold text-white">2</span>
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center border-2 border-white shadow-md">
+                      <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
+                    Browse Items
+                  </h3>
+                  <p className="text-gray-600 text-center leading-relaxed flex-grow">
+                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.
+                  </p>
+
+                  <div className="mt-6 flex justify-center gap-1">
+                    <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-gray-200 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="relative group">
+                <div className="bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 border-2 border-transparent hover:border-tyrian-200 h-full flex flex-col">
+                  <div className="relative mb-6">
+                    <div className="w-20 h-20 mx-auto bg-gradient-to-br from-tyrian-700 to-tyrian-500 rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg shadow-tyrian-700/30">
+                      <span className="text-3xl font-bold text-white">3</span>
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-tyrian-100 rounded-full flex items-center justify-center border-2 border-white shadow-md">
+                      <svg className="w-4 h-4 text-tyrian-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
+                    Make Purchase
+                  </h3>
+                  <p className="text-gray-600 text-center leading-relaxed flex-grow">
+                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.
+                  </p>
+
+                  <div className="mt-6 flex justify-center gap-1">
+                    <div className="w-2 h-2 bg-tyrian-700 rounded-full"></div>
+                    <div className="w-2 h-2 bg-tyrian-400 rounded-full"></div>
+                    <div className="w-2 h-2 bg-tyrian-200 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 4 */}
+              <div className="relative group lg:mt-8">
+                <div className="bg-gradient-to-br from-tyrian-800 to-tyrian-900 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 border-2 border-transparent hover:border-tyrian-300 h-full flex flex-col">
+                  <div className="relative mb-6">
+                    <div className="w-20 h-20 mx-auto bg-white rounded-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
+                      <span className="text-3xl font-bold text-tyrian-800">4</span>
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-400 rounded-full flex items-center justify-center border-2 border-white shadow-md">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <h3 className="text-xl font-bold text-white mb-4 text-center">
+                    Receive Discreetly
+                  </h3>
+                  <p className="text-tyrian-100 text-center leading-relaxed flex-grow">
+                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt.
+                  </p>
+
+                  <div className="mt-6 flex justify-center gap-1">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                    <div className="w-2 h-2 bg-tyrian-300 rounded-full"></div>
+                    <div className="w-2 h-2 bg-tyrian-500 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom CTA */}
+            <div className="mt-16 text-center">
+              <div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div className="text-left">
+                  <p className="text-gray-900 font-semibold mb-1">Ready to get started?</p>
+                  <p className="text-gray-600 text-sm">Lorem ipsum dolor sit amet, consectetur adipiscing.</p>
+                </div>
+                <Link
+                  href="/signup"
+                  className="px-8 py-3 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap"
+                >
+                  Join Now
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
+
       </main>
 
       {/* Footer */}
