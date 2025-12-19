@@ -106,30 +106,42 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-tyrian-50 border border-tyrian-200 rounded-full mb-6 text-sm font-medium text-tyrian-800">
-            <span className="w-2 h-2 bg-tyrian-800 rounded-full animate-pulse"></span>
-            Privacy-focused marketplace
-          </div>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 md:pt-16 md:pb-20">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Left Content */}
+          <div className="space-y-8">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-tyrian-50 border border-tyrian-200 rounded-full text-xs font-semibold text-tyrian-800 tracking-wide">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tyrian-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-tyrian-800"></span>
+                </span>
+                PRIVACY-FIRST MARKETPLACE
+              </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-            Discreet Shopping
-            <br />
-            <span className="bg-gradient-to-r from-tyrian-800 via-tyrian-600 to-gray-500 bg-clip-text text-transparent">
-              Your Privacy Matters
-            </span>
-          </h1>
+              <h1 className="text-4xl md:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight tracking-tight">
+                Shop Intimate Items
+                <br />
+                <span className="relative inline-block">
+                  <span className="bg-linear-to-r from-tyrian-800 via-tyrian-600 to-tyrian-800 bg-clip-text text-transparent">
+                    With Total Privacy
+                  </span>
+                  <svg className="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 200 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 5.5C50 2.5 100 2 150 4C175 5 190 6 199 7" stroke="currentColor" strokeWidth="2" fill="none" className="text-tyrian-300"/>
+                  </svg>
+                </span>
+              </h1>
 
-          <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Buy and sell pre-loved intimate items with complete privacy and discretion.
-            A trusted marketplace where your identity is protected.
-          </p>
+              <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-xl">
+                A secure marketplace for pre-loved items. Anonymous shopping, encrypted messaging, and discreet delivery — all in one trusted platform.
+              </p>
+            </div>
 
-          {!loading && !profileLoading && (
+            {/* CTAs and Trust Indicators */}
+            {!loading && !profileLoading && (
             <>
               {isAuthenticated ? (
-                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
                   <div className="inline-flex items-center gap-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-6 shadow-lg">
                     <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
                       <svg
@@ -231,69 +243,146 @@ export default function Home() {
                   )}
                 </div>
               ) : (
-                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <Link
                       href="/signup"
-                      className="px-10 py-4 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all font-semibold text-lg shadow-lg shadow-tyrian-800/30 hover:shadow-xl hover:shadow-tyrian-800/40 hover:-translate-y-1"
+                      className="group px-8 py-4 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all font-semibold shadow-lg shadow-tyrian-800/25 hover:shadow-xl hover:shadow-tyrian-800/35 hover:-translate-y-0.5 flex items-center justify-center gap-2"
                     >
                       Get Started Free
+                      <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </Link>
+                    <Link
+                      href="/products"
+                      className="px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-tyrian-800 hover:text-tyrian-800 hover:bg-tyrian-50 transition-all font-semibold hover:-translate-y-0.5"
+                    >
+                      Browse Products
                     </Link>
                   </div>
-                  <div className="text-center">
+                  <p className="text-sm text-gray-500">
+                    Already have an account?{" "}
                     <Link
                       href="/signin"
-                      className="text-gray-600 hover:text-tyrian-800 font-medium underline"
+                      className="text-tyrian-800 hover:text-tyrian-900 font-semibold"
                     >
-                      Already have an account? Sign In
+                      Sign In →
                     </Link>
+                  </p>
+
+                  {/* Trust Indicators */}
+                  <div className="flex flex-wrap items-center gap-6 pt-4 text-sm text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span>No credit card required</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span>End-to-end encrypted</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clipRule="evenodd" />
+                        <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
+                      </svg>
+                      <span>100% anonymous</span>
+                    </div>
                   </div>
                 </div>
               )}
             </>
           )}
+          </div>
+
+          {/* Right Visual Element - Feature Cards */}
+          <div className="hidden lg:block relative">
+            <div className="relative">
+              {/* Background gradient orbs */}
+              <div className="absolute -top-20 -right-20 w-72 h-72 bg-tyrian-100 rounded-full blur-3xl opacity-40"></div>
+              <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-blue-100 rounded-full blur-3xl opacity-40"></div>
+
+              {/* Floating feature cards */}
+              <div className="relative space-y-4">
+                {/* Card 1 - Privacy */}
+                <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 transform hover:-translate-y-1 transition-all duration-300">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-linear-to-br from-tyrian-800 to-tyrian-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-tyrian-800/20">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-gray-900 mb-1">Anonymous Shopping</h3>
+                      <p className="text-sm text-gray-600">Your identity stays completely private throughout your journey.</p>
+                    </div>
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+
+                {/* Card 2 - Messaging */}
+                <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 transform hover:-translate-y-1 transition-all duration-300 ml-8">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-linear-to-br from-blue-600 to-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-600/20">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-gray-900 mb-1">Encrypted Messages</h3>
+                      <p className="text-sm text-gray-600">Signal Protocol ensures your conversations are secure.</p>
+                    </div>
+                    <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Card 3 - Delivery */}
+                <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 transform hover:-translate-y-1 transition-all duration-300">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-linear-to-br from-green-600 to-green-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-green-600/20">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-gray-900 mb-1">Discreet Packaging</h3>
+                      <p className="text-sm text-gray-600">Plain boxes with no branding or product details.</p>
+                    </div>
+                    <div className="flex items-center gap-1 px-2 py-1 bg-green-50 rounded-full">
+                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                      <span className="text-xs font-medium text-green-700">Active</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Features Section */}
-        <div className="mt-24">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why Choose Lycusa?
+        {/* Why Lycusa Section - Privacy & Security Focus */}
+        <div className="mt-32">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Why Lycusa?
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              The most trusted platform for buying and selling pre-loved fashion
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Built from the ground up with privacy, security, and discretion at our core.
+              We understand the importance of anonymity in sensitive purchases.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-tyrian-200 hover:-translate-y-2">
-              <div className="w-14 h-14 bg-gradient-to-br from-tyrian-100 to-tyrian-50 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform text-tyrian-800">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Privacy & Anonymity */}
+            <div className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-tyrian-300 hover:-translate-y-2">
+              <div className="w-16 h-16 bg-linear-to-br from-tyrian-800 to-tyrian-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-tyrian-800/20">
                 <svg
-                  className="w-7 h-7"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                Easy Shopping
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Browse thousands of curated pre-loved items from verified sellers
-              </p>
-            </div>
-
-            <div className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-gray-300 hover:-translate-y-2">
-              <div className="w-14 h-14 bg-gradient-to-br from-gray-200 to-gray-100 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform text-gray-700">
-                <svg
-                  className="w-7 h-7"
+                  className="w-8 h-8 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -306,18 +395,19 @@ export default function Home() {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                Secure Payments
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Complete Privacy
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Multiple authentication options including email OTP and Web3 wallet
+                Your identity remains anonymous throughout the entire shopping experience. No personal data is ever exposed to sellers or buyers.
               </p>
             </div>
 
-            <div className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-green-200 hover:-translate-y-2">
-              <div className="w-14 h-14 bg-gradient-to-br from-zinc-100 to-zinc-50 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform text-zinc-600">
+            {/* End-to-End Encryption */}
+            <div className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-300 hover:-translate-y-2">
+              <div className="w-16 h-16 bg-linear-to-br from-blue-600 to-blue-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-blue-600/20">
                 <svg
-                  className="w-7 h-7"
+                  className="w-8 h-8 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -326,15 +416,65 @@ export default function Home() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                Sustainable Impact
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Encrypted Messaging
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Reduce fashion waste and give quality clothing a second life
+                All communications use Signal Protocol end-to-end encryption. Even we can't read your messages.
+              </p>
+            </div>
+
+            {/* Discreet Delivery */}
+            <div className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-green-300 hover:-translate-y-2">
+              <div className="w-16 h-16 bg-linear-to-br from-green-600 to-green-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-green-600/20">
+                <svg
+                  className="w-8 h-8 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Discreet Delivery
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                Plain packaging with no branding or product details. Your deliveries arrive privately without revealing contents.
+              </p>
+            </div>
+
+            {/* Buyer & Seller Protection */}
+            <div className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-amber-300 hover:-translate-y-2">
+              <div className="w-16 h-16 bg-linear-to-br from-amber-600 to-amber-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-amber-600/20">
+                <svg
+                  className="w-8 h-8 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Secure Transactions
+              </h3>
+              <p className="text-gray-600 leading-relaxed">
+                KYC verification, secure escrow payments, and dispute resolution protect both buyers and sellers.
               </p>
             </div>
           </div>
@@ -353,13 +493,13 @@ export default function Home() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              Simple Process
+              Simple & Secure
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               How It Works
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum at eros.
+              Getting started is simple. Create an account, browse anonymously, and shop with complete confidence.
             </p>
           </div>
 
@@ -385,10 +525,10 @@ export default function Home() {
                   </div>
 
                   <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
-                    Create Account
+                    Sign Up Anonymously
                   </h3>
-                  <p className="text-gray-600 text-center leading-relaxed flex-grow">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt.
+                  <p className="text-gray-600 text-center leading-relaxed grow">
+                    Create your account with just an email or Web3 wallet. No personal information required to start browsing.
                   </p>
 
                   {/* Decorative dot */}
@@ -415,10 +555,10 @@ export default function Home() {
                   </div>
 
                   <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
-                    Browse Items
+                    Browse & Connect
                   </h3>
-                  <p className="text-gray-600 text-center leading-relaxed flex-grow">
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.
+                  <p className="text-gray-600 text-center leading-relaxed grow">
+                    Explore verified listings and message sellers through our encrypted chat. Your conversations stay completely private.
                   </p>
 
                   <div className="mt-6 flex justify-center gap-1">
@@ -444,10 +584,10 @@ export default function Home() {
                   </div>
 
                   <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
-                    Make Purchase
+                    Secure Payment
                   </h3>
-                  <p className="text-gray-600 text-center leading-relaxed flex-grow">
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.
+                  <p className="text-gray-600 text-center leading-relaxed grow">
+                    Complete your purchase with our secure escrow system. Payments are protected and released only when you confirm delivery.
                   </p>
 
                   <div className="mt-6 flex justify-center gap-1">
@@ -473,10 +613,10 @@ export default function Home() {
                   </div>
 
                   <h3 className="text-xl font-bold text-white mb-4 text-center">
-                    Receive Discreetly
+                    Discreet Delivery
                   </h3>
-                  <p className="text-tyrian-100 text-center leading-relaxed flex-grow">
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt.
+                  <p className="text-tyrian-100 text-center leading-relaxed grow">
+                    Receive your items in plain, unmarked packaging. No external labels or branding reveal the contents or marketplace name.
                   </p>
 
                   <div className="mt-6 flex justify-center gap-1">
@@ -493,7 +633,7 @@ export default function Home() {
               <div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
                 <div className="text-left">
                   <p className="text-gray-900 font-semibold mb-1">Ready to get started?</p>
-                  <p className="text-gray-600 text-sm">Lorem ipsum dolor sit amet, consectetur adipiscing.</p>
+                  <p className="text-gray-600 text-sm">Join our privacy-first marketplace today.</p>
                 </div>
                 <Link
                   href="/signup"
@@ -502,6 +642,207 @@ export default function Home() {
                   Join Now
                 </Link>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Project Phases Timeline Section */}
+        <div className="mt-32">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-tyrian-50 border border-tyrian-200 rounded-full mb-4 text-sm font-medium text-tyrian-800">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              Our Roadmap
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Project Phases
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              We're building Lycusa in three strategic phases to ensure quality, security, and scalability.
+            </p>
+          </div>
+
+          <div className="max-w-5xl mx-auto">
+            {/* Timeline connector line */}
+            <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-linear-to-b from-tyrian-300 via-tyrian-400 to-gray-300"></div>
+
+            <div className="space-y-12">
+              {/* Phase 1 - Current */}
+              <div className="relative">
+                <div className="md:flex items-center gap-8">
+                  {/* Timeline dot */}
+                  <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-tyrian-800 rounded-full border-4 border-white shadow-lg z-10"></div>
+
+                  {/* Content */}
+                  <div className="md:w-1/2 md:pr-12 md:text-right">
+                    <div className="inline-block bg-linear-to-r from-tyrian-800 to-tyrian-600 text-white px-4 py-1 rounded-full text-sm font-bold mb-3">
+                      PHASE 1 · CURRENT
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Foundation & Core Features</h3>
+                    <p className="text-sm text-gray-500 mb-4">Q1 2025 - Q2 2025</p>
+                  </div>
+                  <div className="md:w-1/2 md:pl-12">
+                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-tyrian-200">
+                      <ul className="space-y-3 text-gray-700">
+                        <li className="flex items-start gap-2">
+                          <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          <span>User authentication & KYC verification</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          <span>End-to-end encrypted messaging (Signal Protocol)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          <span>Product listings & marketplace infrastructure</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <svg className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          <span>Basic order management & escrow system</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Phase 2 - Planned */}
+              <div className="relative">
+                <div className="md:flex items-center gap-8">
+                  {/* Timeline dot */}
+                  <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-gray-400 rounded-full border-4 border-white shadow-lg z-10"></div>
+
+                  {/* Content - Reversed order for alternating layout */}
+                  <div className="md:w-1/2 md:pr-12 md:text-right order-1 md:order-none">
+                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+                      <ul className="space-y-3 text-gray-700">
+                        <li className="flex items-start gap-2 md:flex-row-reverse md:text-right">
+                          <svg className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                          </svg>
+                          <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit</span>
+                        </li>
+                        <li className="flex items-start gap-2 md:flex-row-reverse md:text-right">
+                          <svg className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                          </svg>
+                          <span>Sed do eiusmod tempor incididunt ut labore</span>
+                        </li>
+                        <li className="flex items-start gap-2 md:flex-row-reverse md:text-right">
+                          <svg className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                          </svg>
+                          <span>Ut enim ad minim veniam quis nostrud</span>
+                        </li>
+                        <li className="flex items-start gap-2 md:flex-row-reverse md:text-right">
+                          <svg className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                          </svg>
+                          <span>Exercitation ullamco laboris nisi</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="md:w-1/2 md:pl-12">
+                    <div className="inline-block bg-gray-400 text-white px-4 py-1 rounded-full text-sm font-bold mb-3">
+                      PHASE 2 · PLANNED
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Enhanced Features & Scale</h3>
+                    <p className="text-sm text-gray-500 mb-4">Q3 2025 - Q4 2025</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Phase 3 - Future */}
+              <div className="relative">
+                <div className="md:flex items-center gap-8">
+                  {/* Timeline dot */}
+                  <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-gray-300 rounded-full border-4 border-white shadow-lg z-10"></div>
+
+                  {/* Content */}
+                  <div className="md:w-1/2 md:pr-12 md:text-right">
+                    <div className="inline-block bg-gray-300 text-gray-700 px-4 py-1 rounded-full text-sm font-bold mb-3">
+                      PHASE 3 · FUTURE
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Advanced Platform & Global Expansion</h3>
+                    <p className="text-sm text-gray-500 mb-4">2026 & Beyond</p>
+                  </div>
+                  <div className="md:w-1/2 md:pl-12">
+                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
+                      <ul className="space-y-3 text-gray-700">
+                        <li className="flex items-start gap-2">
+                          <svg className="w-5 h-5 text-gray-300 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                          </svg>
+                          <span>Duis aute irure dolor in reprehenderit</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <svg className="w-5 h-5 text-gray-300 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                          </svg>
+                          <span>Voluptate velit esse cillum dolore</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <svg className="w-5 h-5 text-gray-300 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                          </svg>
+                          <span>Excepteur sint occaecat cupidatat</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <svg className="w-5 h-5 text-gray-300 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                          </svg>
+                          <span>Non proident sunt in culpa qui officia</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Final CTA Section */}
+        <div className="mt-32 mb-16">
+          <div className="relative overflow-hidden bg-linear-to-br from-tyrian-900 via-tyrian-800 to-tyrian-900 rounded-3xl p-12 md:p-16 shadow-2xl">
+            {/* Decorative background elements */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-tyrian-600/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-tyrian-950/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+
+            <div className="relative z-10 text-center max-w-3xl mx-auto">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                Ready to Shop with Complete Privacy?
+              </h2>
+              <p className="text-xl text-tyrian-100 mb-10 leading-relaxed">
+                Join Lycusa today and experience a marketplace built for discretion, security, and your peace of mind.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href="/signup"
+                  className="px-12 py-5 bg-white text-tyrian-900 rounded-2xl hover:bg-gray-100 transition-all font-bold text-lg shadow-xl hover:shadow-2xl hover:-translate-y-1"
+                >
+                  Create Free Account
+                </Link>
+                <Link
+                  href="/products"
+                  className="px-12 py-5 border-2 border-white text-white rounded-2xl hover:bg-white/10 transition-all font-bold text-lg hover:-translate-y-1"
+                >
+                  Explore Products
+                </Link>
+              </div>
+              <p className="mt-6 text-sm text-tyrian-200">
+                No credit card required · Anonymous browsing · Encrypted messaging
+              </p>
             </div>
           </div>
         </div>
