@@ -69,3 +69,157 @@ body {
   color: var(--foreground);
   font-family: 'Manrope', sans-serif;
 }
+
+/* ==========================================
+   2025 Design Trends - Hero Section Styles
+   ========================================== */
+
+/* Aurora Gradient Animation */
+@keyframes aurora {
+
+  0%,
+  100% {
+    transform: translate(0%, 0%) rotate(0deg) scale(1);
+  }
+
+  25% {
+    transform: translate(5%, 5%) rotate(3deg) scale(1.05);
+  }
+
+  50% {
+    transform: translate(-3%, 8%) rotate(-2deg) scale(1.02);
+  }
+
+  75% {
+    transform: translate(-5%, -3%) rotate(2deg) scale(1.08);
+  }
+}
+
+@keyframes aurora-reverse {
+
+  0%,
+  100% {
+    transform: translate(0%, 0%) rotate(0deg) scale(1);
+  }
+
+  25% {
+    transform: translate(-5%, -5%) rotate(-3deg) scale(1.05);
+  }
+
+  50% {
+    transform: translate(3%, -8%) rotate(2deg) scale(1.02);
+  }
+
+  75% {
+    transform: translate(5%, 3%) rotate(-2deg) scale(1.08);
+  }
+}
+
+/* Floating Animation */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes float-delayed {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+/* Pulse Glow Animation */
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(99, 0, 43, 0.3), 0 0 40px rgba(99, 0, 43, 0.1);
+  }
+
+  50% {
+    box-shadow: 0 0 30px rgba(99, 0, 43, 0.5), 0 0 60px rgba(99, 0, 43, 0.2);
+  }
+}
+
+/* Gradient Text Shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Glassmorphism Base Classes */
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.glass-card-light {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+.glass-card-dark {
+  background: rgba(99, 0, 43, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(99, 0, 43, 0.2);
+  box-shadow: 0 8px 32px rgba(99, 0, 43, 0.1);
+}
+
+/* Aurora Background Utility */
+.aurora-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Bento Grid Utilities */
+.bento-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+/* Text Gradient Animation */
+.text-gradient-animated {
+  background: linear-gradient(90deg,
+      #63002B 0%,
+      #8a1048 25%,
+      #b0183f 50%,
+      #8a1048 75%,
+      #63002B 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
