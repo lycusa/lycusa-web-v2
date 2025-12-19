@@ -327,7 +327,7 @@ export default function Home() {
                 {/* Card 2 - Messaging */}
                 <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 transform hover:-translate-y-1 transition-all duration-300 ml-8">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-linear-to-br from-blue-600 to-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-600/20">
+                    <div className="w-12 h-12 bg-linear-to-br from-tyrian-600 to-tyrian-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-tyrian-600/20">
                       <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                       </svg>
@@ -336,16 +336,17 @@ export default function Home() {
                       <h3 className="font-bold text-gray-900 mb-1">Encrypted Messages</h3>
                       <p className="text-sm text-gray-600">Signal Protocol ensures your conversations are secure.</p>
                     </div>
-                    <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
+                    <div className="flex items-center gap-1 px-2 py-1 bg-tyrian-50 rounded-full border border-tyrian-200">
+                      <div className="w-1.5 h-1.5 bg-tyrian-600 rounded-full animate-pulse"></div>
+                      <span className="text-xs font-medium text-tyrian-800">Secure</span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Card 3 - Delivery */}
                 <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 transform hover:-translate-y-1 transition-all duration-300">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-linear-to-br from-green-600 to-green-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-green-600/20">
+                    <div className="w-12 h-12 bg-linear-to-br from-gray-700 to-gray-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-gray-700/20">
                       <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                       </svg>
@@ -354,9 +355,11 @@ export default function Home() {
                       <h3 className="font-bold text-gray-900 mb-1">Discreet Packaging</h3>
                       <p className="text-sm text-gray-600">Plain boxes with no branding or product details.</p>
                     </div>
-                    <div className="flex items-center gap-1 px-2 py-1 bg-green-50 rounded-full">
-                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                      <span className="text-xs font-medium text-green-700">Active</span>
+                    <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full border border-gray-300">
+                      <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-xs font-medium text-gray-700">Verified</span>
                     </div>
                   </div>
                 </div>
@@ -404,8 +407,8 @@ export default function Home() {
             </div>
 
             {/* End-to-End Encryption */}
-            <div className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-300 hover:-translate-y-2">
-              <div className="w-16 h-16 bg-linear-to-br from-blue-600 to-blue-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-blue-600/20">
+            <div className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-tyrian-300 hover:-translate-y-2">
+              <div className="w-16 h-16 bg-linear-to-br from-tyrian-600 to-tyrian-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-tyrian-600/20">
                 <svg
                   className="w-8 h-8 text-white"
                   fill="none"
@@ -429,8 +432,8 @@ export default function Home() {
             </div>
 
             {/* Discreet Delivery */}
-            <div className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-green-300 hover:-translate-y-2">
-              <div className="w-16 h-16 bg-linear-to-br from-green-600 to-green-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-green-600/20">
+            <div className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-gray-300 hover:-translate-y-2">
+              <div className="w-16 h-16 bg-linear-to-br from-gray-700 to-gray-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-gray-700/20">
                 <svg
                   className="w-8 h-8 text-white"
                   fill="none"
@@ -454,8 +457,8 @@ export default function Home() {
             </div>
 
             {/* Buyer & Seller Protection */}
-            <div className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-amber-300 hover:-translate-y-2">
-              <div className="w-16 h-16 bg-linear-to-br from-amber-600 to-amber-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-amber-600/20">
+            <div className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-tyrian-300 hover:-translate-y-2">
+              <div className="w-16 h-16 bg-linear-to-br from-tyrian-700 to-tyrian-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-tyrian-700/20">
                 <svg
                   className="w-8 h-8 text-white"
                   fill="none"
