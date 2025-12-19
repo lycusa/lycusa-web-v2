@@ -69,3 +69,117 @@ body {
   color: var(--foreground);
   font-family: 'Manrope', sans-serif;
 }
+
+/* ===== 2025 Design Trend Animations ===== */
+
+/* Aurora Blob Animation - Smooth morphing movement */
+@keyframes aurora-blob {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    border-radius: 40% 60% 60% 40% / 60% 40% 60% 40%;
+  }
+  25% {
+    transform: translate(30px, -50px) scale(1.1) rotate(90deg);
+    border-radius: 60% 40% 40% 60% / 40% 60% 40% 60%;
+  }
+  50% {
+    transform: translate(-20px, 30px) scale(0.95) rotate(180deg);
+    border-radius: 50% 50% 60% 40% / 50% 60% 40% 50%;
+  }
+  75% {
+    transform: translate(40px, 20px) scale(1.05) rotate(270deg);
+    border-radius: 40% 60% 50% 50% / 60% 40% 50% 50%;
+  }
+}
+
+/* Floating Animation for Cards */
+@keyframes aurora-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(1deg);
+  }
+}
+
+/* Pulse Glow Animation for CTAs */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(99, 0, 43, 0.3), 0 0 40px rgba(99, 0, 43, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(99, 0, 43, 0.5), 0 0 60px rgba(99, 0, 43, 0.3);
+  }
+}
+
+/* Fade In Up Animation */
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Shimmer Effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ===== Utility Classes ===== */
+
+/* Glassmorphism Card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Glass Card Dark Variant */
+.glass-card-dark {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Aurora Blob Base */
+.aurora-blob {
+  animation: aurora-blob 20s ease-in-out infinite;
+  filter: blur(60px);
+}
+
+/* Floating Card */
+.floating-card {
+  animation: aurora-float 6s ease-in-out infinite;
+}
+
+/* Pulse Glow Button */
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Fade In Up */
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out forwards;
+}
+
+/* Staggered Animation Delays */
+.animation-delay-100 { animation-delay: 100ms; }
+.animation-delay-200 { animation-delay: 200ms; }
+.animation-delay-300 { animation-delay: 300ms; }
+.animation-delay-400 { animation-delay: 400ms; }
+.animation-delay-500 { animation-delay: 500ms; }
+.animation-delay-700 { animation-delay: 700ms; }
+.animation-delay-1000 { animation-delay: 1000ms; }
