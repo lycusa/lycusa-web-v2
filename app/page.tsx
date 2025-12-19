@@ -105,268 +105,238 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 md:pt-16 md:pb-20">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left Content */}
-          <div className="space-y-8">
-            <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-tyrian-50 border border-tyrian-200 rounded-full text-xs font-semibold text-tyrian-800 tracking-wide">
+      {/* Hero Section - 2025 Creative Design */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 md:pt-12 md:pb-20">
+        {/* Main Hero Grid - Bento Style */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5">
+
+          {/* Main Content Card - Spans 7 columns */}
+          <div className="lg:col-span-7 relative overflow-hidden bg-linear-to-br from-tyrian-900 via-tyrian-800 to-tyrian-950 rounded-3xl p-8 md:p-10 lg:p-12 min-h-[400px] lg:min-h-[480px] flex flex-col justify-between">
+            {/* Animated Background Elements */}
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute -top-40 -right-40 w-80 h-80 bg-tyrian-600/30 rounded-full blur-3xl animate-pulse"></div>
+              <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-tyrian-700/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+              {/* Grid pattern overlay */}
+              <div className="absolute inset-0 opacity-5" style={{backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 1px)', backgroundSize: '32px 32px'}}></div>
+            </div>
+
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-xs font-semibold text-tyrian-100 tracking-wide mb-6">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tyrian-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-tyrian-800"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tyrian-300 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                 </span>
                 PRIVACY-FIRST MARKETPLACE
               </div>
 
-              <h1 className="text-4xl md:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight tracking-tight">
-                Shop Intimate Items
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tight mb-6">
+                Shop Intimate
+                <br />
+                Items With
                 <br />
                 <span className="relative inline-block">
-                  <span className="bg-linear-to-r from-tyrian-800 via-tyrian-600 to-tyrian-800 bg-clip-text text-transparent">
-                    With Total Privacy
-                  </span>
-                  <svg className="absolute -bottom-2 left-0 w-full" height="8" viewBox="0 0 200 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1 5.5C50 2.5 100 2 150 4C175 5 190 6 199 7" stroke="currentColor" strokeWidth="2" fill="none" className="text-tyrian-300"/>
-                  </svg>
+                  <span className="text-transparent bg-clip-text bg-linear-to-r from-tyrian-200 via-white to-tyrian-200">Total Privacy</span>
                 </span>
               </h1>
 
-              <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-xl">
-                A secure marketplace for pre-loved items. Anonymous shopping, encrypted messaging, and discreet delivery — all in one trusted platform.
+              <p className="text-base md:text-lg text-tyrian-100/80 leading-relaxed max-w-md">
+                A secure marketplace where your identity stays anonymous, messages are encrypted, and packages arrive discreetly.
               </p>
             </div>
 
-            {/* CTAs and Trust Indicators */}
-            {!loading && !profileLoading && (
-            <>
-              {isAuthenticated ? (
-                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                  <div className="inline-flex items-center gap-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-6 shadow-lg">
-                    <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                      <svg
-                        className="w-6 h-6 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </div>
-                    <div className="text-left">
-                      <p className="text-green-900 font-semibold mb-1">
-                        Welcome back!
-                      </p>
-                      <p className="text-green-700 text-sm">
-                        {user?.email && `Signed in as ${user.email}`}
-                        {user?.walletAddress &&
-                          `Connected: ${user.walletAddress.slice(0, 10)}...${user.walletAddress.slice(-8)}`}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Onboarding Steps */}
-                  {!hasProfile ? (
-                    <div className="max-w-2xl mx-auto">
-                      <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
-                        <div className="text-center mb-6">
-                          <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                            Complete Your Profile
-                          </h3>
-                          <p className="text-gray-600">
-                            Let's get you started! Set up your profile to unlock
-                            all features.
-                          </p>
-                        </div>
-
-                        {/* Progress Steps */}
-                        <div className="flex items-center justify-center gap-4 mb-8">
-                          <div className="flex items-center gap-2">
-                            <div className="w-10 h-10 rounded-full bg-tyrian-800 text-white flex items-center justify-center font-bold">
-                              1
-                            </div>
-                            <span className="text-sm font-medium text-gray-900">
-                              Profile
-                            </span>
-                          </div>
-                          <div className="w-12 h-0.5 bg-gray-300"></div>
-                          <div className="flex items-center gap-2 opacity-50">
-                            <div className="w-10 h-10 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-bold">
-                              2
-                            </div>
-                            <span className="text-sm font-medium text-gray-500">
-                              KYC
-                            </span>
-                          </div>
-                        </div>
-
-                        <Link
-                          href="/profile/edit"
-                          className="block w-full px-8 py-4 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1 text-center"
-                        >
-                          Create Profile
-                        </Link>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center flex-wrap">
-                      <Link
-                        href="/products"
-                        className="px-8 py-4 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all font-semibold shadow-lg shadow-tyrian-800/30 hover:shadow-xl hover:shadow-tyrian-800/40 hover:-translate-y-1 text-center"
-                      >
-                        Browse Products
-                      </Link>
-                      <Link
-                        href="/orders"
-                        className="px-8 py-4 bg-zinc-800 text-white rounded-xl hover:bg-zinc-900 transition-all font-semibold shadow-lg shadow-zinc-800/30 hover:shadow-xl hover:shadow-zinc-800/40 hover:-translate-y-1 text-center"
-                      >
-                        My Orders
-                      </Link>
-                      <Link
-                        href="/profile"
-                        className="px-8 py-4 border-2 border-tyrian-800 text-tyrian-800 rounded-xl hover:bg-tyrian-50 transition-all font-semibold hover:-translate-y-1 text-center"
-                      >
-                        View Profile
-                      </Link>
-                      <Link
-                        href="/kyc"
-                        className="px-8 py-4 border-2 border-tyrian-600 text-tyrian-700 rounded-xl hover:bg-tyrian-50 transition-all font-semibold hover:-translate-y-1 text-center"
-                      >
-                        KYC Verification
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Link
-                      href="/signup"
-                      className="group px-8 py-4 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all font-semibold shadow-lg shadow-tyrian-800/25 hover:shadow-xl hover:shadow-tyrian-800/35 hover:-translate-y-0.5 flex items-center justify-center gap-2"
-                    >
-                      Get Started Free
-                      <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </Link>
-                    <Link
-                      href="/products"
-                      className="px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-tyrian-800 hover:text-tyrian-800 hover:bg-tyrian-50 transition-all font-semibold hover:-translate-y-0.5"
-                    >
-                      Browse Products
-                    </Link>
-                  </div>
-                  <p className="text-sm text-gray-500">
-                    Already have an account?{" "}
-                    <Link
-                      href="/signin"
-                      className="text-tyrian-800 hover:text-tyrian-900 font-semibold"
-                    >
-                      Sign In →
-                    </Link>
-                  </p>
-
-                  {/* Trust Indicators */}
-                  <div className="flex flex-wrap items-center gap-6 pt-4 text-sm text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
-                      <span>No credit card required</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
-                      <span>End-to-end encrypted</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clipRule="evenodd" />
-                        <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z" />
-                      </svg>
-                      <span>100% anonymous</span>
-                    </div>
-                  </div>
+            {/* CTAs */}
+            <div className="relative z-10 mt-8">
+              {!loading && !profileLoading && !isAuthenticated && (
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Link
+                    href="/signup"
+                    className="group px-6 py-3.5 bg-white text-tyrian-900 rounded-xl hover:bg-tyrian-50 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                  >
+                    Get Started Free
+                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </Link>
+                  <Link
+                    href="/products"
+                    className="px-6 py-3.5 border border-white/30 text-white rounded-xl hover:bg-white/10 transition-all font-semibold backdrop-blur-sm hover:-translate-y-0.5"
+                  >
+                    Browse Products
+                  </Link>
                 </div>
               )}
-            </>
-          )}
+            </div>
           </div>
 
-          {/* Right Visual Element - Feature Cards */}
-          <div className="hidden lg:block relative">
-            <div className="relative">
-              {/* Background gradient orbs */}
-              <div className="absolute -top-20 -right-20 w-72 h-72 bg-tyrian-100 rounded-full blur-3xl opacity-40"></div>
-              <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-blue-100 rounded-full blur-3xl opacity-40"></div>
+          {/* Right Side - Bento Grid */}
+          <div className="lg:col-span-5 grid grid-cols-2 gap-4 lg:gap-5">
 
-              {/* Floating feature cards */}
-              <div className="relative space-y-4">
-                {/* Card 1 - Privacy */}
-                <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 transform hover:-translate-y-1 transition-all duration-300">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-linear-to-br from-tyrian-800 to-tyrian-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-tyrian-800/20">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-bold text-gray-900 mb-1">Anonymous Shopping</h3>
-                      <p className="text-sm text-gray-600">Your identity stays completely private throughout your journey.</p>
-                    </div>
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            {/* Feature Card 1 - Privacy */}
+            <div className="group col-span-2 bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:border-tyrian-200 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-tyrian-100 to-transparent rounded-full blur-2xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
+              <div className="relative flex items-start gap-4">
+                <div className="w-14 h-14 bg-linear-to-br from-tyrian-800 to-tyrian-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-tyrian-800/25 group-hover:scale-110 transition-transform">
+                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-gray-900 text-lg mb-1">Anonymous Shopping</h3>
+                  <p className="text-sm text-gray-600">Your identity stays completely private throughout your journey.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Feature Card 2 - Encrypted */}
+            <div className="group bg-linear-to-br from-gray-900 to-gray-800 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
+              <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 1px)', backgroundSize: '16px 16px'}}></div>
+              <div className="relative">
+                <div className="w-10 h-10 bg-white/10 backdrop-blur rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </div>
+                <h3 className="font-bold text-white text-sm mb-1">E2E Encrypted</h3>
+                <p className="text-xs text-gray-400">Signal Protocol</p>
+              </div>
+              <div className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 bg-white/10 rounded-full">
+                <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-[10px] font-medium text-green-300">Active</span>
+              </div>
+            </div>
+
+            {/* Feature Card 3 - Delivery */}
+            <div className="group bg-white rounded-2xl p-5 shadow-lg border border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300 hover:-translate-y-1 relative overflow-hidden">
+              <div className="relative">
+                <div className="w-10 h-10 bg-linear-to-br from-gray-700 to-gray-600 rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-gray-700/20 group-hover:scale-110 transition-transform">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+                <h3 className="font-bold text-gray-900 text-sm mb-1">Discreet Delivery</h3>
+                <p className="text-xs text-gray-500">Plain packaging</p>
+              </div>
+              <div className="absolute bottom-3 right-3">
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Feature Card 4 - Escrow / Trust */}
+            <div className="group col-span-2 bg-linear-to-r from-tyrian-50 to-white rounded-2xl p-5 shadow-lg border border-tyrian-100 hover:shadow-xl hover:border-tyrian-200 transition-all duration-300 hover:-translate-y-1">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-linear-to-br from-tyrian-700 to-tyrian-600 rounded-xl flex items-center justify-center shadow-lg shadow-tyrian-700/20 group-hover:scale-110 transition-transform">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900">Secure Escrow</h3>
+                    <p className="text-sm text-gray-600">KYC verified · Buyer protection</p>
                   </div>
                 </div>
-
-                {/* Card 2 - Messaging */}
-                <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 transform hover:-translate-y-1 transition-all duration-300 ml-8">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-linear-to-br from-tyrian-600 to-tyrian-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-tyrian-600/20">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-bold text-gray-900 mb-1">Encrypted Messages</h3>
-                      <p className="text-sm text-gray-600">Signal Protocol ensures your conversations are secure.</p>
-                    </div>
-                    <div className="flex items-center gap-1 px-2 py-1 bg-tyrian-50 rounded-full border border-tyrian-200">
-                      <div className="w-1.5 h-1.5 bg-tyrian-600 rounded-full animate-pulse"></div>
-                      <span className="text-xs font-medium text-tyrian-800">Secure</span>
-                    </div>
+                <div className="flex -space-x-2">
+                  <div className="w-8 h-8 rounded-full bg-tyrian-200 border-2 border-white flex items-center justify-center">
+                    <svg className="w-4 h-4 text-tyrian-700" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
                   </div>
-                </div>
-
-                {/* Card 3 - Delivery */}
-                <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 transform hover:-translate-y-1 transition-all duration-300">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-linear-to-br from-gray-700 to-gray-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-gray-700/20">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-bold text-gray-900 mb-1">Discreet Packaging</h3>
-                      <p className="text-sm text-gray-600">Plain boxes with no branding or product details.</p>
-                    </div>
-                    <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full border border-gray-300">
-                      <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span className="text-xs font-medium text-gray-700">Verified</span>
-                    </div>
+                  <div className="w-8 h-8 rounded-full bg-tyrian-300 border-2 border-white flex items-center justify-center">
+                    <svg className="w-4 h-4 text-tyrian-800" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-tyrian-400 border-2 border-white flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                      <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+                    </svg>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Trust Bar - Below Hero */}
+        {!loading && !profileLoading && !isAuthenticated && (
+          <div className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-3 text-sm text-gray-500">
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-tyrian-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>No credit card required</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-tyrian-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>100% anonymous browsing</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-tyrian-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span>Signal Protocol encryption</span>
+            </div>
+            <p className="text-gray-400">
+              Already have an account?{" "}
+              <Link href="/signin" className="text-tyrian-800 hover:text-tyrian-900 font-semibold">
+                Sign In →
+              </Link>
+            </p>
+          </div>
+        )}
+
+        {/* Authenticated User State */}
+        {!loading && !profileLoading && isAuthenticated && (
+          <div className="mt-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-linear-to-br from-tyrian-600 to-tyrian-500 rounded-full flex items-center justify-center shadow-lg">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">Welcome back!</p>
+                    <p className="text-sm text-gray-600">
+                      {user?.email && `${user.email}`}
+                      {user?.walletAddress && `${user.walletAddress.slice(0, 10)}...${user.walletAddress.slice(-6)}`}
+                    </p>
+                  </div>
+                </div>
+
+                {!hasProfile ? (
+                  <Link
+                    href="/profile/edit"
+                    className="px-6 py-3 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 text-center"
+                  >
+                    Complete Profile →
+                  </Link>
+                ) : (
+                  <div className="flex flex-wrap gap-3">
+                    <Link href="/products" className="px-5 py-2.5 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all font-medium shadow-md hover:shadow-lg text-sm">
+                      Browse Products
+                    </Link>
+                    <Link href="/orders" className="px-5 py-2.5 bg-gray-800 text-white rounded-xl hover:bg-gray-900 transition-all font-medium shadow-md hover:shadow-lg text-sm">
+                      My Orders
+                    </Link>
+                    <Link href="/profile" className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all font-medium text-sm">
+                      Profile
+                    </Link>
+                    <Link href="/kyc" className="px-5 py-2.5 border border-tyrian-300 text-tyrian-700 rounded-xl hover:bg-tyrian-50 transition-all font-medium text-sm">
+                      KYC
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Why Lycusa Section - Privacy & Security Focus */}
         <div className="mt-32">
