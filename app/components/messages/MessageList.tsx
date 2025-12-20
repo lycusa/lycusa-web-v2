@@ -6,9 +6,10 @@ import { ChatBubbleLeftEllipsisIcon, ShieldCheckIcon } from "@heroicons/react/24
 interface Props {
     messages: DecryptedMessage[];
     currentUserId: string;
+    decryptMediaFile: (encryptedBlob: Blob, fileIv: string, mimeType: string) => Promise<Blob>;
 }
 
-export default function MessageList({ messages, currentUserId }: Props) {
+export default function MessageList({ messages, currentUserId, decryptMediaFile }: Props) {
     const bottomRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -73,6 +74,7 @@ export default function MessageList({ messages, currentUserId }: Props) {
                                     isOwn={isOwn}
                                     isFirstInGroup={isFirstInGroup}
                                     isLastInGroup={isLastInGroup}
+                                    decryptMediaFile={decryptMediaFile}
                                 />
                             </div>
                         );

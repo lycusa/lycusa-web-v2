@@ -58,6 +58,8 @@ export interface Message {
 export interface DecryptedMessage extends Omit<Message, "nonce"> {
   decryptedContent?: string;
   decryptionFailed?: boolean;
+  // Decrypted from Signal Protocol encrypted metadata
+  file_iv?: string; // Base64 encoded IV used to encrypt the media file
 }
 
 // ===== Public Key Types =====

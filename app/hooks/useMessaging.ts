@@ -227,6 +227,7 @@ interface UseConversationReturn {
   isConnected: boolean;
   sendMessage: (content: string) => Promise<void>;
   sendMedia: (file: File, type: MediaType, encrypt?: boolean) => Promise<void>;
+  decryptMediaFile: (encryptedBlob: Blob, fileIv: string, mimeType: string) => Promise<Blob>;
   recipientId: string | null;
   keysInitialized: boolean;
   keysError: string | null;
@@ -365,11 +366,49 @@ export const useConversation = (
     ): Promise<DecryptedMessage> => {
       const isOwnMessage = msg.sender_id === currentUserId;
 
+      // Debug log to understand incoming message structure
+      console.log(`[Decrypt] Processing message ${msg.id}:`, {
+        hasMediaKey: !!msg.media_key,
+        mediaKey: msg.media_key,
+        hasSignalCiphertext: !!msg.signal_ciphertext,
+        signalMessageType: msg.signal_message_type,
+        isOwnMessage,
+        senderId: msg.sender_id,
+      });
+
       // CRITICAL: Check local cache FIRST for ALL messages
       // Signal Protocol messages can only be decrypted once, so we cache plaintext
       const cachedPlaintext = await getLocalMessagePlaintext(msg.id, msg.signal_ciphertext || msg.encrypted_content);
       if (cachedPlaintext) {
         console.log(`[Decrypt] Using cached plaintext for message ${msg.id}`);
+        console.log(`[Decrypt] msg.media_key = ${msg.media_key}, cachedPlaintext starts with = ${cachedPlaintext.substring(0, 50)}`);
+
+        // Check if this is a cached media message (cached content is JSON metadata)
+        // Also check if cachedPlaintext looks like media metadata JSON even without media_key
+        const looksLikeMediaMetadata = cachedPlaintext.startsWith('{"media_');
+
+        if (msg.media_key || looksLikeMediaMetadata) {
+          try {
+            const mediaMetadata = JSON.parse(cachedPlaintext);
+            if (mediaMetadata.media_filename || mediaMetadata.media_type || mediaMetadata.media_mime_type) {
+              console.log(`[Decrypt] Cached message ${msg.id} is media metadata, parsing...`, mediaMetadata);
+              return {
+                ...msg,
+                media_filename: mediaMetadata.media_filename || msg.media_filename,
+                media_mime_type: mediaMetadata.media_mime_type || msg.media_mime_type,
+                media_type: mediaMetadata.media_type || msg.media_type,
+                media_size: mediaMetadata.media_size || msg.media_size,
+                file_iv: mediaMetadata.file_iv, // IV for decrypting the media file
+                decryptedContent: undefined, // No text to display for media-only messages
+                decryptionFailed: false,
+              };
+            }
+          } catch (e) {
+            // Not JSON - it's regular text content with media attachment
+            console.log(`[Decrypt] Failed to parse as media metadata:`, e);
+          }
+        }
+
         return { ...msg, decryptedContent: cachedPlaintext, decryptionFailed: false };
       }
 
@@ -405,6 +444,36 @@ export const useConversation = (
           // Signal Protocol messages can only be decrypted once!
           storeLocalMessagePlaintext(msg.id, decryptedContent, msg.signal_ciphertext);
           console.log(`[Signal] Cached decrypted message ${msg.id}`);
+
+          // Check if this is a media message with encrypted metadata
+          // Media messages have signal_ciphertext containing JSON metadata like:
+          // {"media_filename":"photo.jpg","media_mime_type":"image/jpeg","media_type":"image","media_size":12345,"file_iv":"base64..."}
+          // Also detect by content pattern in case media_key is missing
+          const looksLikeMediaMetadata = decryptedContent.startsWith('{"media_');
+
+          if (msg.media_key || looksLikeMediaMetadata) {
+            try {
+              const mediaMetadata = JSON.parse(decryptedContent);
+              // Verify it's actually media metadata (has expected fields)
+              if (mediaMetadata.media_filename || mediaMetadata.media_type || mediaMetadata.media_mime_type) {
+                console.log(`[Signal] Message ${msg.id} is a media message, parsed metadata:`, mediaMetadata);
+                // Return message with merged media metadata, no text content to display
+                return {
+                  ...msg,
+                  media_filename: mediaMetadata.media_filename || msg.media_filename,
+                  media_mime_type: mediaMetadata.media_mime_type || msg.media_mime_type,
+                  media_type: mediaMetadata.media_type || msg.media_type,
+                  media_size: mediaMetadata.media_size || msg.media_size,
+                  file_iv: mediaMetadata.file_iv, // IV for decrypting the media file
+                  decryptedContent: undefined, // No text to display for media-only messages
+                  decryptionFailed: false,
+                };
+              }
+            } catch {
+              // Not JSON or not media metadata - treat as regular text message with media
+              console.log(`[Signal] Message ${msg.id} has media_key but decrypted content is not metadata JSON`);
+            }
+          }
 
           return { ...msg, decryptedContent, decryptionFailed: false };
         } catch (err) {
@@ -649,11 +718,37 @@ export const useConversation = (
                 return prev;
               }
 
+              // For own media messages, check if plaintext is JSON metadata
+              let decryptedContent: string | undefined = plaintext || "[Your encrypted message]";
+              let mergedMsg: DecryptedMessage = { ...msg, decryptedContent: undefined, decryptionFailed: false };
+
+              if (msg.media_key && plaintext) {
+                try {
+                  const mediaMetadata = JSON.parse(plaintext);
+                  if (mediaMetadata.media_filename || mediaMetadata.media_type || mediaMetadata.media_mime_type) {
+                    // It's media metadata, merge it and don't display as text
+                    mergedMsg = {
+                      ...msg,
+                      media_filename: mediaMetadata.media_filename || msg.media_filename,
+                      media_mime_type: mediaMetadata.media_mime_type || msg.media_mime_type,
+                      media_type: mediaMetadata.media_type || msg.media_type,
+                      media_size: mediaMetadata.media_size || msg.media_size,
+                      file_iv: mediaMetadata.file_iv, // IV for decrypting the media file
+                      decryptedContent: undefined,
+                      decryptionFailed: false,
+                    };
+                    decryptedContent = undefined;
+                  }
+                } catch {
+                  // Not JSON, keep as text
+                }
+              }
+
               return [
                 ...prev,
                 {
-                  ...msg,
-                  decryptedContent: plaintext || "[Your encrypted message]",
+                  ...mergedMsg,
+                  decryptedContent,
                   decryptionFailed: false,
                 },
               ];
@@ -830,27 +925,28 @@ export const useConversation = (
 
       const actualConversationId = conversation.id;
 
-      // Create media metadata to be encrypted via Signal Protocol
-      const mediaMetadata = JSON.stringify({
-        media_filename: file.name,
-        media_mime_type: file.type,
-        media_type: type,
-        media_size: file.size,
-      });
-
-      // Encrypt the media metadata using Signal Protocol
-      const encryptedMetadata = await signalEncrypt(
-        recipientId,
-        actualConversationId,
-        mediaMetadata
-      );
-
       if (encrypt && sharedKeyRef.current) {
-        // Encrypt file before upload (existing file encryption for S3)
-        // Note: nonce is embedded in the encrypted blob, not needed separately
-        const { encrypted } = await encryptFile(
+        // Encrypt file before upload
+        const { encrypted, nonce: fileNonce } = await encryptFile(
           file,
           sharedKeyRef.current
+        );
+
+        // Create media metadata with file IV included (required for decryption)
+        // The file_iv is stored in the metadata so the recipient can decrypt the file
+        const mediaMetadata = JSON.stringify({
+          media_filename: file.name,
+          media_mime_type: file.type,
+          media_type: type,
+          media_size: file.size,
+          file_iv: fileNonce, // Include the IV used to encrypt the file
+        });
+
+        // Encrypt the media metadata using Signal Protocol
+        const encryptedMetadata = await signalEncrypt(
+          recipientId,
+          actualConversationId,
+          mediaMetadata
         );
 
         const response = await uploadEncryptedMedia(
@@ -870,6 +966,20 @@ export const useConversation = (
           signal_message_type: encryptedMetadata.messageType as 1 | 2,
         });
       } else {
+        // Create media metadata without file_iv (unencrypted upload)
+        const mediaMetadata = JSON.stringify({
+          media_filename: file.name,
+          media_mime_type: file.type,
+          media_type: type,
+          media_size: file.size,
+        });
+
+        // Encrypt the media metadata using Signal Protocol
+        const encryptedMetadata = await signalEncrypt(
+          recipientId,
+          actualConversationId,
+          mediaMetadata
+        );
         // Upload without file encryption (but still use Signal Protocol for message)
         const response = await uploadMessageMedia(actualConversationId, file, type);
 
@@ -887,6 +997,19 @@ export const useConversation = (
     [conversation, isClosed, signalReady, signalEncrypt, recipientId]
   );
 
+  // Decrypt media file using the shared key
+  const decryptMediaFile = useCallback(
+    async (encryptedBlob: Blob, fileIv: string, mimeType: string): Promise<Blob> => {
+      if (!sharedKeyRef.current) {
+        throw new Error("Shared key not available for media decryption");
+      }
+
+      const { decryptFile } = await import("@/app/lib/crypto");
+      return decryptFile(encryptedBlob, fileIv, sharedKeyRef.current, mimeType);
+    },
+    []
+  );
+
   return {
     conversation,
     messages,
@@ -897,6 +1020,7 @@ export const useConversation = (
     isConnected,
     sendMessage: sendMessageHandler,
     sendMedia: sendMediaHandler,
+    decryptMediaFile, // Expose media decryption function
     recipientId,
     keysInitialized: keysReady,
     keysError,

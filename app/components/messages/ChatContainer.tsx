@@ -12,6 +12,7 @@ interface Props {
     isConnected: boolean;
     onSendMessage: (content: string) => Promise<void>;
     onSendMedia: (file: File, type: MediaType) => Promise<void>;
+    decryptMediaFile: (encryptedBlob: Blob, fileIv: string, mimeType: string) => Promise<Blob>;
     error: string | null;
     keysInitialized: boolean;
     keysError: string | null;
@@ -26,6 +27,7 @@ export default function ChatContainer({
     isConnected,
     onSendMessage,
     onSendMedia,
+    decryptMediaFile,
     error,
     keysInitialized,
     keysError,
@@ -42,7 +44,7 @@ export default function ChatContainer({
             )}
 
             {/* Messages Area */}
-            <MessageList messages={messages} currentUserId={currentUserId} />
+            <MessageList messages={messages} currentUserId={currentUserId} decryptMediaFile={decryptMediaFile} />
 
             {/* Input or Closed State */}
             <div className="flex-shrink-0 bg-white z-20">

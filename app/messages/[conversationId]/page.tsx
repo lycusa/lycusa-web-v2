@@ -28,6 +28,7 @@ export default function ChatPage({ params }: PageProps) {
         closedReason,
         sendMessage,
         sendMedia,
+        decryptMediaFile,
         isConnected,
     } = useConversation(urlParam);
 
@@ -205,6 +206,7 @@ export default function ChatPage({ params }: PageProps) {
                     isConnected={isConnected}
                     onSendMessage={sendMessage}
                     onSendMedia={sendMedia}
+                    decryptMediaFile={decryptMediaFile}
                     error={error}
                     keysInitialized={keysInitialized}
                     keysError={keysError}
