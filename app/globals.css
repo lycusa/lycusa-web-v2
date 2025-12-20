@@ -69,3 +69,295 @@ body {
   color: var(--foreground);
   font-family: 'Manrope', sans-serif;
 }
+
+/* ===== Apple Liquid Glass Design System ===== */
+
+/* Glass Effect Base Classes */
+.glass {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 8px 32px rgba(99, 0, 43, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.glass-dark {
+  background: rgba(99, 0, 43, 0.15);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(99, 0, 43, 0.2);
+  box-shadow:
+    0 8px 32px rgba(99, 0, 43, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-frosted {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 4px 30px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Neumorphism Effects */
+.neumorphic {
+  background: linear-gradient(145deg, #ffffff, #e6e6e6);
+  box-shadow:
+    8px 8px 20px rgba(166, 166, 166, 0.3),
+    -8px -8px 20px rgba(255, 255, 255, 0.9);
+  border: none;
+}
+
+.neumorphic-inset {
+  background: linear-gradient(145deg, #e6e6e6, #ffffff);
+  box-shadow:
+    inset 6px 6px 12px rgba(166, 166, 166, 0.25),
+    inset -6px -6px 12px rgba(255, 255, 255, 0.9);
+}
+
+.neumorphic-button {
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  box-shadow:
+    5px 5px 15px rgba(166, 166, 166, 0.25),
+    -5px -5px 15px rgba(255, 255, 255, 0.95);
+  transition: all 0.3s ease;
+}
+
+.neumorphic-button:hover {
+  box-shadow:
+    3px 3px 8px rgba(166, 166, 166, 0.25),
+    -3px -3px 8px rgba(255, 255, 255, 0.95);
+}
+
+.neumorphic-button:active {
+  box-shadow:
+    inset 4px 4px 10px rgba(166, 166, 166, 0.25),
+    inset -4px -4px 10px rgba(255, 255, 255, 0.9);
+}
+
+.neumorphic-tyrian {
+  background: linear-gradient(145deg, #6d0030, #590026);
+  box-shadow:
+    8px 8px 20px rgba(74, 0, 32, 0.5),
+    -8px -8px 20px rgba(138, 16, 72, 0.3);
+}
+
+/* Liquid Glass Gradient Overlays */
+.liquid-gradient {
+  position: relative;
+}
+
+.liquid-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    125deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.05) 40%,
+    rgba(255, 255, 255, 0.15) 60%,
+    rgba(255, 255, 255, 0.25) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Dynamic Light Reflection */
+.glass-reflection {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-reflection::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 45%,
+    rgba(255, 255, 255, 0.15) 48%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0.15) 52%,
+    transparent 55%
+  );
+  animation: shimmer 8s infinite linear;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) rotate(0deg); }
+  100% { transform: translateX(100%) rotate(0deg); }
+}
+
+/* Depth Shadows for Glass Cards */
+.depth-shadow-sm {
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 4px 8px rgba(99, 0, 43, 0.04),
+    0 8px 16px rgba(99, 0, 43, 0.02);
+}
+
+.depth-shadow-md {
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.03),
+    0 8px 16px rgba(99, 0, 43, 0.06),
+    0 16px 32px rgba(99, 0, 43, 0.04);
+}
+
+.depth-shadow-lg {
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.04),
+    0 16px 32px rgba(99, 0, 43, 0.08),
+    0 32px 64px rgba(99, 0, 43, 0.06);
+}
+
+.depth-shadow-xl {
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.05),
+    0 24px 48px rgba(99, 0, 43, 0.1),
+    0 48px 96px rgba(99, 0, 43, 0.08);
+}
+
+/* Animated Glow Effects */
+.glow-tyrian {
+  box-shadow:
+    0 0 20px rgba(99, 0, 43, 0.2),
+    0 0 40px rgba(99, 0, 43, 0.1),
+    0 0 60px rgba(99, 0, 43, 0.05);
+}
+
+.glow-pulse {
+  animation: glow-pulse-anim 3s ease-in-out infinite;
+}
+
+@keyframes glow-pulse-anim {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(99, 0, 43, 0.2),
+      0 0 40px rgba(99, 0, 43, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(99, 0, 43, 0.3),
+      0 0 60px rgba(99, 0, 43, 0.15);
+  }
+}
+
+/* Floating Animation for Glass Elements */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 6s ease-in-out infinite 2s;
+}
+
+/* Gradient Mesh Background */
+.gradient-mesh {
+  background:
+    radial-gradient(at 40% 20%, rgba(99, 0, 43, 0.08) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(214, 146, 174, 0.12) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(99, 0, 43, 0.05) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, rgba(245, 231, 237, 0.15) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(99, 0, 43, 0.06) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, rgba(245, 231, 237, 0.1) 0px, transparent 50%),
+    linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(253, 242, 246, 0.5) 100%);
+}
+
+/* Interactive Hover States for Glass */
+.glass-hover {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-hover:hover {
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 20px 40px rgba(99, 0, 43, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-4px);
+}
+
+/* Bento Grid Glass Card Styles */
+.bento-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bento-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.bento-card:hover::before {
+  opacity: 1;
+}
+
+/* Border Gradient Effect */
+.border-gradient {
+  position: relative;
+}
+
+.border-gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(99, 0, 43, 0.2) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}

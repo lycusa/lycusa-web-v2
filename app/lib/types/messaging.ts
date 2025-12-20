@@ -84,6 +84,9 @@ export interface SendMediaPayload {
   media_size: number;
   media_filename: string;
   media_mime_type: string;
+  // Signal Protocol fields - required for all messages
+  signal_ciphertext: string;
+  signal_message_type: 1 | 2;
 }
 
 export interface UploadMediaResponse {
