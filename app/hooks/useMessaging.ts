@@ -812,8 +812,16 @@ export const useConversation = (
   // Send media message
   const sendMediaHandler = useCallback(
     async (file: File, type: MediaType, encrypt: boolean = true) => {
+      if (!signalReady) {
+        throw new Error("Signal Protocol not initialized. Please refresh the page.");
+      }
+
       if (!conversation) {
         throw new Error("Conversation not loaded");
+      }
+
+      if (!recipientId) {
+        throw new Error("Recipient not identified");
       }
 
       if (isClosed) {
@@ -822,8 +830,23 @@ export const useConversation = (
 
       const actualConversationId = conversation.id;
 
+      // Create media metadata to be encrypted via Signal Protocol
+      const mediaMetadata = JSON.stringify({
+        media_filename: file.name,
+        media_mime_type: file.type,
+        media_type: type,
+        media_size: file.size,
+      });
+
+      // Encrypt the media metadata using Signal Protocol
+      const encryptedMetadata = await signalEncrypt(
+        recipientId,
+        actualConversationId,
+        mediaMetadata
+      );
+
       if (encrypt && sharedKeyRef.current) {
-        // Encrypt file before upload
+        // Encrypt file before upload (existing file encryption for S3)
         // Note: nonce is embedded in the encrypted blob, not needed separately
         const { encrypted } = await encryptFile(
           file,
@@ -836,16 +859,18 @@ export const useConversation = (
           type
         );
 
-        // Send media message via WebSocket
+        // Send media message via WebSocket with Signal Protocol encryption
         await socketSendMediaMessage(actualConversationId, {
           media_key: response.media_key,
           media_type: type,
           media_size: response.media_size,
           media_filename: file.name,
           media_mime_type: file.type,
+          signal_ciphertext: encryptedMetadata.ciphertext,
+          signal_message_type: encryptedMetadata.messageType as 1 | 2,
         });
       } else {
-        // Upload without encryption
+        // Upload without file encryption (but still use Signal Protocol for message)
         const response = await uploadMessageMedia(actualConversationId, file, type);
 
         await socketSendMediaMessage(actualConversationId, {
@@ -854,10 +879,12 @@ export const useConversation = (
           media_size: response.media_size,
           media_filename: response.media_filename,
           media_mime_type: response.media_mime_type,
+          signal_ciphertext: encryptedMetadata.ciphertext,
+          signal_message_type: encryptedMetadata.messageType as 1 | 2,
         });
       }
     },
-    [conversation, isClosed]
+    [conversation, isClosed, signalReady, signalEncrypt, recipientId]
   );
 
   return {
