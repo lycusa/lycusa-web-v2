@@ -14,6 +14,7 @@ import {
 import { AppBackground, Header } from "@/app/components/layout";
 import type { UserProfile } from "@/app/lib/types/user";
 import imageCompression from "browser-image-compression";
+import ImageCropper from "@/app/components/ui/ImageCropper";
 
 const ALLOWED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_AVATAR_SIZE = 10 * 1024 * 1024; // 10MB
@@ -79,17 +80,21 @@ export default function EditProfilePage() {
     }
   };
 
+  // Cropper state
+  const [showCropper, setShowCropper] = useState(false);
+  const [croppingImage, setCroppingImage] = useState<string | null>(null);
+
   const handleAvatarClick = () => {
     if (!avatarUploading) {
       fileInputRef.current?.click();
     }
   };
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Reset file input so same file can be selected again
+    // Reset file input
     e.target.value = "";
 
     // Validate file type
@@ -98,32 +103,44 @@ export default function EditProfilePage() {
       return;
     }
 
-    // Validate file size (check original size first)
+    // Validate file size
     if (file.size > MAX_AVATAR_SIZE) {
       setAvatarError("Image must be less than 10MB");
       return;
     }
 
+    // Read file for cropper
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      setCroppingImage(reader.result as string);
+      setShowCropper(true);
+      setAvatarError(null);
+    });
+    reader.readAsDataURL(file);
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    setShowCropper(false);
     setAvatarUploading(true);
     setAvatarError(null);
     setAvatarProgress("Compressing...");
 
     try {
+      // Convert Blob to File for compatibility with existing logic/libraries if needed
+      const file = new File([croppedBlob], "avatar.jpg", { type: "image/jpeg" });
+
       // Compress image
       const options = {
         maxSizeMB: 1,
         maxWidthOrHeight: 1024,
         useWebWorker: true,
-        fileType: file.type as string,
+        fileType: "image/jpeg",
       };
 
       let compressedFile = file;
       try {
-        // Only compress if it's an image
-        if (file.type.startsWith('image/')) {
-          compressedFile = await imageCompression(file, options);
-          console.log(`Compressed avatar: ${file.size / 1024 / 1024}MB -> ${compressedFile.size / 1024 / 1024}MB`);
-        }
+        compressedFile = await imageCompression(file, options);
+        console.log(`Compressed avatar: ${file.size / 1024 / 1024}MB -> ${compressedFile.size / 1024 / 1024}MB`);
       } catch (compressionError) {
         console.warn("Image compression failed, falling back to original file:", compressionError);
         // Fallback to original file if compression fails
@@ -180,7 +197,13 @@ export default function EditProfilePage() {
       setAvatarProgress(null);
     } finally {
       setAvatarUploading(false);
+      setCroppingImage(null);
     }
+  };
+
+  const handleCropCancel = () => {
+    setShowCropper(false);
+    setCroppingImage(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -428,7 +451,7 @@ export default function EditProfilePage() {
                 ref={fileInputRef}
                 type="file"
                 accept="image/jpeg,image/png,image/gif,image/webp"
-                onChange={handleAvatarUpload}
+                onChange={handleAvatarSelect}
                 className="hidden"
               />
 
@@ -520,6 +543,15 @@ export default function EditProfilePage() {
           </form>
         </div>
       </main>
+
+      {/* Image Cropper Modal */}
+      {showCropper && croppingImage && (
+        <ImageCropper
+          imageSrc={croppingImage}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+        />
+      )}
     </AppBackground>
   );
 }
