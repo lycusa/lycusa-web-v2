@@ -228,6 +228,20 @@ export default function EditProfilePage() {
 
       if (response.success) {
         setSuccess(true);
+
+        // Manually update cache for immediate feedback
+        if (user?.id) {
+          import("@/app/hooks/useUser").then(({ updateProfileCache }) => {
+            updateProfileCache(user.id, {
+              ...profile,
+              username: formData.username,
+              bio: formData.bio,
+              avatarUrl: formData.avatarUrl,
+              id: user.id
+            } as any);
+          });
+        }
+
         // If creating new profile, redirect to KYC, else go to profile
         setTimeout(() => {
           if (isNewProfile) {
