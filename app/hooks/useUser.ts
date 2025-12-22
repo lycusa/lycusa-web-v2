@@ -29,9 +29,29 @@ export function useUserProfile(userId: string | undefined | null) {
             return;
         }
 
+        // Check in-memory cache first
         if (profileCache[userId]) {
             setProfile(profileCache[userId]);
             return;
+        }
+
+        // Check localStorage cache
+        const cacheKey = `user_profile_${userId}`;
+        const cachedStr = localStorage.getItem(cacheKey);
+        if (cachedStr) {
+            try {
+                const cachedData = JSON.parse(cachedStr);
+                const now = Date.now();
+                // Cache valid for 24 hours
+                if (now - cachedData.timestamp < 24 * 60 * 60 * 1000 && cachedData.profile) {
+                    setProfile(cachedData.profile);
+                    profileCache[userId] = cachedData.profile; // Hydrate memory cache
+                    return;
+                }
+            } catch (e) {
+                console.warn("Invalid cache data for user", userId);
+                localStorage.removeItem(cacheKey);
+            }
         }
 
         let isMounted = true;
@@ -48,6 +68,16 @@ export function useUserProfile(userId: string | undefined | null) {
                         profileCache[userId] = user;
                         setProfile(user);
                         setError(null);
+
+                        // Save to localStorage
+                        try {
+                            localStorage.setItem(cacheKey, JSON.stringify({
+                                timestamp: Date.now(),
+                                profile: user
+                            }));
+                        } catch (e) {
+                            console.warn("Failed to save profile to localStorage", e);
+                        }
                     } else {
                         // Fallback/Handle error gracefully
                         console.warn(`Could not find profile for user ${userId}`);
