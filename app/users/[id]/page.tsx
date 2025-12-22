@@ -22,16 +22,9 @@ import type {
   RelationshipStatus,
   UserStats,
 } from "@/app/lib/types/user";
-
-interface Product {
-  id: string;
-  title: string;
-  price: number;
-  currency: string;
-  media_ids?: string[];
-  thumbnail_url?: string;
-  status: string;
-}
+import type { SearchResultItem } from "@/app/lib/types/product";
+import ProductCard from "@/app/components/products/ProductCard";
+import { ProductStatus } from "@/app/lib/types/product";
 
 export default function UserProfilePage() {
   const params = useParams();
@@ -48,7 +41,7 @@ export default function UserProfilePage() {
   const [relationship, setRelationship] = useState<RelationshipStatus | null>(
     null
   );
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<SearchResultItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -126,12 +119,16 @@ export default function UserProfilePage() {
 
       // Parse products
       if (results[2].status === "fulfilled") {
-        const productsData = results[2].value;
-        if (productsData.total) {
-          newStats.productsCount = productsData.total;
+        const searchResult = results[2].value;
+        if (searchResult.total_results) {
+          newStats.productsCount = searchResult.total_results;
         }
-        if (productsData.products && Array.isArray(productsData.products)) {
-          setProducts(productsData.products.slice(0, 6));
+        if (searchResult.results && Array.isArray(searchResult.results)) {
+          // Filter for active products only
+          const activeProducts = searchResult.results.filter(
+            (p: SearchResultItem) => p.status === ProductStatus.ACTIVE
+          );
+          setProducts(activeProducts.slice(0, 6));
         }
       }
 
@@ -652,52 +649,9 @@ export default function UserProfilePage() {
               )}
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
               {products.map((product) => (
-                <Link
-                  key={product.id}
-                  href={`/products/${product.id}`}
-                  className="group"
-                >
-                  <div className="bg-gray-100 rounded-xl overflow-hidden aspect-square mb-2 relative">
-                    {product.thumbnail_url ? (
-                      <img
-                        src={product.thumbnail_url}
-                        alt={product.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <svg
-                          className="w-12 h-12 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          />
-                        </svg>
-                      </div>
-                    )}
-                    {product.status !== "active" && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <span className="text-white font-medium text-sm">
-                          {product.status === "sold" ? "Sold" : "Unavailable"}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <h3 className="font-medium text-gray-900 truncate group-hover:text-tyrian-600 transition-colors">
-                    {product.title}
-                  </h3>
-                  <p className="text-tyrian-600 font-semibold">
-                    {product.currency} {product.price.toLocaleString()}
-                  </p>
-                </Link>
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           </div>

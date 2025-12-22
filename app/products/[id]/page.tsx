@@ -241,8 +241,8 @@ export default function ProductDetailPage() {
                     key={media.id}
                     onClick={() => setSelectedImageIndex(index)}
                     className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${selectedImageIndex === index
-                        ? "border-brand-600 shadow-lg"
-                        : "border-gray-200 hover:border-gray-300"
+                      ? "border-brand-600 shadow-lg"
+                      : "border-gray-200 hover:border-gray-300"
                       }`}
                   >
                     <Image
@@ -339,8 +339,12 @@ export default function ProductDetailPage() {
             <div className="border-t border-gray-200 pt-6">
               <h2 className="text-lg font-bold text-gray-900 mb-3">Seller</h2>
               <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                <div className="w-12 h-12 bg-gradient-to-br from-tyrian-800 to-brand-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                  {sellerProfile?.username?.[0]?.toUpperCase() || "S"}
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-tyrian-800 to-brand-600 flex items-center justify-center text-white font-bold text-lg overflow-hidden border-2 border-white shadow-sm">
+                  {sellerProfile?.avatarUrl ? (
+                    <img src={sellerProfile.avatarUrl} alt={sellerProfile.username} className="w-full h-full object-cover" />
+                  ) : (
+                    sellerProfile?.username?.[0]?.toUpperCase() || "S"
+                  )}
                 </div>
                 <div className="flex-1">
                   <Link

@@ -13,6 +13,7 @@ import {
 } from "@/app/lib/api";
 import { AppBackground, Header } from "@/app/components/layout";
 import type { UserProfile } from "@/app/lib/types/user";
+import imageCompression from "browser-image-compression";
 
 const ALLOWED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_AVATAR_SIZE = 10 * 1024 * 1024; // 10MB
@@ -97,7 +98,7 @@ export default function EditProfilePage() {
       return;
     }
 
-    // Validate file size
+    // Validate file size (check original size first)
     if (file.size > MAX_AVATAR_SIZE) {
       setAvatarError("Image must be less than 10MB");
       return;
@@ -105,11 +106,33 @@ export default function EditProfilePage() {
 
     setAvatarUploading(true);
     setAvatarError(null);
-    setAvatarProgress("Uploading...");
+    setAvatarProgress("Compressing...");
 
     try {
+      // Compress image
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1024,
+        useWebWorker: true,
+        fileType: file.type as string,
+      };
+
+      let compressedFile = file;
+      try {
+        // Only compress if it's an image
+        if (file.type.startsWith('image/')) {
+          compressedFile = await imageCompression(file, options);
+          console.log(`Compressed avatar: ${file.size / 1024 / 1024}MB -> ${compressedFile.size / 1024 / 1024}MB`);
+        }
+      } catch (compressionError) {
+        console.warn("Image compression failed, falling back to original file:", compressionError);
+        // Fallback to original file if compression fails
+      }
+
+      setAvatarProgress("Uploading...");
+
       // Upload and get task ID
-      const { task_id } = await uploadAvatar(file);
+      const { task_id } = await uploadAvatar(compressedFile);
       setAvatarProgress("Processing...");
 
       // Poll for completion (max 60 seconds)
