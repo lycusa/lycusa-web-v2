@@ -284,19 +284,65 @@ export const decryptFile = async (
   sharedKey: CryptoKey,
   mimeType: string
 ): Promise<Blob> => {
+  debugLog("Decrypting file...");
+  debugLog("Encrypted blob size:", encryptedBlob.size, "bytes");
+  debugLog("Nonce base64 length:", nonceBase64?.length);
+  debugLog("Nonce base64 (first 20 chars):", nonceBase64?.substring(0, 20));
+  debugLog("MIME type:", mimeType);
+
+  // Validate inputs
+  if (!nonceBase64 || typeof nonceBase64 !== 'string') {
+    throw new Error(`Invalid nonce: expected base64 string, got ${typeof nonceBase64}`);
+  }
+
+  if (!encryptedBlob || encryptedBlob.size === 0) {
+    throw new Error(`Invalid encrypted blob: size is ${encryptedBlob?.size || 0}`);
+  }
+
+  // AES-GCM adds a 16-byte auth tag, so encrypted content should be at least 16 bytes
+  if (encryptedBlob.size < 16) {
+    throw new Error(`Encrypted blob too small (${encryptedBlob.size} bytes). Minimum is 16 bytes for AES-GCM auth tag.`);
+  }
+
   const encrypted = await encryptedBlob.arrayBuffer();
-  const iv = base64ToArrayBuffer(nonceBase64);
+  let iv: ArrayBuffer;
 
-  const decrypted = await window.crypto.subtle.decrypt(
-    {
-      name: "AES-GCM",
-      iv: new Uint8Array(iv),
-    },
-    sharedKey,
-    encrypted
-  );
+  try {
+    iv = base64ToArrayBuffer(nonceBase64);
+  } catch (e) {
+    throw new Error(`Failed to decode nonce from base64: ${e instanceof Error ? e.message : String(e)}`);
+  }
 
-  return new Blob([decrypted], { type: mimeType });
+  debugLog("IV decoded length:", iv.byteLength, "bytes");
+
+  // AES-GCM IV should be exactly 12 bytes
+  if (iv.byteLength !== 12) {
+    console.error(`[E2EE] Invalid IV length: expected 12 bytes, got ${iv.byteLength} bytes`);
+    console.error(`[E2EE] Nonce base64 was: ${nonceBase64}`);
+    throw new Error(`Invalid IV length for AES-GCM: expected 12 bytes, got ${iv.byteLength} bytes. The file_iv may be corrupted or incorrectly encoded.`);
+  }
+
+  try {
+    const decrypted = await window.crypto.subtle.decrypt(
+      {
+        name: "AES-GCM",
+        iv: new Uint8Array(iv),
+      },
+      sharedKey,
+      encrypted
+    );
+
+    debugLog("File decryption successful, decrypted size:", decrypted.byteLength, "bytes");
+    return new Blob([decrypted], { type: mimeType });
+  } catch (err) {
+    console.error("[E2EE] File decryption failed:", err);
+    console.error("[E2EE] This usually means:");
+    console.error("[E2EE]   1. The encryption key is different (sender/receiver key mismatch)");
+    console.error("[E2EE]   2. The IV (nonce) doesn't match what was used during encryption");
+    console.error("[E2EE]   3. The encrypted data was corrupted during transmission");
+    console.error("[E2EE] Debug info - encrypted size:", encrypted.byteLength, "iv length:", iv.byteLength);
+    throw new Error(`File decryption failed: ${err instanceof DOMException ? 'Authentication/integrity check failed - the data may have been tampered with or the wrong key/IV was used' : (err instanceof Error ? err.message : String(err))}`);
+  }
 };
 
 /**

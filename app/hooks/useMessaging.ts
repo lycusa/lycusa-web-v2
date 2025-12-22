@@ -956,7 +956,7 @@ export const useConversation = (
         );
 
         // Send media message via WebSocket with Signal Protocol encryption
-        await socketSendMediaMessage(actualConversationId, {
+        const serverMessage = await socketSendMediaMessage(actualConversationId, {
           media_key: response.media_key,
           media_type: type,
           media_size: response.media_size,
@@ -965,6 +965,13 @@ export const useConversation = (
           signal_ciphertext: encryptedMetadata.ciphertext,
           signal_message_type: encryptedMetadata.messageType as 1 | 2,
         });
+
+        // CRITICAL: Cache the media metadata so sender can view their own media
+        // Without this, the sender cannot retrieve file_iv needed for decryption
+        if (serverMessage?.id) {
+          console.log(`[Media] Caching media metadata for message ${serverMessage.id}`);
+          storeLocalMessagePlaintext(serverMessage.id, mediaMetadata, encryptedMetadata.ciphertext);
+        }
       } else {
         // Create media metadata without file_iv (unencrypted upload)
         const mediaMetadata = JSON.stringify({
@@ -983,7 +990,7 @@ export const useConversation = (
         // Upload without file encryption (but still use Signal Protocol for message)
         const response = await uploadMessageMedia(actualConversationId, file, type);
 
-        await socketSendMediaMessage(actualConversationId, {
+        const serverMessage = await socketSendMediaMessage(actualConversationId, {
           media_key: response.media_key,
           media_type: type,
           media_size: response.media_size,
@@ -992,6 +999,12 @@ export const useConversation = (
           signal_ciphertext: encryptedMetadata.ciphertext,
           signal_message_type: encryptedMetadata.messageType as 1 | 2,
         });
+
+        // Cache media metadata for non-encrypted uploads too
+        if (serverMessage?.id) {
+          console.log(`[Media] Caching media metadata for message ${serverMessage.id}`);
+          storeLocalMessagePlaintext(serverMessage.id, mediaMetadata, encryptedMetadata.ciphertext);
+        }
       }
     },
     [conversation, isClosed, signalReady, signalEncrypt, recipientId]

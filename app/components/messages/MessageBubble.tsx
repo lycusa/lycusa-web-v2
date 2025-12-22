@@ -42,6 +42,8 @@ export default function MessageBubble({ message, isOwn, isFirstInGroup, isLastIn
                 // Check if media is encrypted (has file_iv from decrypted metadata)
                 if (message.file_iv) {
                     console.log(`[Media] Downloading and decrypting encrypted media for message ${message.id}`);
+                    console.log(`[Media] file_iv: ${message.file_iv?.substring(0, 20)}... (length: ${message.file_iv?.length})`);
+                    console.log(`[Media] mime_type: ${message.media_mime_type}`);
 
                     // Download encrypted blob
                     const response = await fetch(presignedUrl);
@@ -49,16 +51,28 @@ export default function MessageBubble({ message, isOwn, isFirstInGroup, isLastIn
                         throw new Error(`Failed to download media: ${response.status}`);
                     }
                     const encryptedBlob = await response.blob();
+                    console.log(`[Media] Downloaded encrypted blob: ${encryptedBlob.size} bytes, type: ${encryptedBlob.type}`);
+
+                    // Sanity check: encrypted blob should be larger than 16 bytes (min AES-GCM overhead)
+                    if (encryptedBlob.size < 16) {
+                        throw new Error(`Encrypted blob too small (${encryptedBlob.size} bytes), likely not encrypted or corrupted`);
+                    }
 
                     // Decrypt the file
                     const mimeType = message.media_mime_type || 'application/octet-stream';
-                    const decryptedBlob = await decryptMediaFile(encryptedBlob, message.file_iv, mimeType);
+                    try {
+                        const decryptedBlob = await decryptMediaFile(encryptedBlob, message.file_iv, mimeType);
 
-                    // Create object URL for decrypted content
-                    const objectUrl = URL.createObjectURL(decryptedBlob);
-                    objectUrlRef.current = objectUrl;
-                    setMediaUrl(objectUrl);
-                    console.log(`[Media] Successfully decrypted media for message ${message.id}`);
+                        // Create object URL for decrypted content
+                        const objectUrl = URL.createObjectURL(decryptedBlob);
+                        objectUrlRef.current = objectUrl;
+                        setMediaUrl(objectUrl);
+                        console.log(`[Media] Successfully decrypted media for message ${message.id}, decrypted size: ${decryptedBlob.size} bytes`);
+                    } catch (decryptError) {
+                        console.error(`[Media] Decryption failed for message ${message.id}:`, decryptError);
+                        console.error(`[Media] Debug info: encrypted size=${encryptedBlob.size}, file_iv length=${message.file_iv?.length}`);
+                        throw decryptError;
+                    }
                 } else {
                     // Unencrypted media - use presigned URL directly
                     console.log(`[Media] Using direct URL for unencrypted media ${message.id}`);
