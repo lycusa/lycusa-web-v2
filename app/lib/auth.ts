@@ -1,5 +1,3 @@
-import { clearStoredKeys } from "./crypto";
-
 // Token management utilities
 const ACCESS_TOKEN_KEY = "lycusa_access_token";
 const REFRESH_TOKEN_KEY = "lycusa_refresh_token";
@@ -31,8 +29,11 @@ export const clearTokens = async () => {
   if (typeof window !== "undefined") {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
-    // Clear E2EE keys from IndexedDB
-    await clearStoredKeys();
+    // NOTE: We intentionally do NOT clear E2EE keys on logout.
+    // E2EE keys must persist across logout/login cycles to allow
+    // decryption of previously encrypted media. The shared secret
+    // derived from ECDH key pairs would change if keys are regenerated,
+    // making old encrypted content undecryptable.
     // Dispatch custom event to notify useAuth hook
     window.dispatchEvent(new Event("auth-change"));
   }
