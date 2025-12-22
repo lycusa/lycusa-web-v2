@@ -7,9 +7,10 @@ interface Props {
     messages: DecryptedMessage[];
     currentUserId: string;
     decryptMediaFile: (encryptedBlob: Blob, fileIv: string, mimeType: string) => Promise<Blob>;
+    otherUserAvatarUrl?: string;
 }
 
-export default function MessageList({ messages, currentUserId, decryptMediaFile }: Props) {
+export default function MessageList({ messages, currentUserId, decryptMediaFile, otherUserAvatarUrl }: Props) {
     const bottomRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -75,6 +76,7 @@ export default function MessageList({ messages, currentUserId, decryptMediaFile 
                                     isFirstInGroup={isFirstInGroup}
                                     isLastInGroup={isLastInGroup}
                                     decryptMediaFile={decryptMediaFile}
+                                    avatarUrl={!isOwn ? otherUserAvatarUrl : undefined}
                                 />
                             </div>
                         );

@@ -49,8 +49,8 @@ export default function ConversationCard({ conversation, currentUserId }: Props)
                 {/* Avatar */}
                 <div className="relative flex-shrink-0 self-center">
                     <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${gradients[gradientIndex]} flex items-center justify-center text-white font-bold text-sm shadow-sm ring-2 ring-white`}>
-                        {profile?.avatar_url ? (
-                            <img src={profile.avatar_url} alt={displayName} className="w-full h-full rounded-full object-cover" />
+                        {profile?.avatarUrl ? (
+                            <img src={profile.avatarUrl} alt={displayName} className="w-full h-full rounded-full object-cover" />
                         ) : (
                             displayName.slice(0, 2).toUpperCase()
                         )}

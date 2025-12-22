@@ -6,7 +6,7 @@ import { getUserProfile } from "@/app/lib/api";
 export interface UserProfile {
     id: string;
     username: string;
-    avatar_url?: string;
+    avatarUrl?: string; // camelCase to match app/lib/types/user.ts
     bio?: string;
     // Add other fields as needed based on API response
 }

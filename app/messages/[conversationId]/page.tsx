@@ -129,8 +129,8 @@ export default function ChatPage({ params }: PageProps) {
                             {/* Avatar */}
                             <div className="relative flex-shrink-0">
                                 <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${gradients[gradientIndex]} flex items-center justify-center text-white font-bold text-sm shadow-sm ring-2 ring-white`}>
-                                    {otherUserProfile?.avatar_url ? (
-                                        <img src={otherUserProfile.avatar_url} alt={displayName} className="w-full h-full rounded-full object-cover" />
+                                    {otherUserProfile?.avatarUrl ? (
+                                        <img src={otherUserProfile.avatarUrl} alt={displayName} className="w-full h-full rounded-full object-cover" />
                                     ) : (
                                         displayName.slice(0, 2).toUpperCase()
                                     )}
@@ -210,6 +210,7 @@ export default function ChatPage({ params }: PageProps) {
                     error={error}
                     keysInitialized={keysInitialized}
                     keysError={keysError}
+                    otherUserProfile={otherUserProfile}
                 />
             </main>
         </div>

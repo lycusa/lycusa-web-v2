@@ -10,9 +10,10 @@ interface Props {
     isFirstInGroup: boolean;
     isLastInGroup: boolean;
     decryptMediaFile: (encryptedBlob: Blob, fileIv: string, mimeType: string) => Promise<Blob>;
+    avatarUrl?: string;
 }
 
-export default function MessageBubble({ message, isOwn, isFirstInGroup, isLastInGroup, decryptMediaFile }: Props) {
+export default function MessageBubble({ message, isOwn, isFirstInGroup, isLastInGroup, decryptMediaFile, avatarUrl }: Props) {
     const [imgError, setImgError] = useState(false);
     const [mediaUrl, setMediaUrl] = useState<string | null>(null);
     const [isLoadingMedia, setIsLoadingMedia] = useState(false);
@@ -98,6 +99,23 @@ export default function MessageBubble({ message, isOwn, isFirstInGroup, isLastIn
 
     return (
         <div className={`flex w-full ${isOwn ? "justify-end" : "justify-start"} ${marginClass} group`}>
+            {/* Avatar for incoming messages (only on last message of group) */}
+            {!isOwn && (
+                <div className={`flex-shrink-0 w-8 mr-2 flex flex-col justify-end ${!isLastInGroup ? "invisible" : ""}`}>
+                    {avatarUrl ? (
+                        <img
+                            src={avatarUrl}
+                            alt="User"
+                            className="w-8 h-8 rounded-full object-cover bg-gray-100 border border-gray-100"
+                        />
+                    ) : (
+                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-bold text-gray-500">
+                            ?
+                        </div>
+                    )}
+                </div>
+            )}
+
             <div className={`flex flex-col max-w-[75%] sm:max-w-[70%] ${isOwn ? "items-end" : "items-start"}`}>
                 <div
                     className={`

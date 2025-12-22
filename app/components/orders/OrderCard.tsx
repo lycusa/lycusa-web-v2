@@ -36,8 +36,8 @@ function OrderAvatar({ userId, role }: OrderAvatarProps) {
 
   return (
     <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${gradients[gradientIndex]} flex items-center justify-center text-white border-2 border-white shadow-sm overflow-hidden`}>
-      {profile?.avatar_url ? (
-        <img src={profile.avatar_url} alt={role} className="w-full h-full object-cover" />
+      {profile?.avatarUrl ? (
+        <img src={profile.avatarUrl} alt={role} className="w-full h-full object-cover" />
       ) : (
         <span className="text-xs font-bold">{profile?.username?.slice(0, 1).toUpperCase() || role.slice(0, 1)}</span>
       )}

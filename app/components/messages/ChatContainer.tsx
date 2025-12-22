@@ -16,6 +16,7 @@ interface Props {
     error: string | null;
     keysInitialized: boolean;
     keysError: string | null;
+    otherUserProfile: any; // Using any temporarily to avoid circular dependency or import issues, or imported UserProfile
 }
 
 export default function ChatContainer({
@@ -31,6 +32,7 @@ export default function ChatContainer({
     error,
     keysInitialized,
     keysError,
+    otherUserProfile,
 }: Props) {
 
     return (
@@ -44,7 +46,12 @@ export default function ChatContainer({
             )}
 
             {/* Messages Area */}
-            <MessageList messages={messages} currentUserId={currentUserId} decryptMediaFile={decryptMediaFile} />
+            <MessageList
+                messages={messages}
+                currentUserId={currentUserId}
+                decryptMediaFile={decryptMediaFile}
+                otherUserAvatarUrl={otherUserProfile?.avatarUrl}
+            />
 
             {/* Input or Closed State */}
             <div className="flex-shrink-0 bg-white z-20">
