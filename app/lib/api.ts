@@ -310,6 +310,22 @@ export const uploadMedia = async (file: File) => {
   return response.data;
 };
 
+// Upload avatar image
+export const uploadAvatar = async (file: File): Promise<{ task_id: string; status_url: string; avatar_id: string }> => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  // Don't manually set Content-Type - let axios set it automatically with the boundary
+  const response = await api.post("/product/api/v1/avatar", formData);
+  return response.data.data;
+};
+
+// Get Celery task status (for avatar upload)
+export const getCeleryTaskStatus = async (taskId: string) => {
+  const response = await api.get(`/product/api/v1/celery/tasks/${taskId}/status`);
+  return response.data;
+};
+
 // Get media information
 export const getMediaInfo = async (mediaId: string) => {
   const response = await api.get(`/product/api/v1/media/${mediaId}`);

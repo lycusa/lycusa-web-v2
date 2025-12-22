@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/app/components/auth/AuthGuard";
@@ -8,9 +8,14 @@ import {
   getUserProfile,
   createUserProfile,
   updateUserProfile,
+  uploadAvatar,
+  getCeleryTaskStatus,
 } from "@/app/lib/api";
 import { AppBackground, Header } from "@/app/components/layout";
 import type { UserProfile } from "@/app/lib/types/user";
+
+const ALLOWED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+const MAX_AVATAR_SIZE = 10 * 1024 * 1024; // 10MB
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -21,6 +26,12 @@ export default function EditProfilePage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isNewProfile, setIsNewProfile] = useState(false);
+
+  // Avatar upload state
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+  const [avatarProgress, setAvatarProgress] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -64,6 +75,88 @@ export default function EditProfilePage() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAvatarClick = () => {
+    if (!avatarUploading) {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Reset file input so same file can be selected again
+    e.target.value = "";
+
+    // Validate file type
+    if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+      setAvatarError("Please select a valid image file (JPEG, PNG, GIF, or WebP)");
+      return;
+    }
+
+    // Validate file size
+    if (file.size > MAX_AVATAR_SIZE) {
+      setAvatarError("Image must be less than 10MB");
+      return;
+    }
+
+    setAvatarUploading(true);
+    setAvatarError(null);
+    setAvatarProgress("Uploading...");
+
+    try {
+      // Upload and get task ID
+      const { task_id } = await uploadAvatar(file);
+      setAvatarProgress("Processing...");
+
+      // Poll for completion (max 60 seconds)
+      const maxAttempts = 30;
+      for (let i = 0; i < maxAttempts; i++) {
+        const statusResponse = await getCeleryTaskStatus(task_id);
+        const status = statusResponse.data;
+
+        if (status.status === "SUCCESS") {
+          if (status.result?.rejected) {
+            setAvatarError("Image was rejected: " + (status.result.reason || "Content not allowed"));
+            setAvatarProgress(null);
+            return;
+          }
+
+          if (status.result?.avatar_url) {
+            // Update form with new avatar URL
+            setFormData(prev => ({ ...prev, avatarUrl: status.result.avatar_url }));
+            setAvatarProgress(null);
+            return;
+          }
+
+          if (status.result?.error) {
+            setAvatarError("Upload failed: " + status.result.error);
+            setAvatarProgress(null);
+            return;
+          }
+        }
+
+        if (status.status === "FAILURE") {
+          setAvatarError("Upload failed. Please try again.");
+          setAvatarProgress(null);
+          return;
+        }
+
+        // Wait 2 seconds before next poll
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+
+      setAvatarError("Upload timed out. Please try again.");
+      setAvatarProgress(null);
+    } catch (err: any) {
+      console.error("Avatar upload error:", err);
+      setAvatarError(err.response?.data?.message || "Upload failed. Please try again.");
+      setAvatarProgress(null);
+    } finally {
+      setAvatarUploading(false);
     }
   };
 
@@ -246,9 +339,12 @@ export default function EditProfilePage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Avatar Preview */}
-            <div className="flex justify-center">
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 shadow-lg flex items-center justify-center overflow-hidden">
+            {/* Avatar Upload */}
+            <div className="flex flex-col items-center">
+              <div
+                onClick={handleAvatarClick}
+                className={`relative w-32 h-32 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 shadow-lg flex items-center justify-center overflow-hidden cursor-pointer group transition-all hover:shadow-xl ${avatarUploading ? 'opacity-75' : ''}`}
+              >
                 {formData.avatarUrl ? (
                   <img
                     src={formData.avatarUrl}
@@ -270,7 +366,62 @@ export default function EditProfilePage() {
                     />
                   </svg>
                 )}
+
+                {/* Hover overlay */}
+                {!avatarUploading && (
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <svg
+                      className="w-8 h-8 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                  </div>
+                )}
+
+                {/* Loading overlay */}
+                {avatarUploading && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                    <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
               </div>
+
+              {/* Hidden file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/gif,image/webp"
+                onChange={handleAvatarUpload}
+                className="hidden"
+              />
+
+              {/* Upload status */}
+              {avatarProgress && (
+                <p className="mt-2 text-sm text-brand-600 font-medium">{avatarProgress}</p>
+              )}
+
+              {/* Avatar error */}
+              {avatarError && (
+                <p className="mt-2 text-sm text-red-500">{avatarError}</p>
+              )}
+
+              <p className="mt-2 text-xs text-gray-500">
+                Click to upload a profile picture (max 10MB)
+              </p>
             </div>
 
             {/* Username */}
@@ -315,33 +466,11 @@ export default function EditProfilePage() {
               </p>
             </div>
 
-            {/* Avatar URL */}
-            <div>
-              <label
-                htmlFor="avatarUrl"
-                className="block text-sm font-semibold text-gray-900 mb-2"
-              >
-                Avatar URL
-              </label>
-              <input
-                type="url"
-                id="avatarUrl"
-                name="avatarUrl"
-                value={formData.avatarUrl}
-                onChange={handleInputChange}
-                placeholder="https://example.com/avatar.jpg"
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Enter a URL to your profile picture
-              </p>
-            </div>
-
             {/* Buttons */}
             <div className="flex gap-4 pt-6">
               <button
                 type="submit"
-                disabled={saving}
+                disabled={saving || avatarUploading}
                 className="flex-1 px-6 py-4 bg-gradient-to-r from-tyrian-800 to-brand-600 text-white rounded-xl hover:from-tyrian-900 hover:to-brand-700 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
               >
                 {saving ? (
