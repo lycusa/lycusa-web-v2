@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getAccessToken, isTokenExpired, clearTokens } from "./auth";
+import { dispatchKycRequired, isKycRequiredError } from "../components/providers/KycProvider";
 
 // API Gateway URL - all requests go through the gateway
 const API_GATEWAY_URL =
@@ -57,6 +58,27 @@ api.interceptors.response.use(
         window.location.href = "/signin";
       }
     }
+
+    // Handle KYC required errors (403 with code: KYC_REQUIRED)
+    if (isKycRequiredError(error)) {
+      console.log("[API] KYC verification required");
+      // Extract action context from the request URL
+      const requestUrl = error.config?.url || "";
+      let attemptedAction: string | undefined;
+
+      if (requestUrl.includes("/product")) {
+        attemptedAction = "manage products";
+      } else if (requestUrl.includes("/order")) {
+        attemptedAction = "manage orders";
+      } else if (requestUrl.includes("/messaging")) {
+        attemptedAction = "send messages";
+      } else if (requestUrl.includes("/rating")) {
+        attemptedAction = "submit ratings";
+      }
+
+      dispatchKycRequired(attemptedAction);
+    }
+
     return Promise.reject(error);
   }
 );

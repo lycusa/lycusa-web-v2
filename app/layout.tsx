@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import SignalAutoRegister from "./components/SignalAutoRegister";
+import KycProvider from "./components/providers/KycProvider";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -24,8 +25,10 @@ export default function RootLayout({
       <body
         className={`${manrope.variable} antialiased font-sans`}
       >
-        <SignalAutoRegister />
-        {children}
+        <KycProvider>
+          <SignalAutoRegister />
+          {children}
+        </KycProvider>
       </body>
     </html>
   );
