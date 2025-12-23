@@ -193,7 +193,13 @@ export default function EditProfilePage() {
       setAvatarProgress(null);
     } catch (err: any) {
       console.error("Avatar upload error:", err);
-      setAvatarError(err.response?.data?.message || "Upload failed. Please try again.");
+
+      // Check if this is a KYC-required error
+      if (err.response?.status === 403 && err.response?.data?.code === "KYC_REQUIRED") {
+        setAvatarError("You must complete KYC verification to add a profile photo.");
+      } else {
+        setAvatarError(err.response?.data?.message || "Upload failed. Please try again.");
+      }
       setAvatarProgress(null);
     } finally {
       setAvatarUploading(false);

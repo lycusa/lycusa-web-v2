@@ -61,12 +61,19 @@ api.interceptors.response.use(
 
     // Handle KYC required errors (403 with code: KYC_REQUIRED)
     // Note: /user endpoints are excluded - users can use user microservice without KYC verification
+    // Note: /avatar endpoints show inline error message instead of modal
     if (isKycRequiredError(error)) {
       const requestUrl = error.config?.url || "";
 
       // Skip KYC modal for user microservice endpoints
       if (requestUrl.includes("/user")) {
         console.log("[API] User microservice - KYC not required");
+        return Promise.reject(error);
+      }
+
+      // Skip KYC modal for avatar uploads - handled with inline error message
+      if (requestUrl.includes("/avatar")) {
+        console.log("[API] Avatar upload - KYC error handled inline");
         return Promise.reject(error);
       }
 
