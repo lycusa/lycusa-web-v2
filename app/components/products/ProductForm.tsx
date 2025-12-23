@@ -7,6 +7,15 @@ import api from "@/app/lib/api";
 import type { Product, Media } from "@/app/lib/types/product";
 import { ProductType } from "@/app/lib/types/product";
 import {
+  IMAGE_ACCEPT_STRING,
+  SUPPORTED_FORMATS_DISPLAY,
+  PRODUCT_MEDIA_SIZE_DISPLAY,
+  PRODUCT_MEDIA_MAX_SIZE,
+  isRejectedFormat,
+  isSupportedMimeType,
+  formatFileSize,
+} from "@/app/lib/mediaConstants";
+import {
   DndContext,
   closestCenter,
   PointerSensor,
@@ -196,17 +205,68 @@ export default function ProductForm({
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
+    // Client-side validation
+    const validFiles: File[] = [];
+    const rejectedFiles: { name: string; reason: string }[] = [];
+
+    for (const file of Array.from(files)) {
+      // Check for rejected formats
+      const rejectionReason = isRejectedFormat(file.name);
+      if (rejectionReason) {
+        rejectedFiles.push({ name: file.name, reason: rejectionReason });
+        continue;
+      }
+
+      // Check MIME type (with fallback for HEIC which may not report correctly)
+      const ext = file.name.toLowerCase().split(".").pop() || "";
+      const isHeicHeif = ["heic", "heif"].includes(ext);
+      if (!isSupportedMimeType(file.type) && !isHeicHeif) {
+        rejectedFiles.push({
+          name: file.name,
+          reason: `Unsupported format. Use ${SUPPORTED_FORMATS_DISPLAY}`,
+        });
+        continue;
+      }
+
+      // Check file size
+      if (file.size > PRODUCT_MEDIA_MAX_SIZE) {
+        rejectedFiles.push({
+          name: file.name,
+          reason: `File too large (${formatFileSize(file.size)}). Max ${PRODUCT_MEDIA_SIZE_DISPLAY}`,
+        });
+        continue;
+      }
+
+      validFiles.push(file);
+    }
+
+    // Show rejected files immediately
+    if (rejectedFiles.length > 0) {
+      setUploadProgress(
+        rejectedFiles.map((f) => ({
+          fileName: f.name,
+          status: "failed" as const,
+          reason: f.reason,
+        }))
+      );
+    }
+
+    if (validFiles.length === 0) {
+      return;
+    }
+
     setUploadingMedia(true);
     setError(null);
-    setUploadProgress(
-      Array.from(files).map((file) => ({
+    setUploadProgress((prev) => [
+      ...prev,
+      ...validFiles.map((file) => ({
         fileName: file.name,
-        status: "uploading",
-      }))
-    );
+        status: "uploading" as const,
+      })),
+    ]);
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
+    for (let i = 0; i < validFiles.length; i++) {
+      const file = validFiles[i];
       try {
         const response = await uploadMedia(file);
 
@@ -243,12 +303,12 @@ export default function ProductForm({
                     prev.map((p) =>
                       p.fileName === file.name
                         ? {
-                            ...p,
-                            status: "rejected",
-                            reason:
-                              result.reason ||
-                              "Media rejected by content moderation.",
-                          }
+                          ...p,
+                          status: "rejected",
+                          reason:
+                            result.reason ||
+                            "Media rejected by content moderation.",
+                        }
                         : p
                     )
                   );
@@ -306,10 +366,10 @@ export default function ProductForm({
           prev.map((p) =>
             p.fileName === file.name
               ? {
-                  ...p,
-                  status: "failed",
-                  reason: (err as Error).message,
-                }
+                ...p,
+                status: "failed",
+                reason: (err as Error).message,
+              }
               : p
           )
         );
@@ -594,7 +654,7 @@ export default function ProductForm({
         <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-brand-500 transition-colors">
           <input
             type="file"
-            accept="image/*"
+            accept={IMAGE_ACCEPT_STRING}
             multiple
             onChange={handleFileUpload}
             disabled={uploadingMedia}
@@ -625,7 +685,9 @@ export default function ProductForm({
             <p className="text-sm font-medium text-gray-900 mb-1">
               {uploadingMedia ? "Uploading..." : "Click to upload images"}
             </p>
-            <p className="text-xs text-gray-500">PNG, JPG up to 50MB each</p>
+            <p className="text-xs text-gray-500">
+              {SUPPORTED_FORMATS_DISPLAY} up to {PRODUCT_MEDIA_SIZE_DISPLAY} each
+            </p>
           </label>
         </div>
 

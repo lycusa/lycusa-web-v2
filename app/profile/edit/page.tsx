@@ -15,9 +15,16 @@ import { AppBackground, Header } from "@/app/components/layout";
 import type { UserProfile } from "@/app/lib/types/user";
 import imageCompression from "browser-image-compression";
 import ImageCropper from "@/app/components/ui/ImageCropper";
+import {
+  SUPPORTED_IMAGE_MIME_TYPES,
+  IMAGE_ACCEPT_STRING,
+  AVATAR_MAX_SIZE,
+  AVATAR_SIZE_DISPLAY,
+  SUPPORTED_FORMATS_DISPLAY,
+} from "@/app/lib/mediaConstants";
 
-const ALLOWED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-const MAX_AVATAR_SIZE = 10 * 1024 * 1024; // 10MB
+// Use shared constants for avatar types
+const ALLOWED_AVATAR_TYPES = [...SUPPORTED_IMAGE_MIME_TYPES] as string[];
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -97,15 +104,17 @@ export default function EditProfilePage() {
     // Reset file input
     e.target.value = "";
 
-    // Validate file type
-    if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
-      setAvatarError("Please select a valid image file (JPEG, PNG, GIF, or WebP)");
+    // Validate file type (with fallback for HEIC which may not report correctly)
+    const ext = file.name.toLowerCase().split(".").pop() || "";
+    const isHeicHeif = ["heic", "heif"].includes(ext);
+    if (!ALLOWED_AVATAR_TYPES.includes(file.type) && !isHeicHeif) {
+      setAvatarError(`Please select a valid image file (${SUPPORTED_FORMATS_DISPLAY})`);
       return;
     }
 
     // Validate file size
-    if (file.size > MAX_AVATAR_SIZE) {
-      setAvatarError("Image must be less than 10MB");
+    if (file.size > AVATAR_MAX_SIZE) {
+      setAvatarError(`Image must be less than ${AVATAR_SIZE_DISPLAY}`);
       return;
     }
 
@@ -470,7 +479,7 @@ export default function EditProfilePage() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/jpeg,image/png,image/gif,image/webp"
+                accept={IMAGE_ACCEPT_STRING}
                 onChange={handleAvatarSelect}
                 className="hidden"
               />
@@ -486,7 +495,7 @@ export default function EditProfilePage() {
               )}
 
               <p className="mt-2 text-xs text-gray-500">
-                Click to upload a profile picture (max 10MB)
+                Click to upload a profile picture (max {AVATAR_SIZE_DISPLAY})
               </p>
             </div>
 
