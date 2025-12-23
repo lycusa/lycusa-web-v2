@@ -117,7 +117,7 @@ export default function Home() {
               <div className="absolute -top-40 -right-40 w-80 h-80 bg-tyrian-600/30 rounded-full blur-3xl animate-pulse"></div>
               <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-tyrian-700/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
               {/* Grid pattern overlay */}
-              <div className="absolute inset-0 opacity-5" style={{backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 1px)', backgroundSize: '32px 32px'}}></div>
+              <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
             </div>
 
             <div className="relative z-10">
@@ -193,7 +193,7 @@ export default function Home() {
               style={{
                 background: 'linear-gradient(135deg, rgba(17, 17, 17, 0.95) 0%, rgba(31, 31, 31, 0.98) 100%)',
               }}>
-              <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 1px)', backgroundSize: '16px 16px'}}></div>
+              <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 1px)', backgroundSize: '16px 16px' }}></div>
               <div className="absolute inset-0 opacity-30" style={{
                 background: 'radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%)',
               }}></div>
@@ -338,9 +338,6 @@ export default function Home() {
                     </Link>
                     <Link href="/profile" className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all font-medium text-sm">
                       Profile
-                    </Link>
-                    <Link href="/kyc" className="px-5 py-2.5 border border-tyrian-300 text-tyrian-700 rounded-xl hover:bg-tyrian-50 transition-all font-medium text-sm">
-                      KYC
                     </Link>
                   </div>
                 )}

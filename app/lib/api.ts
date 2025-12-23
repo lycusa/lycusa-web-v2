@@ -60,10 +60,18 @@ api.interceptors.response.use(
     }
 
     // Handle KYC required errors (403 with code: KYC_REQUIRED)
+    // Note: /user endpoints are excluded - users can use user microservice without KYC verification
     if (isKycRequiredError(error)) {
+      const requestUrl = error.config?.url || "";
+
+      // Skip KYC modal for user microservice endpoints
+      if (requestUrl.includes("/user")) {
+        console.log("[API] User microservice - KYC not required");
+        return Promise.reject(error);
+      }
+
       console.log("[API] KYC verification required");
       // Extract action context from the request URL
-      const requestUrl = error.config?.url || "";
       let attemptedAction: string | undefined;
 
       if (requestUrl.includes("/product")) {

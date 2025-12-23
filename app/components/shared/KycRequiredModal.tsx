@@ -193,7 +193,10 @@ export default function KycRequiredModal({
                 Verify Now
               </button>
               <button
-                onClick={onClose}
+                onClick={() => {
+                  onClose();
+                  router.push("/");
+                }}
                 className="w-full px-6 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-colors font-medium"
               >
                 Maybe Later
