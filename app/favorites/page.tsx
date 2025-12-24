@@ -1,49 +1,58 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useFavorites } from "@/app/hooks/useFavorites";
-import { searchProducts } from "@/app/lib/api";
+import { getProductsBatch } from "@/app/lib/api";
 import BentoProductGrid from "@/app/components/products/BentoProductGrid";
-import type { SearchResultItem } from "@/app/lib/types/product";
+import type { Product } from "@/app/lib/types/product";
 
 export default function FavoritesPage() {
     const { favoriteIds, favoritesCount, isReady } = useFavorites();
-    const [products, setProducts] = useState<SearchResultItem[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Track if a fetch is in progress to prevent duplicate requests
+    const isFetchingRef = useRef(false);
+    // Track the last fetched IDs to prevent unnecessary re-fetches
+    const lastFetchedIdsRef = useRef<string>("");
 
     useEffect(() => {
         const fetchFavoriteProducts = async () => {
             if (!isReady) return;
 
+            // Create a stable string representation for comparison
+            const idsKey = favoriteIds.slice().sort().join(",");
+
+            // Skip if already fetching or if IDs haven't changed
+            if (isFetchingRef.current || idsKey === lastFetchedIdsRef.current) {
+                return;
+            }
+
             if (favoriteIds.length === 0) {
                 setProducts([]);
                 setLoading(false);
+                lastFetchedIdsRef.current = idsKey;
                 return;
             }
 
             try {
+                isFetchingRef.current = true;
                 setLoading(true);
-                // Fetch all products and filter by favorite IDs
-                // Note: In a real app, you'd have a dedicated API endpoint for bulk product fetch
-                const response = await searchProducts({
-                    query: "*",
-                    size: 100, // Fetch enough to include all favorites
-                });
+                // Fetch favorite products using the batch endpoint
+                const response = await getProductsBatch(favoriteIds);
 
                 if (response.success && response.data) {
-                    // Filter to only show favorited products
-                    const favoriteProducts = response.data.results.filter(
-                        (product: SearchResultItem) => favoriteIds.includes(product.id)
-                    );
-                    setProducts(favoriteProducts);
+                    setProducts(response.data);
                 }
+                lastFetchedIdsRef.current = idsKey;
             } catch (err: any) {
                 console.error("Error fetching favorite products:", err);
                 setError(err.message || "Failed to load favorites");
             } finally {
                 setLoading(false);
+                isFetchingRef.current = false;
             }
         };
 

@@ -2,13 +2,40 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import type { SearchResultItem } from "@/app/lib/types/product";
+import type { SearchResultItem, Product, Media } from "@/app/lib/types/product";
 import { ProductType, ProductStatus } from "@/app/lib/types/product";
 import { formatPrice } from "@/app/lib/utils";
 import FavoriteButton from "./FavoriteButton";
 
+// Union type to support both search results and direct product objects
+type ProductItem = SearchResultItem | Product;
+
+// Helper to get the first image URL from either product type
+function getImageUrl(product: ProductItem): string {
+  // SearchResultItem has media_urls array
+  if ('media_urls' in product && product.media_urls?.length > 0) {
+    return product.media_urls[0];
+  }
+  // Product has media array with url property
+  if ('media' in product && Array.isArray(product.media) && product.media.length > 0) {
+    return (product.media as Media[])[0]?.url || "/placeholder-product.jpg";
+  }
+  return "/placeholder-product.jpg";
+}
+
+// Helper to get media count from either product type
+function getMediaCount(product: ProductItem): number {
+  if ('media_count' in product) {
+    return product.media_count;
+  }
+  if ('media' in product && Array.isArray(product.media)) {
+    return product.media.length;
+  }
+  return 0;
+}
+
 interface BentoProductGridProps {
-  products: SearchResultItem[];
+  products: ProductItem[];
   emptyMessage?: string;
   showInactiveStatus?: boolean;
 }
@@ -78,7 +105,8 @@ export default function BentoProductGrid({
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 auto-rows-[200px] sm:auto-rows-[220px]">
       {products.map((product, index) => {
-        const imageUrl = product.media_urls?.[0] || "/placeholder-product.jpg";
+        const imageUrl = getImageUrl(product);
+        const mediaCount = getMediaCount(product);
         const isPreOrder = product.product_type === ProductType.PRE_ORDER;
         const isActive = product.status === ProductStatus.ACTIVE;
         const bentoClass = getBentoClass(index);
@@ -121,12 +149,12 @@ export default function BentoProductGrid({
             </div>
 
             {/* Media Count Badge */}
-            {product.media_count > 1 && (
+            {mediaCount > 1 && (
               <div className="absolute bottom-2 left-2 px-1.5 py-1 bg-black/50 backdrop-blur-sm text-white text-[10px] rounded-md flex items-center gap-1 z-10">
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span className="font-medium">{product.media_count}</span>
+                <span className="font-medium">{mediaCount}</span>
               </div>
             )}
 

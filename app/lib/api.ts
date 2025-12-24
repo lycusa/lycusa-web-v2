@@ -329,6 +329,14 @@ export const searchProducts = async (query: SearchQuery) => {
   return response.data;
 };
 
+// Batch get multiple products by IDs
+export const getProductsBatch = async (productIds: string[]) => {
+  const response = await api.post("/product/api/v1/products/batch", {
+    product_ids: productIds,
+  });
+  return response.data;
+};
+
 // Get search suggestions (autocomplete)
 export const getSearchSuggestions = async (query: string, size: number = 5) => {
   const response = await api.get("/product/api/v1/search/suggestions", {

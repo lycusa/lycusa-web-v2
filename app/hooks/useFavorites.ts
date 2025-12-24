@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
     getAllFavorites,
     toggleFavorite as cacheToggle,
@@ -55,9 +55,9 @@ export function useFavorites() {
     const favoritesCount = favorites.size;
 
     /**
-     * Get all favorite IDs as array
+     * Get all favorite IDs as array - memoized to prevent unnecessary re-renders
      */
-    const favoriteIds = Array.from(favorites);
+    const favoriteIds = useMemo(() => Array.from(favorites), [favorites]);
 
     return {
         favorites,
