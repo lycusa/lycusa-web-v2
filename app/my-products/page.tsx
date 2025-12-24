@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/app/components/auth/AuthGuard";
-import { searchProducts, deleteProduct } from "@/app/lib/api";
+import { deleteProduct } from "@/app/lib/api";
+import { useSellerProducts, invalidateProductCache } from "@/app/hooks/useProducts";
 import type { SearchResultItem } from "@/app/lib/types/product";
 import { ProductType, ProductStatus, ModerationStatus } from "@/app/lib/types/product";
 import { AppBackground, Header } from "@/app/components/layout";
@@ -13,47 +14,19 @@ import ConfirmationModal from "@/app/components/shared/ConfirmationModal";
 
 export default function MyProductsPage() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
-  const [products, setProducts] = useState<SearchResultItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
+  // Use SWR hook for fetching user's products with automatic caching
+  const { products, isLoading, error, mutate } = useSellerProducts(
+    isAuthenticated && user?.id ? user.id : null
+  );
+
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [productToDeleteId, setProductToDeleteId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchMyProducts = async () => {
-      if (!user?.id) return;
+  const loading = authLoading || isLoading;
 
-      try {
-        setLoading(true);
-        const response = await searchProducts({
-          query: "*",
-          seller_id: user.id,
-          page: 1,
-          size: 100,
-          sort_by: "created_at",
-          sort_order: "desc",
-        });
-
-        if (response.success && response.data) {
-          setProducts(response.data.results);
-        } else {
-          setError(response.message || "Failed to load products");
-        }
-      } catch (err: any) {
-        console.error("Error fetching products:", err);
-        setError(err.message || "Failed to load products");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (isAuthenticated && user) {
-      fetchMyProducts();
-    } else if (!authLoading) {
-      setLoading(false);
-    }
-  }, [user, isAuthenticated, authLoading]);
 
   const handleDeleteClick = (productId: string) => {
     setProductToDeleteId(productId);
@@ -65,23 +38,38 @@ export default function MyProductsPage() {
 
     setDeletingId(productToDeleteId);
     setDeleteModalOpen(false);
+    setDeleteError(null);
 
     try {
       const response = await deleteProduct(productToDeleteId);
 
       if (response.success) {
-        setProducts((prev) => prev.filter((p) => p.id !== productToDeleteId));
+        // Optimistically update the cache by filtering out the deleted product
+        mutate(
+          (currentData) => {
+            if (!currentData) return currentData;
+            return {
+              ...currentData,
+              results: currentData.results?.filter((p: SearchResultItem) => p.id !== productToDeleteId) || [],
+              total_results: Math.max(0, (currentData.total_results || 0) - 1),
+            };
+          },
+          { revalidate: false }
+        );
+        // Also invalidate related caches
+        invalidateProductCache(productToDeleteId);
       } else {
-        setError(response.message || "Failed to delete product");
+        setDeleteError(response.message || "Failed to delete product");
       }
     } catch (err: any) {
       console.error("Delete error:", err);
-      setError(err.message || "Failed to delete product");
+      setDeleteError(err.message || "Failed to delete product");
     } finally {
       setDeletingId(null);
       setProductToDeleteId(null);
     }
   };
+
 
   if (authLoading || loading) {
     return (

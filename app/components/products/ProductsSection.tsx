@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { searchProducts } from "@/app/lib/api";
+import { useState } from "react";
+import { useSellerProducts } from "@/app/hooks/useProducts";
 import type { SearchResultItem } from "@/app/lib/types/product";
 import { ProductStatus } from "@/app/lib/types/product";
 import BentoProductGrid from "./BentoProductGrid";
@@ -17,48 +17,17 @@ export default function ProductsSection({
   isOwnProfile,
   initialProducts,
 }: ProductsSectionProps) {
-  const [products, setProducts] = useState<SearchResultItem[]>(initialProducts || []);
-  const [loading, setLoading] = useState(!initialProducts);
-  const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<"all" | "active" | "inactive">(
     isOwnProfile ? "all" : "active"
   );
 
-  useEffect(() => {
-    if (!initialProducts) {
-      loadProducts();
-    }
-  }, [sellerId, isOwnProfile, initialProducts]);
+  // Use SWR hook for fetching seller products with automatic caching
+  // Only filter by status when viewing another user's profile (non-owners see only active)
+  const { products, isLoading: loading, error, mutate } = useSellerProducts(
+    sellerId,
+    isOwnProfile ? {} : { status: ProductStatus.ACTIVE }
+  );
 
-  const loadProducts = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Use searchProducts API with seller_id filter
-      const response = await searchProducts({
-        query: "*",
-        seller_id: sellerId,
-        page: 1,
-        size: 100,
-        sort_by: "created_at",
-        sort_order: "desc",
-        // Only filter by status if viewing another user's profile
-        ...(isOwnProfile ? {} : { status: ProductStatus.ACTIVE }),
-      });
-
-      if (response.success && response.data) {
-        setProducts(response.data.results || []);
-      } else {
-        setError(response.message || "Failed to load products");
-      }
-    } catch (err: any) {
-      console.error("Error loading products:", err);
-      setError(err.response?.data?.message || "Failed to load products");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Filter products based on active filter (only for own profile)
   const getFilteredProducts = () => {
@@ -117,7 +86,7 @@ export default function ProductsSection({
           </h3>
           <p className="text-sm text-red-700">{error}</p>
           <button
-            onClick={loadProducts}
+            onClick={() => mutate()}
             className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
           >
             Try Again
@@ -158,11 +127,10 @@ export default function ProductsSection({
           <div className="flex items-center gap-1.5 bg-gray-100/80 p-1 rounded-xl border border-gray-200/50">
             <button
               onClick={() => setActiveFilter("all")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                activeFilter === "all"
-                  ? "bg-white text-gray-900 shadow-sm border border-gray-200/50"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeFilter === "all"
+                ? "bg-white text-gray-900 shadow-sm border border-gray-200/50"
+                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                }`}
             >
               All
               <span className={`ml-1.5 ${activeFilter === "all" ? "text-tyrian-600" : "text-gray-400"}`}>
@@ -171,11 +139,10 @@ export default function ProductsSection({
             </button>
             <button
               onClick={() => setActiveFilter("active")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                activeFilter === "active"
-                  ? "bg-white text-gray-900 shadow-sm border border-gray-200/50"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeFilter === "active"
+                ? "bg-white text-gray-900 shadow-sm border border-gray-200/50"
+                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                }`}
             >
               Active
               <span className={`ml-1.5 ${activeFilter === "active" ? "text-emerald-600" : "text-gray-400"}`}>
@@ -184,11 +151,10 @@ export default function ProductsSection({
             </button>
             <button
               onClick={() => setActiveFilter("inactive")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                activeFilter === "inactive"
-                  ? "bg-white text-gray-900 shadow-sm border border-gray-200/50"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeFilter === "inactive"
+                ? "bg-white text-gray-900 shadow-sm border border-gray-200/50"
+                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                }`}
             >
               Inactive
               <span className={`ml-1.5 ${activeFilter === "inactive" ? "text-amber-600" : "text-gray-400"}`}>

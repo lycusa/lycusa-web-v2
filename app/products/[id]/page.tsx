@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { getProduct, getUserProfile } from "@/app/lib/api";
+import { getUserProfile } from "@/app/lib/api";
 import { useAuth } from "@/app/components/auth/AuthGuard";
+import { useProduct } from "@/app/hooks/useProducts";
 import type { Product } from "@/app/lib/types/product";
 import { ProductType, ProductStatus, ModerationStatus } from "@/app/lib/types/product";
 import FavoriteButton from "@/app/components/products/FavoriteButton";
@@ -16,45 +17,29 @@ export default function ProductDetailPage() {
   const { user, isAuthenticated } = useAuth();
   const productId = params.id as string;
 
-  const [product, setProduct] = useState<Product | null>(null);
+  // Use SWR hook for product fetching with automatic caching
+  const { product, isLoading: loading, error } = useProduct(productId);
+
   const [sellerProfile, setSellerProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
+  // Fetch seller profile when product loads
   useEffect(() => {
-    const fetchProduct = async () => {
+    const fetchSellerProfile = async () => {
+      if (!product?.seller_id) return;
       try {
-        setLoading(true);
-        const response = await getProduct(productId);
-
-        if (response.success && response.data) {
-          setProduct(response.data);
-
-          // Fetch seller profile
-          try {
-            const sellerResponse = await getUserProfile(response.data.seller_id);
-            if (sellerResponse.success && sellerResponse.data) {
-              setSellerProfile(sellerResponse.data);
-            }
-          } catch (err) {
-            console.error("Failed to fetch seller profile:", err);
-          }
-        } else {
-          setError(response.message || "Product not found");
+        const sellerResponse = await getUserProfile(product.seller_id);
+        if (sellerResponse.success && sellerResponse.data) {
+          setSellerProfile(sellerResponse.data);
         }
-      } catch (err: any) {
-        console.error("Error fetching product:", err);
-        setError(err.message || "Failed to load product");
-      } finally {
-        setLoading(false);
+      } catch (err) {
+        console.error("Failed to fetch seller profile:", err);
       }
     };
 
-    if (productId) {
-      fetchProduct();
-    }
-  }, [productId]);
+    fetchSellerProfile();
+  }, [product?.seller_id]);
+
 
   if (loading) {
     return (

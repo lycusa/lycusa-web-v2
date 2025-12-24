@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
-import { searchProducts } from "@/app/lib/api";
 import ProductCard from "@/app/components/products/ProductCard";
 import SearchBar from "@/app/components/products/SearchBar";
 import ProductFilters from "@/app/components/products/ProductFilters";
 import { AppBackground, Header } from "@/app/components/layout";
-import type { SearchQuery, SearchResult } from "@/app/lib/types/product";
-import { ProductType, ProductStatus } from "@/app/lib/types/product";
+import { useProducts } from "@/app/hooks/useProducts";
+import type { SearchQuery } from "@/app/lib/types/product";
+import { ProductStatus } from "@/app/lib/types/product";
 
 export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("*");
@@ -22,52 +22,18 @@ export default function ProductsPage() {
     sort_by: "relevance" as const,
     sort_order: "desc" as const,
   });
-  const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const performSearch = async () => {
-      setLoading(true);
-      setError(null);
+  // Build search query for SWR hook
+  const query: SearchQuery = useMemo(() => ({
+    query: searchQuery || "*",
+    ...filters,
+  }), [searchQuery, filters]);
 
-      try {
-        // Build search query - use empty string or "*" to get all products
-        const query: SearchQuery = {
-          query: searchQuery || "*",
-          ...filters,
-        };
+  // Use SWR hook for product search with automatic caching
+  const { searchResult, isLoading: loading, error } = useProducts(query);
 
-        const response = await searchProducts(query);
-
-        if (response.success && response.data) {
-          setSearchResult(response.data);
-        } else {
-          setError(response.message || "Failed to search products");
-        }
-      } catch (err: any) {
-        console.error("Search error:", err);
-
-        // Provide more helpful error messages
-        if (err.response?.status === 401) {
-          setError("Please sign in to browse products");
-        } else if (err.response?.status === 503) {
-          setError("Search service is temporarily unavailable. Please try again later.");
-        } else if (err.code === 'ECONNABORTED' || err.code === 'ETIMEDOUT') {
-          setError("Search request timed out. Please try again.");
-        } else {
-          setError(err.response?.data?.message || err.message || "An error occurred while searching");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    performSearch();
-  }, [searchQuery, filters]);
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query || "*");
+  const handleSearch = (newQuery: string) => {
+    setSearchQuery(newQuery || "*");
     setFilters((prev) => ({ ...prev, page: 1 }));
   };
 
@@ -79,6 +45,7 @@ export default function ProductsPage() {
     setFilters((prev) => ({ ...prev, page: newPage }));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
 
   return (
     <AppBackground>

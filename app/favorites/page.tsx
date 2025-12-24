@@ -1,63 +1,20 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useFavorites } from "@/app/hooks/useFavorites";
-import { getProductsBatch } from "@/app/lib/api";
+import { useProductsBatch } from "@/app/hooks/useProducts";
 import BentoProductGrid from "@/app/components/products/BentoProductGrid";
-import type { Product } from "@/app/lib/types/product";
 
 export default function FavoritesPage() {
     const { favoriteIds, favoritesCount, isReady } = useFavorites();
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
-    // Track if a fetch is in progress to prevent duplicate requests
-    const isFetchingRef = useRef(false);
-    // Track the last fetched IDs to prevent unnecessary re-fetches
-    const lastFetchedIdsRef = useRef<string>("");
+    // Use SWR hook for batch product fetching with automatic caching
+    // Only fetch when favorites are ready and we have some favorites
+    const { products, isLoading, error } = useProductsBatch(isReady ? favoriteIds : []);
 
-    useEffect(() => {
-        const fetchFavoriteProducts = async () => {
-            if (!isReady) return;
+    // Show loading while favorites cache is initializing
+    const loading = !isReady || isLoading;
 
-            // Create a stable string representation for comparison
-            const idsKey = favoriteIds.slice().sort().join(",");
-
-            // Skip if already fetching or if IDs haven't changed
-            if (isFetchingRef.current || idsKey === lastFetchedIdsRef.current) {
-                return;
-            }
-
-            if (favoriteIds.length === 0) {
-                setProducts([]);
-                setLoading(false);
-                lastFetchedIdsRef.current = idsKey;
-                return;
-            }
-
-            try {
-                isFetchingRef.current = true;
-                setLoading(true);
-                // Fetch favorite products using the batch endpoint
-                const response = await getProductsBatch(favoriteIds);
-
-                if (response.success && response.data) {
-                    setProducts(response.data);
-                }
-                lastFetchedIdsRef.current = idsKey;
-            } catch (err: any) {
-                console.error("Error fetching favorite products:", err);
-                setError(err.message || "Failed to load favorites");
-            } finally {
-                setLoading(false);
-                isFetchingRef.current = false;
-            }
-        };
-
-        fetchFavoriteProducts();
-    }, [favoriteIds, isReady]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-brand-50">
