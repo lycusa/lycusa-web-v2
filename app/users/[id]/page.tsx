@@ -22,9 +22,7 @@ import type {
   RelationshipStatus,
   UserStats,
 } from "@/app/lib/types/user";
-import type { SearchResultItem } from "@/app/lib/types/product";
-import ProductCard from "@/app/components/products/ProductCard";
-import { ProductStatus } from "@/app/lib/types/product";
+import ProductsSection from "@/app/components/products/ProductsSection";
 
 export default function UserProfilePage() {
   const params = useParams();
@@ -41,7 +39,6 @@ export default function UserProfilePage() {
   const [relationship, setRelationship] = useState<RelationshipStatus | null>(
     null
   );
-  const [products, setProducts] = useState<SearchResultItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -79,7 +76,7 @@ export default function UserProfilePage() {
       const promises: Promise<any>[] = [
         getUserFollowers(userId),
         getUserFollowing(userId),
-        searchProducts({ query: "", seller_id: userId, page: 1, size: 6 }),
+        searchProducts({ query: "*", seller_id: userId, page: 1, size: 1 }),
       ];
 
       // Only check relationship if authenticated
@@ -117,18 +114,11 @@ export default function UserProfilePage() {
           : 0;
       }
 
-      // Parse products
+      // Parse products count
       if (results[2].status === "fulfilled") {
         const searchResult = results[2].value;
         if (searchResult.total_results) {
           newStats.productsCount = searchResult.total_results;
-        }
-        if (searchResult.results && Array.isArray(searchResult.results)) {
-          // Filter for active products only
-          const activeProducts = searchResult.results.filter(
-            (p: SearchResultItem) => p.status === ProductStatus.ACTIVE
-          );
-          setProducts(activeProducts.slice(0, 6));
         }
       }
 
@@ -622,40 +612,9 @@ export default function UserProfilePage() {
         </div>
 
         {/* Products Section */}
-        {products.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Products</h2>
-              {(stats.productsCount ?? 0) > 6 && (
-                <Link
-                  href={`/products?seller=${userId}`}
-                  className="text-tyrian-600 hover:text-tyrian-700 text-sm font-medium flex items-center gap-1"
-                >
-                  View all {stats.productsCount ?? 0}
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </Link>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          </div>
-        )}
+        <div className="mb-8">
+          <ProductsSection sellerId={userId} isOwnProfile={false} />
+        </div>
 
         {/* About Card */}
         <div className="bg-white rounded-2xl shadow-lg p-8">

@@ -15,6 +15,7 @@ import {
 } from "@/app/lib/api";
 import { AppBackground, Header } from "@/app/components/layout";
 import type { UserProfile, UserStats } from "@/app/lib/types/user";
+import ProductsSection from "@/app/components/products/ProductsSection";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -73,7 +74,7 @@ export default function ProfilePage() {
         await Promise.allSettled([
           getUserFollowers(user!.id),
           getUserFollowing(user!.id),
-          searchProducts({ query: "", seller_id: user!.id, page: 1, size: 1 }),
+          searchProducts({ query: "*", seller_id: user!.id, page: 1, size: 1 }),
           loadKycStatus(),
         ]);
 
@@ -541,6 +542,13 @@ export default function ProfilePage() {
             </div>
           </Link>
         </div>
+
+        {/* Products Section */}
+        {user?.id && (
+          <div className="mb-8">
+            <ProductsSection sellerId={user.id} isOwnProfile={true} />
+          </div>
+        )}
 
         {/* Profile Details Card */}
         <div className="bg-white rounded-2xl shadow-lg p-8">
