@@ -80,17 +80,13 @@ export default function ProductsSection({
 
   if (loading) {
     return (
-      <div className="py-12">
-        <div className="animate-pulse space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[280px]">
-            {[...Array(8)].map((_, i) => (
+      <div className="py-8">
+        <div className="animate-pulse">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 auto-rows-[200px] sm:auto-rows-[220px]">
+            {[...Array(10)].map((_, i) => (
               <div
                 key={i}
-                className="bg-gray-200 rounded-2xl"
-                style={{
-                  gridColumn: i % 6 === 0 ? "span 2" : "span 1",
-                  gridRow: i % 6 === 0 || i % 6 === 3 ? "span 2" : "span 1",
-                }}
+                className="bg-gray-200/60 rounded-xl"
               />
             ))}
           </div>
@@ -137,17 +133,21 @@ export default function ProductsSection({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         {/* Stats */}
         <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-tyrian-100 to-tyrian-200 rounded-xl flex items-center justify-center">
+            <svg className="w-6 h-6 text-tyrian-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+          </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-xl font-bold text-gray-900 tracking-tight">
               {isOwnProfile ? "My Products" : "Products"}
             </h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-gray-500">
               {products.length} {products.length === 1 ? "listing" : "listings"}
-              {isOwnProfile && (
-                <>
-                  {" "}
-                  ({activeCount} active, {inactiveCount} inactive)
-                </>
+              {isOwnProfile && products.length > 0 && (
+                <span className="text-gray-400">
+                  {" "}· {activeCount} active
+                </span>
               )}
             </p>
           </div>
@@ -155,36 +155,45 @@ export default function ProductsSection({
 
         {/* Filter Buttons (only for own profile) */}
         {isOwnProfile && products.length > 0 && (
-          <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-xl">
+          <div className="flex items-center gap-1.5 bg-gray-100/80 p-1 rounded-xl border border-gray-200/50">
             <button
               onClick={() => setActiveFilter("all")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeFilter === "all"
-                  ? "bg-white text-tyrian-800 shadow-md"
-                  : "text-gray-600 hover:text-gray-900"
+                  ? "bg-white text-gray-900 shadow-sm border border-gray-200/50"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
               }`}
             >
-              All ({products.length})
+              All
+              <span className={`ml-1.5 ${activeFilter === "all" ? "text-tyrian-600" : "text-gray-400"}`}>
+                {products.length}
+              </span>
             </button>
             <button
               onClick={() => setActiveFilter("active")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeFilter === "active"
-                  ? "bg-white text-tyrian-800 shadow-md"
-                  : "text-gray-600 hover:text-gray-900"
+                  ? "bg-white text-gray-900 shadow-sm border border-gray-200/50"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
               }`}
             >
-              Active ({activeCount})
+              Active
+              <span className={`ml-1.5 ${activeFilter === "active" ? "text-emerald-600" : "text-gray-400"}`}>
+                {activeCount}
+              </span>
             </button>
             <button
               onClick={() => setActiveFilter("inactive")}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeFilter === "inactive"
-                  ? "bg-white text-tyrian-800 shadow-md"
-                  : "text-gray-600 hover:text-gray-900"
+                  ? "bg-white text-gray-900 shadow-sm border border-gray-200/50"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
               }`}
             >
-              Inactive ({inactiveCount})
+              Inactive
+              <span className={`ml-1.5 ${activeFilter === "inactive" ? "text-amber-600" : "text-gray-400"}`}>
+                {inactiveCount}
+              </span>
             </button>
           </div>
         )}
