@@ -8,6 +8,7 @@ import { getProduct, getUserProfile } from "@/app/lib/api";
 import { useAuth } from "@/app/components/auth/AuthGuard";
 import type { Product } from "@/app/lib/types/product";
 import { ProductType, ProductStatus, ModerationStatus } from "@/app/lib/types/product";
+import FavoriteButton from "@/app/components/products/FavoriteButton";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -387,9 +388,7 @@ export default function ProductDetailPage() {
                 <button className="w-full px-8 py-4 bg-gradient-to-r from-tyrian-800 to-brand-600 text-white rounded-xl hover:from-tyrian-900 hover:to-brand-700 transition-all font-semibold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5">
                   Contact Seller
                 </button>
-                <button className="w-full px-8 py-4 bg-white text-gray-900 border-2 border-gray-300 rounded-xl hover:border-gray-400 hover:bg-gray-50 transition-all font-semibold">
-                  Add to Wishlist
-                </button>
+                <FavoriteButton productId={productId} size="lg" showLabel />
               </div>
             )}
 

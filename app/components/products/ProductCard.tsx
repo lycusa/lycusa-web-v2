@@ -5,6 +5,7 @@ import Image from "next/image";
 import type { SearchResultItem } from "@/app/lib/types/product";
 import { ProductType, ProductStatus } from "@/app/lib/types/product";
 import { formatPrice } from "@/app/lib/utils";
+import FavoriteButton from "./FavoriteButton";
 
 interface ProductCardProps {
   product: SearchResultItem;
@@ -74,6 +75,11 @@ export default function ProductCard({ product }: ProductCardProps) {
                 Inactive
               </span>
             )}
+          </div>
+
+          {/* Favorite Button */}
+          <div className="absolute top-3 right-3 z-10">
+            <FavoriteButton productId={product.id} size="sm" />
           </div>
 
           {/* Media Count Badge */}
