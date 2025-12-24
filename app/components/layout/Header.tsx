@@ -76,7 +76,6 @@ export default function Header({ showNav = true, className = "" }: HeaderProps) 
                             >
                                 Browse
                             </Link>
-                            <FavoritesNavLink />
                             {loading ? (
                                 <div className="flex items-center gap-3">
                                     <div className="w-24 h-9 bg-gray-200 animate-pulse rounded-xl"></div>
@@ -122,6 +121,7 @@ export default function Header({ showNav = true, className = "" }: HeaderProps) 
                                         </span>
                                     </div>
                                     <LogoutButton className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all text-sm font-medium" />
+                                    <FavoritesNavLink />
                                 </>
                             ) : (
                                 <>
