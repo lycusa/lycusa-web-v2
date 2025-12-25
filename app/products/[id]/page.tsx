@@ -129,45 +129,112 @@ function MediaLightbox({
   );
 }
 
-// Expandable Description Component
-function ExpandableDescription({ text, maxLength = 200 }: { text: string; maxLength?: number }) {
-  const [isExpanded, setIsExpanded] = useState(false);
+// Description with Modal for full text
+function DescriptionWithModal({
+  text,
+  maxLength = 180,
+  productName,
+  productId,
+  onBuyNow
+}: {
+  text: string;
+  maxLength?: number;
+  productName: string;
+  productId: string;
+  onBuyNow: () => void;
+}) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const shouldTruncate = text.length > maxLength;
 
-  if (!shouldTruncate) {
-    return (
-      <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-        {text}
-      </p>
-    );
-  }
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isModalOpen]);
 
   return (
-    <div>
-      <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-        {isExpanded ? text : `${text.slice(0, maxLength).trim()}...`}
-      </p>
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-tyrian-800 hover:text-tyrian-900 transition-colors group"
-      >
-        {isExpanded ? (
-          <>
-            Show less
-            <svg className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-            </svg>
-          </>
-        ) : (
-          <>
+    <>
+      <div>
+        <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+          {shouldTruncate ? `${text.slice(0, maxLength).trim()}...` : text}
+        </p>
+        {shouldTruncate && (
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-tyrian-800 hover:text-tyrian-900 transition-colors group"
+          >
             Read more
-            <svg className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </>
+          </button>
         )}
-      </button>
-    </div>
+      </div>
+
+      {/* Description Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-md"
+            onClick={() => setIsModalOpen(false)}
+          />
+
+          {/* Modal Content */}
+          <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-5 bg-gradient-to-r from-tyrian-800 to-tyrian-900">
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-tyrian-200 font-semibold mb-1">Product Description</p>
+                <h3 className="text-lg font-bold text-white">{productName}</h3>
+              </div>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-colors group"
+              >
+                <svg className="w-5 h-5 text-white group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 overflow-y-auto max-h-[50vh] bg-gray-50">
+              <p className="text-gray-700 leading-relaxed whitespace-pre-line text-[15px]">
+                {text}
+              </p>
+            </div>
+
+            {/* Footer with Buy Now */}
+            <div className="px-6 py-4 bg-white border-t border-gray-100 flex items-center justify-between gap-4">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-5 py-2.5 text-gray-600 hover:text-gray-800 font-medium text-sm transition-colors"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  setIsModalOpen(false);
+                  onBuyNow();
+                }}
+                className="px-6 py-2.5 bg-tyrian-800 hover:bg-tyrian-900 text-white rounded-xl font-semibold text-sm transition-all hover:shadow-lg flex items-center gap-2 group"
+              >
+                <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Buy Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -492,13 +559,19 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Row 3: Description + Actions */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 flex-1">
-              {/* Description Card - Takes more space */}
-              <div className="lg:col-span-3 glass-frosted rounded-3xl p-6 depth-shadow-md hover:depth-shadow-lg transition-all duration-300 relative overflow-hidden flex flex-col">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-start">
+              {/* Description Card - Fixed height with internal scroll when expanded */}
+              <div className="lg:col-span-3 glass-frosted rounded-3xl p-6 depth-shadow-md hover:depth-shadow-lg transition-all duration-300 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-tyrian-50/10 pointer-events-none" />
-                <div className="relative z-10 flex-1">
+                <div className="relative z-10">
                   <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-3">Description</p>
-                  <ExpandableDescription text={product.description} maxLength={250} />
+                  <DescriptionWithModal
+                    text={product.description}
+                    maxLength={180}
+                    productName={product.name}
+                    productId={productId}
+                    onBuyNow={() => router.push(`/checkout?productId=${productId}&quantity=1`)}
+                  />
                 </div>
 
                 {/* Tags Section - Inside Description Card */}
@@ -519,7 +592,7 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Action Buttons Card */}
-              <div className="lg:col-span-2 flex flex-col gap-3">
+              <div className="lg:col-span-2 flex flex-col gap-3 lg:h-full">
                 {!isOwner && isActive && (
                   <>
                     <button
