@@ -2,11 +2,15 @@
  * Favorites Cache
  * LocalStorage-based persistence for product favorites
  * Implements optimistic updates and subscription pattern for real-time UI sync
+ * Scoped per user to prevent favorites leaking between accounts
  */
+
+import { getUserFromToken } from "./auth";
 
 // ===== Configuration =====
 
-const STORAGE_KEY = "lycusa_favorites";
+const STORAGE_KEY_PREFIX = "lycusa_favorites";
+const LEGACY_STORAGE_KEY = "lycusa_favorites"; // For migration
 
 // ===== Types =====
 
@@ -16,7 +20,55 @@ type FavoritesListener = (favorites: Set<string>) => void;
 
 let favoritesSet: Set<string> = new Set();
 let isInitialized = false;
+let currentUserId: string | null = null;
 const listeners: Set<FavoritesListener> = new Set();
+
+// ===== User Management =====
+
+/**
+ * Get current user ID from JWT token
+ * Returns null if user is not authenticated
+ */
+const getCurrentUserId = (): string | null => {
+    const user = getUserFromToken();
+    // Use user ID or sub claim from JWT
+    return user?.id || user?.sub || null;
+};
+
+/**
+ * Get storage key for current user
+ * Falls back to guest key if user is not authenticated
+ */
+const getStorageKey = (): string => {
+    const userId = getCurrentUserId();
+    return userId ? `${STORAGE_KEY_PREFIX}_${userId}` : `${STORAGE_KEY_PREFIX}_guest`;
+};
+
+/**
+ * Migrate legacy favorites to current user
+ * This runs once per user to migrate old non-scoped favorites
+ */
+const migrateLegacyFavorites = (): void => {
+    try {
+        const legacyData = localStorage.getItem(LEGACY_STORAGE_KEY);
+        if (!legacyData) return;
+
+        const currentKey = getStorageKey();
+        // Only migrate if:
+        // 1. Legacy data exists
+        // 2. Current user has no favorites yet
+        // 3. Current key is different from legacy key (user-scoped)
+        if (currentKey !== LEGACY_STORAGE_KEY && !localStorage.getItem(currentKey)) {
+            localStorage.setItem(currentKey, legacyData);
+            console.log("[FavoritesCache] Migrated legacy favorites to user-scoped storage");
+        }
+
+        // Remove legacy key after successful migration
+        localStorage.removeItem(LEGACY_STORAGE_KEY);
+    } catch (err) {
+        console.warn("[FavoritesCache] Failed to migrate legacy favorites:", err);
+    }
+};
 
 // ===== Initialization =====
 
@@ -25,15 +77,28 @@ const listeners: Set<FavoritesListener> = new Set();
  * Call this early in app lifecycle
  */
 const initializeFromStorage = (): void => {
-    if (isInitialized) return;
+    const userId = getCurrentUserId();
+
+    // If user changed, force re-initialization
+    if (isInitialized && currentUserId === userId) return;
+
+    // Update current user
+    currentUserId = userId;
 
     try {
-        const stored = localStorage.getItem(STORAGE_KEY);
+        // Try to migrate legacy favorites first
+        migrateLegacyFavorites();
+
+        const storageKey = getStorageKey();
+        const stored = localStorage.getItem(storageKey);
         if (stored) {
             const parsed = JSON.parse(stored);
             if (Array.isArray(parsed)) {
                 favoritesSet = new Set(parsed);
             }
+        } else {
+            // No favorites for this user yet
+            favoritesSet = new Set();
         }
     } catch (err) {
         console.warn("[FavoritesCache] Failed to load from localStorage:", err);
@@ -49,7 +114,8 @@ const initializeFromStorage = (): void => {
 const persistToStorage = (): void => {
     try {
         const arrayData = Array.from(favoritesSet);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(arrayData));
+        const storageKey = getStorageKey();
+        localStorage.setItem(storageKey, JSON.stringify(arrayData));
     } catch (err) {
         console.error("[FavoritesCache] Failed to persist to localStorage:", err);
     }
@@ -67,6 +133,30 @@ const notifyListeners = (): void => {
         }
     });
 };
+
+/**
+ * Reset cache and reinitialize for current user
+ * Called when user logs in/out or switches accounts
+ */
+const resetCache = (): void => {
+    isInitialized = false;
+    favoritesSet = new Set();
+    initializeFromStorage();
+    notifyListeners();
+    console.log("[FavoritesCache] Cache reset for user change");
+};
+
+// ===== Auth Change Listener =====
+
+/**
+ * Listen for auth changes and reset cache when user changes
+ * This ensures favorites are switched when user logs in/out
+ */
+if (typeof window !== "undefined") {
+    window.addEventListener("auth-change", () => {
+        resetCache();
+    });
+}
 
 // ===== Core Functions =====
 
