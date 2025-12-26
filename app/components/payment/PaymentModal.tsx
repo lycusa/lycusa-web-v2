@@ -403,10 +403,8 @@ export default function PaymentModal({
       // Step 3: Processing payment
       setStep("processing");
 
-      // Convert amount to cents (smallest currency unit)
-      const totalAmount = Math.round(
-        (orderData.amount + orderData.deliveryCost) * 100
-      );
+      // Calculate total amount (product + delivery)
+      const totalAmount = orderData.amount + orderData.deliveryCost;
       const platformFee = Math.round(totalAmount * 0.05); // 5% platform fee
 
       const paymentResponse = await createPayment({
