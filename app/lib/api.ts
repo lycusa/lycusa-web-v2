@@ -291,6 +291,12 @@ import type {
   UploadMediaResponse,
 } from "./types/messaging";
 
+import type {
+  CreatePaymentRequest,
+  PaymentResponse,
+  PaymentStatusResponse,
+} from "./types/payment";
+
 // Create a new product
 export const createProduct = async (data: CreateProductRequest) => {
   const response = await api.post("/product/api/v1/products", data);
@@ -619,6 +625,60 @@ export const getMessageMediaUrl = async (mediaKey: string): Promise<string> => {
     `/messaging/api/media/${encodeURIComponent(mediaKey)}`
   );
   return response.data.url;
+};
+
+// ===== Payment Service API =====
+
+// Create a new payment
+export const createPayment = async (data: CreatePaymentRequest): Promise<PaymentResponse> => {
+  const response = await api.post("/payment/payments", data);
+  return response.data;
+};
+
+// Get payment details by ID
+export const getPayment = async (paymentId: string): Promise<PaymentResponse> => {
+  const response = await api.get(`/payment/payments/${paymentId}`);
+  return response.data;
+};
+
+// Get payment status (lightweight endpoint)
+export const getPaymentStatus = async (paymentId: string): Promise<PaymentStatusResponse> => {
+  const response = await api.get(`/payment/payments/${paymentId}/status`);
+  return response.data;
+};
+
+// Get user's payments (as buyer or seller)
+export const getMyPayments = async (page: number = 1, limit: number = 10): Promise<{
+  payments: PaymentResponse[];
+  total: number;
+}> => {
+  const response = await api.get("/payment/payments/my", {
+    params: { page, limit },
+  });
+  return response.data;
+};
+
+// Poll payment status until terminal state or timeout
+export const pollPaymentStatus = async (
+  paymentId: string,
+  maxAttempts: number = 30,
+  intervalMs: number = 1000
+): Promise<PaymentStatusResponse> => {
+  const terminalStatuses = ["completed", "failed", "refunded", "canceled"];
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const status = await getPaymentStatus(paymentId);
+
+    if (terminalStatuses.includes(status.status)) {
+      return status;
+    }
+
+    // Wait before next poll
+    await new Promise(resolve => setTimeout(resolve, intervalMs));
+  }
+
+  // Timeout - return last known status
+  return getPaymentStatus(paymentId);
 };
 
 export default api;

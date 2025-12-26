@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/app/components/auth/AuthGuard";
@@ -12,6 +12,7 @@ import {
   PlaceOrderRequest,
 } from "@/app/lib/types/order";
 import { AppBackground, Header } from "@/app/components/layout";
+import { PaymentModal } from "@/app/components/payment";
 
 function CheckoutContent() {
   const searchParams = useSearchParams();
@@ -36,6 +37,9 @@ function CheckoutContent() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(
     PaymentMethod.STRIPE
   );
+
+  // Payment modal state
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -85,6 +89,7 @@ function CheckoutContent() {
     return true;
   };
 
+  // Open payment modal instead of directly placing order
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -108,10 +113,16 @@ function CheckoutContent() {
       return;
     }
 
-    setSubmitting(true);
+    // Open payment modal
+    setShowPaymentModal(true);
+  };
+
+  // Create order function - called from PaymentModal after successful payment initiation
+  const handleCreateOrder = useCallback(async (): Promise<{ orderId: string } | null> => {
+    if (!product || !user) return null;
 
     try {
-      // Generate a mock payment ID (in real implementation, this would come from payment processor)
+      // Generate a temporary payment ID (will be replaced with real payment ID)
       const paymentId = `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
       const orderData: PlaceOrderRequest = {
@@ -139,23 +150,27 @@ function CheckoutContent() {
       const response = await placeOrder(orderData);
 
       if (response.order_id) {
-        setSuccess(true);
-        setOrderId(response.order_id);
+        return { orderId: response.order_id };
       } else {
-        setError(response.message || "Failed to place order");
+        throw new Error(response.message || "Failed to create order");
       }
     } catch (err: any) {
-      console.error("Error placing order:", err);
-      const errorMessage =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        err.message ||
-        "Failed to place order";
-      setError(errorMessage);
-    } finally {
-      setSubmitting(false);
+      console.error("Error creating order:", err);
+      throw err;
     }
-  };
+  }, [product, user, deliveryMethod, deliveryAddress, paymentMethod, calculateTotal]);
+
+  // Handle successful payment
+  const handlePaymentSuccess = useCallback((paymentId: string, orderId: string) => {
+    setShowPaymentModal(false);
+    setSuccess(true);
+    setOrderId(orderId);
+  }, []);
+
+  // Handle payment modal close
+  const handlePaymentModalClose = useCallback(() => {
+    setShowPaymentModal(false);
+  }, []);
 
   if (authLoading || loading) {
     return (
@@ -639,6 +654,26 @@ function CheckoutContent() {
             </div>
           </div>
         </form>
+
+        {/* Payment Modal */}
+        {product && (
+          <PaymentModal
+            isOpen={showPaymentModal}
+            onClose={handlePaymentModalClose}
+            onSuccess={handlePaymentSuccess}
+            onCreateOrder={handleCreateOrder}
+            orderData={{
+              productName: product.name,
+              productImage: product.media?.[0]?.url,
+              amount: calculateTotal(),
+              currency: product.price.currency,
+              sellerId: product.seller_id,
+              deliveryMethod: deliveryMethod,
+              deliveryAddress: deliveryAddress,
+              deliveryCost: deliveryMethod === DeliveryMethod.EXPRESS ? 9.99 : 0,
+            }}
+          />
+        )}
       </main>
     </AppBackground>
   );
