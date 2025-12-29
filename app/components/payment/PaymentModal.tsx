@@ -312,28 +312,63 @@ export default function PaymentModal({
     []
   );
 
-  // Mock payment test scenarios
+  // Mock payment test scenarios - aligned with TEST_CARDS.md
   const mockTestScenarios = [
+    // Success cards
     {
-      name: "Success",
+      category: "Success",
+      name: "Always Success",
       card: "4242 4242 4242 4242",
       holder: "Test Success",
       expiry: "12/25",
       cvc: "123",
+      description: "Standard test card - always succeeds",
     },
     {
-      name: "Decline",
-      card: "4000 0000 0000 0002",
-      holder: "Test Decline",
-      expiry: "12/25",
-      cvc: "123",
-    },
-    {
-      name: "Processing",
+      category: "Success",
+      name: "Processing Simulation",
       card: "4000 0000 0000 0122",
       holder: "Test Processing",
       expiry: "12/25",
       cvc: "123",
+      description: "Simulates processing - always succeeds",
+    },
+    // Failure cards - selected scenarios only
+    {
+      category: "Failure",
+      name: "Card Declined",
+      card: "4000 0000 0000 0002",
+      holder: "Test Decline",
+      expiry: "12/25",
+      cvc: "123",
+      description: "Card declined - generic decline",
+    },
+    {
+      category: "Failure",
+      name: "Insufficient Funds",
+      card: "4000 0000 0000 9995",
+      holder: "Test Insufficient",
+      expiry: "12/25",
+      cvc: "123",
+      description: "Card declined - insufficient funds",
+    },
+    {
+      category: "Failure",
+      name: "Incorrect CVC",
+      card: "4000 0000 0000 0127",
+      holder: "Test CVC",
+      expiry: "12/25",
+      cvc: "123",
+      description: "Incorrect CVC code",
+    },
+    {
+      category: "Failure",
+      name: "Expired Card",
+      card: "4000 0000 0000 0069",
+      holder: "Test Expired",
+      expiry: "12/25",
+      cvc: "123",
+      description: "Card has expired",
     },
   ];
 
@@ -436,9 +471,18 @@ export default function PaymentModal({
           onSuccess(paymentResponse.id, orderResult.orderId);
         }, 2000);
       } else if (finalStatus.status === "failed") {
-        throw new Error(
-          "Payment was declined. Please check your card details and try again."
-        );
+        // Extract detailed error information from the response
+        const failureReason = (finalStatus as any).failureReason || "Payment was declined";
+        const testCardInfo = (finalStatus as any).gatewayResponse?.testCard;
+
+        let errorMsg = failureReason;
+
+        // Add test card information if available (for debugging)
+        if (testCardInfo) {
+          errorMsg += ` (Test card: ${testCardInfo.last4} - ${testCardInfo.scenario})`;
+        }
+
+        throw new Error(errorMsg);
       } else {
         // Payment is still processing after timeout
         setStep("success");
@@ -448,11 +492,15 @@ export default function PaymentModal({
       }
     } catch (error: any) {
       console.error("Payment error:", error);
-      setErrorMessage(
-        error.response?.data?.message ||
-          error.message ||
-          "An unexpected error occurred. Please try again."
-      );
+
+      // Extract error message with priority:
+      // 1. Backend API error message
+      // 2. Error message from thrown error
+      // 3. Generic fallback
+      const backendError = error.response?.data?.message;
+      const errorMsg = backendError || error.message || "An unexpected error occurred. Please try again.";
+
+      setErrorMessage(errorMsg);
       setStep("error");
     }
   };
@@ -487,9 +535,9 @@ export default function PaymentModal({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-[slide-up_0.3s_ease-out]">
+      <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-[slide-up_0.3s_ease-out] max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="relative bg-gradient-to-br from-tyrian-800 to-tyrian-900 p-6 text-white">
+        <div className="relative bg-gradient-to-br from-tyrian-800 to-tyrian-900 p-6 text-white flex-shrink-0">
           <button
             onClick={handleClose}
             disabled={step !== "idle" && step !== "error"}
@@ -555,29 +603,62 @@ export default function PaymentModal({
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto flex-1">
           {step === "idle" && (
             <>
               {/* Mock Mode Quick Test Buttons */}
               {isMockMode && (
                 <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
                   <p className="text-sm font-semibold text-blue-900 mb-3">
-                    Quick Test Scenarios:
+                    Test Card Scenarios:
                   </p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {mockTestScenarios.map((scenario) => (
-                      <button
-                        key={scenario.name}
-                        type="button"
-                        onClick={() => applyMockScenario(scenario)}
-                        className="px-3 py-2 text-xs font-medium bg-white border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors text-blue-700"
-                      >
-                        {scenario.name}
-                      </button>
-                    ))}
+
+                  {/* Success scenarios */}
+                  <div className="mb-4">
+                    <p className="text-xs font-medium text-green-700 mb-2 uppercase tracking-wide">
+                      Success Scenarios
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {mockTestScenarios
+                        .filter((s) => s.category === "Success")
+                        .map((scenario) => (
+                          <button
+                            key={scenario.name}
+                            type="button"
+                            onClick={() => applyMockScenario(scenario)}
+                            className="px-3 py-2 text-xs font-medium bg-white border border-green-300 rounded-lg hover:bg-green-50 transition-colors text-green-700 text-left"
+                            title={scenario.description}
+                          >
+                            {scenario.name}
+                          </button>
+                        ))}
+                    </div>
                   </div>
-                  <p className="text-xs text-blue-700 mt-2">
-                    Click to auto-fill test data
+
+                  {/* Failure scenarios */}
+                  <div>
+                    <p className="text-xs font-medium text-red-700 mb-2 uppercase tracking-wide">
+                      Failure Scenarios
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {mockTestScenarios
+                        .filter((s) => s.category === "Failure")
+                        .map((scenario) => (
+                          <button
+                            key={scenario.name}
+                            type="button"
+                            onClick={() => applyMockScenario(scenario)}
+                            className="px-3 py-2 text-xs font-medium bg-white border border-red-300 rounded-lg hover:bg-red-50 transition-colors text-red-700 text-left"
+                            title={scenario.description}
+                          >
+                            {scenario.name}
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-blue-700 mt-3">
+                    Click any scenario to auto-fill test card data
                   </p>
                 </div>
               )}
