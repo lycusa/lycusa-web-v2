@@ -7,6 +7,7 @@ import LogoutButton from "./components/auth/LogoutButton";
 import { useState, useEffect } from "react";
 import { getUserProfile } from "./lib/api";
 import { AppBackground } from "./components/layout";
+import EmailSubscriptionModal from "./components/shared/EmailSubscriptionModal";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -1073,6 +1074,9 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Email Subscription Modal - Shows on first visit */}
+      <EmailSubscriptionModal delayMs={3000} />
     </AppBackground>
   );
 }
