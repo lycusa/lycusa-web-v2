@@ -12,28 +12,20 @@ export default function EmailSubscriptionModal({ delayMs = 2000 }: EmailSubscrip
   const [shouldShow, setShouldShow] = useState(false);
 
   useEffect(() => {
-    // Check if user has already seen or dismissed the modal
-    const hasSeenModal = localStorage.getItem('lycusa_email_modal_seen');
-    const hasSubscribed = localStorage.getItem('lycusa_email_subscribed');
+    setShouldShow(true);
+    // Show modal after delay
+    const timer = setTimeout(() => {
+      setIsOpen(true);
+    }, delayMs);
 
-    if (!hasSeenModal && !hasSubscribed) {
-      setShouldShow(true);
-      // Show modal after delay
-      const timer = setTimeout(() => {
-        setIsOpen(true);
-      }, delayMs);
-
-      return () => clearTimeout(timer);
-    }
+    return () => clearTimeout(timer);
   }, [delayMs]);
 
   const handleClose = () => {
     setIsOpen(false);
-    localStorage.setItem('lycusa_email_modal_seen', 'true');
   };
 
-  const handleSuccess = (email: string) => {
-    localStorage.setItem('lycusa_email_subscribed', 'true');
+  const handleSuccess = () => {
     // Close modal after a short delay to show success message
     setTimeout(() => {
       setIsOpen(false);
