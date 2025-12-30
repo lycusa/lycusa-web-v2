@@ -57,7 +57,7 @@ export default function EmailSubscriptionModal({ delayMs = 2000 }: EmailSubscrip
           {/* Close Button */}
           <button
             onClick={handleClose}
-            className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center group"
+            className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center group"
             aria-label="Close modal"
           >
             <svg
