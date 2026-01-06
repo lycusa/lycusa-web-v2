@@ -36,7 +36,7 @@ export default function ZkpassportVerification({
   } = useZkpassportVerification({
     userUuid,
     pollInterval: 2000,
-    onSuccess: (status) => {
+    onSuccess: () => {
       onVerified?.();
     },
     onError: (err) => {
@@ -80,7 +80,7 @@ export default function ZkpassportVerification({
         </h2>
 
         <p className="text-gray-600 mb-6 max-w-md mx-auto">
-          Verify your age using ZKPassport's zero-knowledge proof technology.
+          Verify your age using ZKPassport&apos;s zero-knowledge proof technology.
           Your personal data never leaves your phone.
         </p>
 
@@ -104,7 +104,7 @@ export default function ZkpassportVerification({
                 </svg>
               </div>
               <span>
-                <strong>Privacy Protected</strong> - Only proves you're 18+,
+                <strong>Privacy Protected</strong> - Only proves you&apos;re 18+,
                 nothing more
               </span>
             </li>
@@ -154,7 +154,7 @@ export default function ZkpassportVerification({
         {/* Requirements */}
         <div className="text-sm text-gray-500 mb-6">
           <p>
-            You'll need the{" "}
+            You&apos;ll need the{" "}
             <a
               href="https://zkpassport.id"
               target="_blank"
@@ -304,7 +304,7 @@ export default function ZkpassportVerification({
       {status?.status === "pending" && (
         <div className="text-center pt-4 border-t border-gray-100">
           <p className="text-sm text-gray-500 mb-3">
-            Don't have the ZKPassport app?
+            Don&apos;t have the ZKPassport app?
           </p>
           <div className="flex justify-center gap-4">
             <a
