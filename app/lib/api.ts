@@ -256,7 +256,12 @@ export const getUserByAddress = async (address: string) => {
 
 // ===== KYC Service API =====
 
-// Initiate KYC verification for the authenticated user
+import type {
+  CreateZkpassportSessionResponse,
+  GetZkpassportStatusResponse,
+} from "./types/zkpassport";
+
+// Initiate KYC verification for the authenticated user (legacy mock provider)
 export const initiateKycVerification = async (userUuid: string) => {
   const response = await api.post("/kyc/kyc/verify", { userUuid });
   return response.data;
@@ -266,6 +271,63 @@ export const initiateKycVerification = async (userUuid: string) => {
 export const getUserKycStatus = async (userId: string) => {
   const response = await api.get(`/user/users/${userId}/kyc-status`);
   return response.data;
+};
+
+// ===== ZKPassport Verification API =====
+
+/**
+ * Create a ZKPassport verification session
+ * Returns a session ID and verification URL for QR code display
+ */
+export const createZkpassportSession = async (
+  userUuid: string
+): Promise<CreateZkpassportSessionResponse> => {
+  const response = await api.post("/kyc/kyc/zkpassport/session", { userUuid });
+  return response.data;
+};
+
+/**
+ * Get the status of a ZKPassport verification session
+ * Used for polling to check if user has completed verification
+ */
+export const getZkpassportStatus = async (
+  sessionId: string
+): Promise<GetZkpassportStatusResponse> => {
+  const response = await api.get(`/kyc/kyc/zkpassport/status/${sessionId}`);
+  return response.data;
+};
+
+/**
+ * Poll ZKPassport verification status until a terminal state is reached
+ * Terminal states: verified, rejected, expired
+ */
+export const pollZkpassportStatus = async (
+  sessionId: string,
+  options: {
+    maxAttempts?: number;
+    intervalMs?: number;
+    onStatusChange?: (status: GetZkpassportStatusResponse) => void;
+  } = {}
+): Promise<GetZkpassportStatusResponse> => {
+  const { maxAttempts = 150, intervalMs = 2000, onStatusChange } = options;
+  const terminalStatuses = ["verified", "rejected", "expired", "error"];
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const status = await getZkpassportStatus(sessionId);
+
+    // Notify about status change
+    onStatusChange?.(status);
+
+    if (terminalStatuses.includes(status.status)) {
+      return status;
+    }
+
+    // Wait before next poll
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
+
+  // Timeout - return last known status
+  return getZkpassportStatus(sessionId);
 };
 
 // ===== Product Service API =====
