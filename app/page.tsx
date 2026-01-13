@@ -78,7 +78,7 @@ function HomeContent() {
       </header>
 
       {/* Hero Section - 2025 Creative Design */}
-      <main className="max-w-7xl mx-auto container-safe pt-6 pb-12 sm:pt-8 sm:pb-16 md:pt-12 md:pb-20">
+      <main className="max-w-7xl mx-auto container-safe pt-6 pb-12 sm:pt-8 sm:pb-16 md:pt-12 md:pb-20 snap-section-hero">
         {/* Main Hero Grid - Bento Style */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-4 lg:gap-5">
 
@@ -220,7 +220,7 @@ function HomeContent() {
         {/* Authenticated User State hidden for marketing landing page */}
 
         {/* How It Works Section - Bento Glass Grid */}
-        <div id="how-it-works" className="mt-12 sm:mt-16 md:mt-20 relative scroll-mt-20">
+        <div id="how-it-works" className="mt-12 sm:mt-16 md:mt-20 relative snap-section-content">
           {/* Decorative background elements with liquid glass effect */}
           <div className="absolute inset-0 -z-10 overflow-hidden">
             <div className="absolute top-1/4 -left-16 sm:-left-32 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] rounded-full blur-3xl animate-float-slow"

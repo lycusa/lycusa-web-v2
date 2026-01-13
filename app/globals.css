@@ -43,6 +43,31 @@
   --font-manrope: 'Manrope', sans-serif;
 }
 
+/* ===== Scroll Snap for Section Navigation ===== */
+/* Uses proximity-based snapping - gentler than mandatory */
+html {
+  scroll-snap-type: y proximity;
+  scroll-behavior: smooth;
+}
+
+/* Snap sections - will snap when close to viewport edge */
+.snap-section-hero {
+  scroll-snap-align: start;
+}
+
+.snap-section-content {
+  scroll-snap-align: start;
+  scroll-margin-top: 0;
+}
+
+/* Reduced motion: disable scroll snap for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -120,12 +145,10 @@ body {
 }
 
 .glass-frosted {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.5) 0%,
-    rgba(255, 255, 255, 0.25) 50%,
-    rgba(255, 255, 255, 0.4) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.25) 50%,
+      rgba(255, 255, 255, 0.4) 100%);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.4);
@@ -187,13 +210,11 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    125deg,
-    rgba(255, 255, 255, 0.3) 0%,
-    rgba(255, 255, 255, 0.05) 40%,
-    rgba(255, 255, 255, 0.15) 60%,
-    rgba(255, 255, 255, 0.25) 100%
-  );
+  background: linear-gradient(125deg,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0.05) 40%,
+      rgba(255, 255, 255, 0.15) 60%,
+      rgba(255, 255, 255, 0.25) 100%);
   pointer-events: none;
   z-index: 1;
 }
@@ -211,22 +232,25 @@ body {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent 45%,
-    rgba(255, 255, 255, 0.15) 48%,
-    rgba(255, 255, 255, 0.25) 50%,
-    rgba(255, 255, 255, 0.15) 52%,
-    transparent 55%
-  );
+  background: linear-gradient(45deg,
+      transparent 45%,
+      rgba(255, 255, 255, 0.15) 48%,
+      rgba(255, 255, 255, 0.25) 50%,
+      rgba(255, 255, 255, 0.15) 52%,
+      transparent 55%);
   animation: shimmer 8s infinite linear;
   pointer-events: none;
   z-index: 2;
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%) rotate(0deg); }
-  100% { transform: translateX(100%) rotate(0deg); }
+  0% {
+    transform: translateX(-100%) rotate(0deg);
+  }
+
+  100% {
+    transform: translateX(100%) rotate(0deg);
+  }
 }
 
 /* Depth Shadows for Glass Cards */
@@ -271,11 +295,14 @@ body {
 }
 
 @keyframes glow-pulse-anim {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow:
       0 0 20px rgba(99, 0, 43, 0.2),
       0 0 40px rgba(99, 0, 43, 0.1);
   }
+
   50% {
     box-shadow:
       0 0 30px rgba(99, 0, 43, 0.3),
@@ -285,8 +312,15 @@ body {
 
 /* Floating Animation for Glass Elements */
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .animate-float {
@@ -338,11 +372,9 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.4) 0%,
-    rgba(255, 255, 255, 0.1) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(255, 255, 255, 0.1) 100%);
   opacity: 0;
   transition: opacity 0.4s ease;
   z-index: 1;
@@ -364,12 +396,10 @@ body {
   inset: 0;
   padding: 1px;
   border-radius: inherit;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.6) 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(99, 0, 43, 0.2) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.6) 0%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(99, 0, 43, 0.2) 100%);
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
@@ -384,28 +414,55 @@ body {
 /* ===== Favorites Micro-Interactions ===== */
 
 @keyframes favorite-pop {
-  0% { transform: scale(1); }
-  25% { transform: scale(1.25); }
-  50% { transform: scale(0.95); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  25% {
+    transform: scale(1.25);
+  }
+
+  50% {
+    transform: scale(0.95);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes favorite-heart {
-  0% { transform: scale(1); }
-  15% { transform: scale(1.3); }
-  30% { transform: scale(0.9); }
-  45% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  15% {
+    transform: scale(1.3);
+  }
+
+  30% {
+    transform: scale(0.9);
+  }
+
+  45% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes favorite-pulse {
-  0% { 
+  0% {
     box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.5);
   }
-  70% { 
+
+  70% {
     box-shadow: 0 0 0 12px rgba(244, 63, 94, 0);
   }
-  100% { 
+
+  100% {
     box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
   }
 }
@@ -485,7 +542,12 @@ body {
 }
 
 /* All interactive elements should have this */
-button, a, [role="button"], input, select, textarea {
+button,
+a,
+[role="button"],
+input,
+select,
+textarea {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
@@ -551,6 +613,7 @@ button, a, [role="button"], input, select, textarea {
 
 /* Reduced motion support for accessibility */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -593,6 +656,7 @@ button, a, [role="button"], input, select, textarea {
 
 /* Mobile-friendly button active states */
 @media (hover: none) and (pointer: coarse) {
+
   .neumorphic-button:active,
   .neumorphic-tyrian:active {
     transform: scale(0.98);
@@ -607,6 +671,7 @@ button, a, [role="button"], input, select, textarea {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
+
   .glass,
   .glass-light,
   .glass-frosted {
@@ -737,26 +802,29 @@ button, a, [role="button"], input, select, textarea {
   display: none;
 }
 
-.scroll-x-mobile > * {
+.scroll-x-mobile>* {
   scroll-snap-align: start;
   flex-shrink: 0;
 }
 
 /* Image loading states */
 .img-loading {
-  background: linear-gradient(
-    90deg,
-    rgba(99, 0, 43, 0.05) 0%,
-    rgba(99, 0, 43, 0.1) 50%,
-    rgba(99, 0, 43, 0.05) 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(99, 0, 43, 0.05) 0%,
+      rgba(99, 0, 43, 0.1) 50%,
+      rgba(99, 0, 43, 0.05) 100%);
   background-size: 200% 100%;
   animation: img-shimmer 1.5s infinite;
 }
 
 @keyframes img-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* Fade-in animation for feedback messages */
@@ -765,6 +833,7 @@ button, a, [role="button"], input, select, textarea {
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -781,6 +850,7 @@ button, a, [role="button"], input, select, textarea {
     opacity: 0;
     transform: translateY(100%);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
