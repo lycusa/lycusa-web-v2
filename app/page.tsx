@@ -15,6 +15,15 @@ function HomeContent() {
   const openModal = useCallback(() => setIsModalOpen(true), []);
   const closeModal = useCallback(() => setIsModalOpen(false), []);
 
+  // Auto-show modal 3 seconds after page load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      openModal();
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [openModal]);
+
   // Handle Escape key to close modal
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -84,12 +93,12 @@ function HomeContent() {
 
           {/* Main Content Card - Spans 7 columns */}
           <div className="lg:col-span-7 relative overflow-hidden bg-linear-to-br from-tyrian-900 via-tyrian-800 to-tyrian-950 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12 min-h-[320px] sm:min-h-[380px] lg:min-h-[480px] flex flex-col justify-between">
-            {/* Animated Background Elements */}
+            {/* Animated Background Elements - Zen Subtle */}
             <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-48 sm:w-80 h-48 sm:h-80 bg-tyrian-600/30 rounded-full blur-3xl animate-pulse"></div>
-              <div className="absolute -bottom-20 -left-20 sm:-bottom-40 sm:-left-40 w-48 sm:w-80 h-48 sm:h-80 bg-tyrian-700/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-              {/* Grid pattern overlay */}
-              <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
+              <div className="absolute -top-20 -right-20 sm:-top-40 sm:-right-40 w-48 sm:w-80 h-48 sm:h-80 bg-tyrian-600/20 rounded-full blur-3xl"></div>
+              <div className="absolute -bottom-20 -left-20 sm:-bottom-40 sm:-left-40 w-48 sm:w-80 h-48 sm:h-80 bg-tyrian-700/15 rounded-full blur-3xl"></div>
+              {/* Grid pattern overlay - subtle */}
+              <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
             </div>
 
             <div className="relative z-10">
@@ -221,12 +230,12 @@ function HomeContent() {
 
         {/* How It Works Section - Bento Glass Grid */}
         <div id="how-it-works" className="mt-12 sm:mt-16 md:mt-20 relative snap-section-content">
-          {/* Decorative background elements with liquid glass effect */}
+          {/* Decorative background elements - Zen Subtle */}
           <div className="absolute inset-0 -z-10 overflow-hidden">
             <div className="absolute top-1/4 -left-16 sm:-left-32 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] rounded-full blur-3xl animate-float-slow"
-              style={{ background: 'radial-gradient(circle, rgba(99, 0, 43, 0.08) 0%, transparent 70%)' }} />
-            <div className="absolute bottom-1/4 -right-16 sm:-right-32 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] rounded-full blur-3xl animate-float"
-              style={{ background: 'radial-gradient(circle, rgba(214, 146, 174, 0.1) 0%, transparent 70%)', animationDelay: '2s' }} />
+              style={{ background: 'radial-gradient(circle, rgba(99, 0, 43, 0.04) 0%, transparent 70%)' }} />
+            <div className="absolute bottom-1/4 -right-16 sm:-right-32 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] rounded-full blur-3xl animate-float-slow"
+              style={{ background: 'radial-gradient(circle, rgba(250, 240, 235, 0.15) 0%, transparent 70%)', animationDelay: '3s' }} />
           </div>
 
           <div className="text-center mb-6 sm:mb-8 md:mb-10">
@@ -301,7 +310,7 @@ function HomeContent() {
                   <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                     {t('howItWorks.step3.description')}
                   </p>
-                  <span className="inline-block mt-2 text-[10px] sm:text-xs text-teal-700 font-medium bg-teal-50 px-2 py-0.5 rounded-full">{t('howItWorks.step3.hint')}</span>
+                  <span className="inline-block mt-2 text-[10px] sm:text-xs text-tyrian-700 font-medium bg-tyrian-50 px-2 py-0.5 rounded-full">{t('howItWorks.step3.hint')}</span>
                 </div>
               </div>
             </div>
@@ -372,17 +381,17 @@ function HomeContent() {
             background: 'linear-gradient(180deg, rgba(45, 0, 19, 0.95) 0%, rgba(45, 0, 19, 0.99) 100%)',
           }} />
 
-        {/* Decorative orbs */}
+        {/* Decorative orbs - Zen Subtle */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-10 sm:-top-20 left-1/4 w-[150px] sm:w-[300px] h-[150px] sm:h-[300px] rounded-full opacity-30"
+          <div className="absolute -top-10 sm:-top-20 left-1/4 w-[150px] sm:w-[300px] h-[150px] sm:h-[300px] rounded-full opacity-20"
             style={{
-              background: 'radial-gradient(circle, rgba(99, 0, 43, 0.4) 0%, transparent 70%)',
-              filter: 'blur(50px)',
+              background: 'radial-gradient(circle, rgba(99, 0, 43, 0.25) 0%, transparent 70%)',
+              filter: 'blur(60px)',
             }} />
-          <div className="absolute -bottom-10 sm:-bottom-20 right-1/4 w-[125px] sm:w-[250px] h-[125px] sm:h-[250px] rounded-full opacity-20"
+          <div className="absolute -bottom-10 sm:-bottom-20 right-1/4 w-[125px] sm:w-[250px] h-[125px] sm:h-[250px] rounded-full opacity-15"
             style={{
-              background: 'radial-gradient(circle, rgba(176, 24, 63, 0.3) 0%, transparent 70%)',
-              filter: 'blur(40px)',
+              background: 'radial-gradient(circle, rgba(176, 24, 63, 0.2) 0%, transparent 70%)',
+              filter: 'blur(50px)',
             }} />
         </div>
 
@@ -477,38 +486,22 @@ function HomeContent() {
               <div className="w-12 h-1.5 bg-gradient-to-r from-tyrian-200 via-tyrian-400 to-tyrian-200 rounded-full opacity-60" />
             </div>
 
-            {/* Aurora glow effect */}
+            {/* Aurora glow effect - Zen Subtle */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              {/* Top aurora */}
+              {/* Top aurora - softened */}
               <div
-                className="absolute -top-32 left-1/2 -translate-x-1/2 w-[500px] h-[300px] opacity-40"
+                className="absolute -top-32 left-1/2 -translate-x-1/2 w-[500px] h-[300px] opacity-25"
                 style={{
-                  background: 'radial-gradient(ellipse at center, rgba(99, 0, 43, 0.2) 0%, rgba(214, 146, 174, 0.1) 40%, transparent 70%)',
-                  filter: 'blur(40px)',
+                  background: 'radial-gradient(ellipse at center, rgba(99, 0, 43, 0.12) 0%, rgba(250, 245, 240, 0.1) 40%, transparent 70%)',
+                  filter: 'blur(50px)',
                 }}
               />
-              {/* Floating orbs */}
+              {/* Single subtle orb */}
               <div
                 className="absolute top-1/4 -right-16 w-40 h-40 rounded-full animate-float-slow"
                 style={{
-                  background: 'radial-gradient(circle, rgba(99, 0, 43, 0.08) 0%, transparent 60%)',
-                  filter: 'blur(30px)',
-                }}
-              />
-              <div
-                className="absolute bottom-1/4 -left-16 w-48 h-48 rounded-full animate-float"
-                style={{
-                  background: 'radial-gradient(circle, rgba(214, 146, 174, 0.1) 0%, transparent 60%)',
-                  filter: 'blur(35px)',
-                  animationDelay: '1.5s',
-                }}
-              />
-              {/* Subtle grid pattern */}
-              <div
-                className="absolute inset-0 opacity-[0.02]"
-                style={{
-                  backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(99, 0, 43, 0.5) 1px, transparent 1px)',
-                  backgroundSize: '20px 20px'
+                  background: 'radial-gradient(circle, rgba(99, 0, 43, 0.04) 0%, transparent 60%)',
+                  filter: 'blur(40px)',
                 }}
               />
             </div>
