@@ -453,11 +453,10 @@ function HomeContent() {
           onClick={closeModal}
         >
           <div
-            className={`relative w-full max-w-xl overflow-hidden max-h-[92vh] sm:max-h-[88vh] overflow-y-auto safe-area-bottom transition-all duration-500 ease-out ${isModalOpen ? 'translate-y-0 scale-100' : 'translate-y-full sm:translate-y-8 sm:scale-95'}`}
+            className={`relative w-full max-w-xl overflow-hidden max-h-[92vh] sm:max-h-[88vh] overflow-y-auto safe-area-bottom transition-all duration-500 ease-out rounded-t-[2rem] sm:rounded-[2rem] ${isModalOpen ? 'translate-y-0 scale-100' : 'translate-y-full sm:translate-y-8 sm:scale-95'}`}
             onClick={(e) => e.stopPropagation()}
             style={{
               background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%)',
-              borderRadius: '2rem 2rem 0 0',
               boxShadow: '0 -8px 50px -12px rgba(99, 0, 43, 0.25), 0 25px 80px -15px rgba(0, 0, 0, 0.3)',
             }}
           >
