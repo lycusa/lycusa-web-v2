@@ -3,71 +3,71 @@
         "signIn": "Sign In"
     },
     "hero": {
-        "badge": "PRIVACY-FIRST MARKETPLACE",
-        "title1": "Shop Intimate",
-        "title2": "Items With",
-        "title3": "Total Privacy",
-        "description": "A secure marketplace where your identity stays anonymous, messages are encrypted, and packages arrive discreetly."
+        "badge": "Private Clothing Marketplace",
+        "title1": "Your Clothes",
+        "title2": "Your Desire",
+        "title3": "Your Space",
+        "description": "Sell and buy used socks, underwear, tights and more — from real people. Private profiles. Real connection. Real value."
     },
     "features": {
         "anonymousShopping": {
-            "title": "Anonymous Shopping",
-            "description": "Your identity stays completely private throughout your journey."
+            "title": "Turn everyday clothes into income",
+            "description": "Your socks, underwear or tights can mean more to someone else. Sell items you already own. Set your price. Stay in control."
         },
         "encrypted": {
-            "title": "E2E Encrypted",
-            "subtitle": "Signal Protocol",
+            "title": "Find items with a story",
+            "subtitle": "Real clothes from real people — with scent, feeling and personal touch.",
             "status": "Active"
         },
         "delivery": {
-            "title": "Discreet Delivery",
-            "subtitle": "Plain packaging"
+            "title": "Private by default",
+            "subtitle": "No real names. No pressure. Share only what you want. Stay yourself, safely."
         },
         "escrow": {
-            "title": "Secure Escrow",
-            "subtitle": "KYC verified · Buyer protection"
+            "title": "Built on trust",
+            "subtitle": "Every user is checked. No fake profiles. No guessing who’s on the other side."
         }
     },
     "howItWorks": {
         "badge": "Simple & Secure",
-        "title": "How It Works",
-        "description": "Getting started is simple. Create an account, browse anonymously, and shop with complete confidence.",
+        "title": "How Lycusa Works",
+        "description": "Lycusa is launching soon in Europe, starting with Germany. Join the waitlist and get early access.",
         "step1": {
-            "title": "Sign Up Anonymously",
+            "title": "Join Early",
             "description": "Create your account with just an email or Web3 wallet. No personal information required to start browsing.",
-            "hint": "Email or Wallet"
+            "hint": "No personal details"
         },
         "step2": {
-            "title": "Browse & Connect",
-            "description": "Explore verified listings and message sellers through our encrypted chat. Your conversations stay completely private.",
-            "hint": "End-to-end encrypted"
+            "title": "List What You Want to Sell",
+            "description": "Socks, underwear, tights and more. Add photos. Add details. Decide how personal you want to be.",
+            "hint": "Your details, your choice"
         },
         "step3": {
-            "title": "Secure Payment",
-            "description": "Complete your purchase with our secure escrow system. Payments are protected until you confirm delivery.",
-            "hint": "Escrow protected"
+            "title": "Choose What You Like",
+            "description": "Browse real listings. Look for the style, feeling and vibe you want.",
+            "hint": "Follow your taste"
         },
         "step4": {
-            "title": "Discreet Delivery",
-            "description": "Receive your items in plain, unmarked packaging. No external labels or branding reveal the contents.",
-            "hint": "Plain packaging"
+            "title": "Connection",
+            "description": "This is not just shopping. It’s about desire, curiosity and personal taste — without exposure.",
+            "hint": "Just between you"
         },
         "cta": {
-            "title": "Coming Soon",
-            "description": "Our privacy-first marketplace is launching soon.",
-            "button": "Stay Tuned"
+            "title": "Join The Waitlist",
+            "description": "Get early access to Lycusa.",
+            "button": "Join Waitlist"
         }
     },
     "footer": {
-        "tagline": "The privacy-first marketplace for discreet shopping.",
+        "tagline": "A private place to sell and buy used clothes",
         "badges": {
-            "encrypted": "E2E Encrypted",
-            "escrow": "Secure Escrow"
+            "encrypted": "Verified users",
+            "escrow": "Safe payments"
         },
-        "copyright": "© 2025 Lycusa. All rights reserved."
+        "copyright": "© 2026 Lycusa. All rights reserved."
     },
     "modal": {
-        "title": "Get Early Access",
+        "title": "Join Lycusa early",
         "description": "Be the first to know when Lycusa launches. Get exclusive updates and early access to our privacy-first marketplace.",
         "placeholder": "your@email.com",
         "button": "Get Early Access",

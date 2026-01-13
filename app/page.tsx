@@ -237,12 +237,7 @@ function HomeContent() {
           </div>
 
           <div className="text-center mb-8 sm:mb-12 md:mb-16">
-            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 glass-frosted rounded-full mb-4 sm:mb-6 text-xs sm:text-sm font-semibold text-tyrian-800">
-              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              {t('howItWorks.badge')}
-            </div>
+
             <h2 className="text-fluid-4xl font-bold text-gray-900 mb-3 sm:mb-4 md:mb-6">
               {t('howItWorks.title')}
             </h2>
