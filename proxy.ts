@@ -5,7 +5,7 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Allow only the main page and necessary assets/api routes
-  const allowedPaths = ['/', '/_next', '/favicon.ico', '/api']
+  const allowedPaths = ['/', '/_next', '/favicon.ico', '/api', '/logos', '/fonts']
 
   const isAllowed = allowedPaths.some(
     (path) => pathname === path || pathname.startsWith(path + '/')

@@ -65,6 +65,7 @@ export default function Header({ showNav = true, className = "" }: HeaderProps) 
                             height={40}
                             className="h-10 w-auto group-hover:scale-105 transition-transform"
                             priority
+                            unoptimized
                         />
                     </Link>
 

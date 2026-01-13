@@ -63,6 +63,7 @@ export default function MessagesLayout({
                             height={36}
                             className="h-8 w-auto group-hover:scale-105 transition-transform"
                             priority
+                            unoptimized
                         />
                     </Link>
 

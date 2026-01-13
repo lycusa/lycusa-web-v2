@@ -26,6 +26,7 @@ export default function Home() {
                 height={40}
                 className="h-10 w-auto"
                 priority
+                unoptimized
               />
             </Link>
 
@@ -445,6 +446,7 @@ export default function Home() {
                   width={120}
                   height={35}
                   className="h-8 w-auto opacity-90"
+                  unoptimized
                 />
               </div>
 

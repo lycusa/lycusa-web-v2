@@ -48,6 +48,7 @@ export default function SignUpPage() {
               height={48}
               className="h-12 w-auto mx-auto group-hover:scale-105 transition-transform"
               priority
+              unoptimized
             />
           </Link>
         </div>
