@@ -13,24 +13,26 @@ export default function LanguageSwitcher() {
 
     return (
         <div
-            className="relative flex items-center h-[44px] p-1 bg-gradient-to-br from-tyrian-800 to-tyrian-900 border border-tyrian-600/30 rounded-xl shadow-lg shadow-tyrian-900/20"
+            className="relative flex items-center h-9 p-0.5 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full shadow-[0_2px_12px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.1)]"
             role="radiogroup"
             aria-label="Language selection"
         >
-            {/* Sliding indicator */}
+            {/* Sliding indicator with gradient */}
             <div
-                className={`absolute h-[36px] w-[calc(50%-2px)] bg-white rounded-lg shadow-md transition-all duration-300 ease-out ${locale === 'de' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'
+                className={`absolute h-8 w-[calc(50%-2px)] rounded-full transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${locale === 'de' ? 'translate-x-[calc(100%+2px)]' : 'translate-x-0'
                     }`}
                 style={{
-                    left: '4px',
+                    left: '2px',
+                    background: 'linear-gradient(135deg, #63002B 0%, #8a1048 100%)',
+                    boxShadow: '0 2px 8px rgba(99, 0, 43, 0.35), 0 1px 2px rgba(99, 0, 43, 0.2)',
                 }}
             />
 
             <button
                 onClick={() => handleLocaleChange('en')}
-                className={`relative z-10 flex items-center justify-center gap-1.5 w-[44px] h-[36px] rounded-lg text-xs font-bold tracking-wide transition-colors duration-300 ${locale === 'en'
-                    ? 'text-tyrian-800'
-                    : 'text-tyrian-200 hover:text-white'
+                className={`relative z-10 flex items-center justify-center w-10 h-8 rounded-full text-[11px] font-medium tracking-widest uppercase transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-tyrian-500 focus-visible:ring-offset-1 ${locale === 'en'
+                        ? 'text-white'
+                        : 'text-tyrian-800/70 hover:text-tyrian-800'
                     }`}
                 aria-label={t('languageSwitcher.english')}
                 aria-checked={locale === 'en'}
@@ -41,9 +43,9 @@ export default function LanguageSwitcher() {
 
             <button
                 onClick={() => handleLocaleChange('de')}
-                className={`relative z-10 flex items-center justify-center gap-1.5 w-[44px] h-[36px] rounded-lg text-xs font-bold tracking-wide transition-colors duration-300 ${locale === 'de'
-                    ? 'text-tyrian-800'
-                    : 'text-tyrian-200 hover:text-white'
+                className={`relative z-10 flex items-center justify-center w-10 h-8 rounded-full text-[11px] font-medium tracking-widest uppercase transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-tyrian-500 focus-visible:ring-offset-1 ${locale === 'de'
+                        ? 'text-white'
+                        : 'text-tyrian-800/70 hover:text-tyrian-800'
                     }`}
                 aria-label={t('languageSwitcher.german')}
                 aria-checked={locale === 'de'}
