@@ -238,24 +238,24 @@ function HomeContent() {
             </p>
           </div>
 
-          {/* Bento Grid - Compact & Modern */}
-          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4">
+          {/* Bento Grid - Full Width & Modern */}
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 sm:gap-5">
             {/* Card 1 - Join Early - Glass Frosted */}
-            <div className="lg:col-span-6 group relative glass-frosted rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 depth-shadow-md sm:hover:depth-shadow-xl transition-all duration-500 sm:hover:-translate-y-1 active:scale-[0.99] overflow-hidden">
+            <div className="lg:col-span-6 group relative glass-frosted rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 depth-shadow-md sm:hover:depth-shadow-xl transition-all duration-500 sm:hover:-translate-y-1 active:scale-[0.99] overflow-hidden">
               {/* Glass reflection */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-transparent to-tyrian-50/20 pointer-events-none" />
               <div className="absolute -top-10 -left-10 w-32 h-32 bg-tyrian-400/15 rounded-full blur-3xl sm:group-hover:bg-tyrian-400/25 transition-all duration-700" />
 
-              <div className="relative z-10 flex items-start gap-3 sm:gap-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 neumorphic-tyrian rounded-xl flex items-center justify-center flex-shrink-0 sm:group-hover:scale-110 transition-transform duration-300">
+              <div className="relative z-10 flex items-start gap-4 sm:gap-5">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 neumorphic-tyrian rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 sm:group-hover:scale-110 transition-transform duration-300">
                   {/* User/Join icon */}
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">{t('howItWorks.step1.title')}</h3>
-                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2 sm:line-clamp-none">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1.5">{t('howItWorks.step1.title')}</h3>
+                  <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                     {t('howItWorks.step1.description')}
                   </p>
                   <span className="inline-block mt-2 text-[10px] sm:text-xs text-tyrian-600 font-medium bg-tyrian-50 px-2 py-0.5 rounded-full">{t('howItWorks.step1.hint')}</span>
@@ -264,20 +264,20 @@ function HomeContent() {
             </div>
 
             {/* Card 2 - List Items - Neumorphic */}
-            <div className="lg:col-span-6 group relative neumorphic rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 sm:hover:shadow-2xl transition-all duration-500 sm:hover:-translate-y-1 active:scale-[0.99] overflow-hidden">
+            <div className="lg:col-span-6 group relative neumorphic rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 sm:hover:shadow-2xl transition-all duration-500 sm:hover:-translate-y-1 active:scale-[0.99] overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/50 to-gray-100/30 pointer-events-none" />
 
-              <div className="relative z-10 flex items-start gap-3 sm:gap-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-gray-700 to-gray-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-gray-700/30 sm:group-hover:scale-110 transition-transform duration-300">
+              <div className="relative z-10 flex items-start gap-4 sm:gap-5">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-gray-700 to-gray-500 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-gray-700/30 sm:group-hover:scale-110 transition-transform duration-300">
                   {/* Camera/Upload icon */}
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">{t('howItWorks.step2.title')}</h3>
-                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2 sm:line-clamp-none">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1.5">{t('howItWorks.step2.title')}</h3>
+                  <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                     {t('howItWorks.step2.description')}
                   </p>
                   <span className="inline-block mt-2 text-[10px] sm:text-xs text-gray-500 font-medium bg-gray-100 px-2 py-0.5 rounded-full">{t('howItWorks.step2.hint')}</span>
@@ -286,19 +286,19 @@ function HomeContent() {
             </div>
 
             {/* Card 3 - Browse/Choose - Glass Light */}
-            <div className="lg:col-span-5 group relative glass-light rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 depth-shadow-md sm:hover:depth-shadow-xl transition-all duration-500 sm:hover:-translate-y-1 active:scale-[0.99] overflow-hidden">
+            <div className="lg:col-span-5 group relative glass-light rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 depth-shadow-md sm:hover:depth-shadow-xl transition-all duration-500 sm:hover:-translate-y-1 active:scale-[0.99] overflow-hidden">
               <div className="absolute inset-0 glass-reflection pointer-events-none opacity-40 hidden sm:block" />
 
-              <div className="relative z-10 flex items-start gap-3 sm:gap-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-tyrian-700 to-tyrian-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-tyrian-700/30 sm:group-hover:scale-110 transition-transform duration-300">
+              <div className="relative z-10 flex items-start gap-4 sm:gap-5">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-tyrian-700 to-tyrian-500 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-tyrian-700/30 sm:group-hover:scale-110 transition-transform duration-300">
                   {/* Heart/Like icon for browsing preferences */}
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">{t('howItWorks.step3.title')}</h3>
-                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2 sm:line-clamp-none">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1.5">{t('howItWorks.step3.title')}</h3>
+                  <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                     {t('howItWorks.step3.description')}
                   </p>
                   <span className="inline-block mt-2 text-[10px] sm:text-xs text-tyrian-600 font-medium bg-tyrian-50 px-2 py-0.5 rounded-full">{t('howItWorks.step3.hint')}</span>
@@ -307,7 +307,7 @@ function HomeContent() {
             </div>
 
             {/* Card 4 - Connection - Dark Glass (No checkmarks) */}
-            <div className="lg:col-span-7 group relative overflow-hidden rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 depth-shadow-lg sm:hover:depth-shadow-xl transition-all duration-500 sm:hover:-translate-y-1 active:scale-[0.99]"
+            <div className="lg:col-span-7 group relative overflow-hidden rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 depth-shadow-lg sm:hover:depth-shadow-xl transition-all duration-500 sm:hover:-translate-y-1 active:scale-[0.99]"
               style={{
                 background: 'linear-gradient(135deg, rgba(99, 0, 43, 0.95) 0%, rgba(45, 0, 19, 0.98) 100%)',
               }}>
@@ -320,16 +320,16 @@ function HomeContent() {
                 backgroundSize: '24px 24px',
               }} />
 
-              <div className="relative z-10 flex items-start gap-3 sm:gap-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/15 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0 border border-white/20 sm:group-hover:scale-110 transition-transform duration-300">
+              <div className="relative z-10 flex items-start gap-4 sm:gap-5">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/15 backdrop-blur-sm rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/20 sm:group-hover:scale-110 transition-transform duration-300">
                   {/* Link/Connection icon */}
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base sm:text-lg font-bold text-white mb-1">{t('howItWorks.step4.title')}</h3>
-                  <p className="text-xs sm:text-sm text-tyrian-100/90 leading-relaxed line-clamp-2 sm:line-clamp-none">
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-1.5">{t('howItWorks.step4.title')}</h3>
+                  <p className="text-sm sm:text-base text-tyrian-100/90 leading-relaxed">
                     {t('howItWorks.step4.description')}
                   </p>
                   <span className="inline-block mt-2 text-[10px] sm:text-xs text-tyrian-200 font-medium bg-white/10 px-2 py-0.5 rounded-full border border-white/10">{t('howItWorks.step4.hint')}</span>
@@ -338,22 +338,22 @@ function HomeContent() {
             </div>
 
             {/* Bottom CTA - Full Width Glass Card */}
-            <div className="lg:col-span-12 glass-frosted rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 depth-shadow-md">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 sm:w-11 sm:h-11 neumorphic rounded-xl flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5 sm:w-5 sm:h-5 text-tyrian-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="lg:col-span-12 glass-frosted rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 depth-shadow-md">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 neumorphic rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 sm:w-7 sm:h-7 text-tyrian-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                   </div>
                   <div className="text-left">
-                    <p className="text-gray-900 font-bold text-sm sm:text-base">{t('howItWorks.cta.title')}</p>
-                    <p className="text-gray-600 text-xs sm:text-sm">{t('howItWorks.cta.description')}</p>
+                    <p className="text-gray-900 font-bold text-base sm:text-lg">{t('howItWorks.cta.title')}</p>
+                    <p className="text-gray-600 text-sm sm:text-base">{t('howItWorks.cta.description')}</p>
                   </div>
                 </div>
                 <button
                   onClick={openModal}
-                  className="w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 min-h-[44px] neumorphic-tyrian text-white rounded-xl font-semibold whitespace-nowrap active:scale-[0.98] transition-transform text-sm sm:text-base"
+                  className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 min-h-[44px] neumorphic-tyrian text-white rounded-xl sm:rounded-2xl font-semibold whitespace-nowrap active:scale-[0.98] transition-transform text-base"
                 >
                   {t('howItWorks.cta.button')}
                 </button>
