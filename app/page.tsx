@@ -536,42 +536,42 @@ function HomeContent() {
               </svg>
             </button>
 
-            {/* Content Container */}
-            <div className="relative z-10 px-6 pt-4 pb-8 sm:px-10 sm:pt-10 sm:pb-12 md:px-14 md:pt-12 md:pb-14">
-              <div className="text-center mb-8 sm:mb-10">
-                {/* Logo Symbol Container with premium styling */}
-                <div className="relative inline-flex items-center justify-center mb-6 sm:mb-8">
+            {/* Content Container - Compact */}
+            <div className="relative z-10 px-5 pt-2 pb-5 sm:px-8 sm:pt-6 sm:pb-8">
+              <div className="text-center mb-4 sm:mb-5">
+                {/* Logo Symbol Container - Compact */}
+                <div className="relative inline-flex items-center justify-center mb-4 sm:mb-5">
                   {/* Outer glow ring */}
                   <div
-                    className="absolute inset-0 rounded-3xl animate-pulse"
+                    className="absolute inset-0 rounded-2xl"
                     style={{
-                      background: 'linear-gradient(135deg, rgba(99, 0, 43, 0.2) 0%, rgba(214, 146, 174, 0.15) 100%)',
-                      filter: 'blur(20px)',
-                      transform: 'scale(1.5)',
+                      background: 'linear-gradient(135deg, rgba(99, 0, 43, 0.15) 0%, rgba(214, 146, 174, 0.1) 100%)',
+                      filter: 'blur(15px)',
+                      transform: 'scale(1.4)',
                     }}
                   />
                   {/* Logo container */}
                   <div
-                    className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-3xl flex items-center justify-center p-4 sm:p-5"
+                    className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center p-2.5 sm:p-3"
                     style={{
                       background: 'linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 245, 247, 0.9) 100%)',
-                      boxShadow: '0 8px 32px -8px rgba(99, 0, 43, 0.2), 0 4px 16px -4px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(255, 255, 255, 0.9)',
+                      boxShadow: '0 6px 24px -6px rgba(99, 0, 43, 0.2), 0 3px 12px -3px rgba(0, 0, 0, 0.08), inset 0 1px 3px rgba(255, 255, 255, 0.9)',
                       border: '1px solid rgba(99, 0, 43, 0.08)',
                     }}
                   >
                     <Image
                       src="/logos/tyrian-purple-symbol.svg"
                       alt="Lycusa"
-                      width={56}
-                      height={56}
-                      className="w-12 h-12 sm:w-14 sm:h-14"
+                      width={40}
+                      height={40}
+                      className="w-9 h-9 sm:w-10 sm:h-10"
                       unoptimized
                     />
                   </div>
                 </div>
 
                 {/* Heading with gradient text */}
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 tracking-tight">
+                <h2 className="text-xl sm:text-2xl font-bold mb-2 tracking-tight">
                   <span
                     className="bg-clip-text text-transparent"
                     style={{
@@ -581,16 +581,16 @@ function HomeContent() {
                     {t('modal.title')}
                   </span>
                 </h2>
-                <p className="text-sm sm:text-base md:text-lg text-gray-500 leading-relaxed max-w-md mx-auto font-light">
+                <p className="text-sm sm:text-base text-gray-500 leading-snug max-w-sm mx-auto font-light">
                   {t('modal.description')}
                 </p>
               </div>
 
-              {/* Email Collector with enhanced wrapper */}
+              {/* Email Collector - Compact */}
               <div
-                className="relative mb-8 sm:mb-10 p-4 sm:p-5 rounded-2xl"
+                className="relative mb-4 sm:mb-5 p-3 sm:p-4 rounded-xl"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(250, 245, 247, 0.6) 0%, rgba(255, 255, 255, 0.4) 100%)',
+                  background: 'linear-gradient(135deg, rgba(250, 245, 247, 0.5) 0%, rgba(255, 255, 255, 0.3) 100%)',
                   border: '1px solid rgba(99, 0, 43, 0.05)',
                 }}
               >
@@ -610,62 +610,35 @@ function HomeContent() {
                 />
               </div>
 
-              {/* Trust Indicators - Refined pills */}
-              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-                <div
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-full text-xs sm:text-sm"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.04) 100%)',
-                    border: '1px solid rgba(16, 185, 129, 0.15)',
-                  }}
-                >
-                  <div className="w-4 h-4 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-500 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <span className="text-gray-600 font-medium">{t('modal.trust.noSpam')}</span>
+              {/* Trust Indicators - Compact inline */}
+              <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs text-gray-500">
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  <span>{t('modal.trust.noSpam')}</span>
                 </div>
-                <div
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-full text-xs sm:text-sm"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.04) 100%)',
-                    border: '1px solid rgba(16, 185, 129, 0.15)',
-                  }}
-                >
-                  <div className="w-4 h-4 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-500 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <span className="text-gray-600 font-medium">{t('modal.trust.unsubscribe')}</span>
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  <span>{t('modal.trust.unsubscribe')}</span>
                 </div>
-                <div
-                  className="flex items-center gap-2 px-3.5 py-2 rounded-full text-xs sm:text-sm"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.04) 100%)',
-                    border: '1px solid rgba(16, 185, 129, 0.15)',
-                  }}
-                >
-                  <div className="w-4 h-4 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-500 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <span className="text-gray-600 font-medium">{t('modal.trust.privacy')}</span>
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  <span>{t('modal.trust.privacy')}</span>
                 </div>
               </div>
 
-              {/* Skip Link - Subtle and elegant */}
-              <div className="mt-6 sm:mt-8 text-center">
+              {/* Skip Link - Compact */}
+              <div className="mt-4 text-center">
                 <button
                   onClick={closeModal}
-                  className="text-sm text-gray-400 hover:text-tyrian-500 active:text-tyrian-600 transition-all duration-300 min-h-[44px] px-4 relative group"
+                  className="text-xs text-gray-400 hover:text-tyrian-500 transition-colors min-h-[36px] px-3"
                 >
-                  <span className="relative">
-                    {t('modal.skip')}
-                    <span className="absolute bottom-0 left-0 w-0 h-px bg-tyrian-400 group-hover:w-full transition-all duration-300" />
-                  </span>
+                  {t('modal.skip')}
                 </button>
               </div>
             </div>
