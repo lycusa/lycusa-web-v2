@@ -1,8 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
-
+/* ===== Safe Area & Mobile Foundation ===== */
 :root {
+  /* Safe Area Insets for notched devices */
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+
+  /* Touch target minimum sizes (WCAG 2.2 AAA) */
+  --touch-target-min: 44px;
+  --touch-target-comfortable: 48px;
+
+  /* Fluid spacing scale */
+  --space-xs: clamp(0.25rem, 0.5vw, 0.5rem);
+  --space-sm: clamp(0.5rem, 1vw, 0.75rem);
+  --space-md: clamp(0.75rem, 2vw, 1rem);
+  --space-lg: clamp(1rem, 3vw, 1.5rem);
+  --space-xl: clamp(1.5rem, 4vw, 2rem);
+  --space-2xl: clamp(2rem, 5vw, 3rem);
+  --space-3xl: clamp(3rem, 6vw, 4rem);
+
   /* Brand Colors - Luxury Tech Palette */
   --color-tyrian: #63002B;
   --color-tyrian-light: #8a1048;
@@ -411,4 +430,331 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* ===== Mobile-First & Cross-Browser Compatibility ===== */
+
+/* Safe area padding utilities */
+.safe-area-top {
+  padding-top: var(--safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: var(--safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: var(--safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: var(--safe-area-inset-right);
+}
+
+.safe-area-x {
+  padding-left: var(--safe-area-inset-left);
+  padding-right: var(--safe-area-inset-right);
+}
+
+.safe-area-y {
+  padding-top: var(--safe-area-inset-top);
+  padding-bottom: var(--safe-area-inset-bottom);
+}
+
+.safe-area-all {
+  padding-top: var(--safe-area-inset-top);
+  padding-right: var(--safe-area-inset-right);
+  padding-bottom: var(--safe-area-inset-bottom);
+  padding-left: var(--safe-area-inset-left);
+}
+
+/* Touch-friendly interaction utilities */
+.touch-target {
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+}
+
+.touch-target-comfortable {
+  min-height: var(--touch-target-comfortable);
+  min-width: var(--touch-target-comfortable);
+}
+
+/* Disable tap highlight on mobile */
+.tap-transparent {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* All interactive elements should have this */
+button, a, [role="button"], input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Fluid typography scale for mobile-first design */
+.text-fluid-xs {
+  font-size: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+}
+
+.text-fluid-sm {
+  font-size: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+}
+
+.text-fluid-base {
+  font-size: clamp(1rem, 0.925rem + 0.375vw, 1.125rem);
+}
+
+.text-fluid-lg {
+  font-size: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+}
+
+.text-fluid-xl {
+  font-size: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+}
+
+.text-fluid-2xl {
+  font-size: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
+}
+
+.text-fluid-3xl {
+  font-size: clamp(1.875rem, 1.5rem + 1.875vw, 2.5rem);
+}
+
+.text-fluid-4xl {
+  font-size: clamp(2.25rem, 1.75rem + 2.5vw, 3rem);
+}
+
+.text-fluid-5xl {
+  font-size: clamp(3rem, 2rem + 5vw, 4rem);
+}
+
+.text-fluid-hero {
+  font-size: clamp(2.5rem, 1.5rem + 5vw, 4.5rem);
+}
+
+/* Mobile-optimized glass effects (lighter blur for performance) */
+@media (max-width: 768px) {
+  .glass {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .glass-light {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .glass-frosted {
+    backdrop-filter: blur(24px) saturate(150%);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+  }
+}
+
+/* Reduced motion support for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-float,
+  .animate-float-slow,
+  .animate-float-delayed,
+  .glow-pulse,
+  .glass-reflection::after {
+    animation: none !important;
+  }
+}
+
+/* Smooth scrolling (respects user preferences) */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Mobile modal/overlay fixes */
+.modal-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+/* Prevent iOS rubber-banding on modals */
+.modal-scroll-lock {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Mobile-friendly button active states */
+@media (hover: none) and (pointer: coarse) {
+  .neumorphic-button:active,
+  .neumorphic-tyrian:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+
+  /* Larger touch targets on touch devices */
+  .touch-expand {
+    padding: 12px 16px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .glass,
+  .glass-light,
+  .glass-frosted {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid currentColor;
+  }
+
+  .glass-dark {
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid currentColor;
+  }
+}
+
+/* Fix for in-app browsers (Instagram, TikTok, etc.) */
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Prevent text selection on interactive elements */
+.select-none-interactive {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Better focus states for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--color-tyrian);
+  outline-offset: 2px;
+}
+
+/* Mobile card spacing utilities */
+.card-mobile {
+  padding: clamp(1rem, 4vw, 1.5rem);
+}
+
+.card-mobile-sm {
+  padding: clamp(0.75rem, 3vw, 1.25rem);
+}
+
+/* Full-bleed mobile sections */
+.full-bleed-mobile {
+  margin-left: calc(-1 * var(--space-md));
+  margin-right: calc(-1 * var(--space-md));
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+@media (min-width: 640px) {
+  .full-bleed-mobile {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* Mobile-optimized shadows (softer for performance) */
+@media (max-width: 768px) {
+  .depth-shadow-md {
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.02),
+      0 4px 8px rgba(99, 0, 43, 0.04);
+  }
+
+  .depth-shadow-lg {
+    box-shadow:
+      0 4px 8px rgba(0, 0, 0, 0.03),
+      0 8px 16px rgba(99, 0, 43, 0.06);
+  }
+
+  .depth-shadow-xl {
+    box-shadow:
+      0 6px 12px rgba(0, 0, 0, 0.04),
+      0 12px 24px rgba(99, 0, 43, 0.08);
+  }
+}
+
+/* Sticky header with safe area */
+.sticky-safe {
+  position: sticky;
+  top: var(--safe-area-inset-top);
+  z-index: 50;
+}
+
+/* Container with safe area margins */
+.container-safe {
+  padding-left: max(1rem, var(--safe-area-inset-left));
+  padding-right: max(1rem, var(--safe-area-inset-right));
+}
+
+@media (min-width: 640px) {
+  .container-safe {
+    padding-left: max(1.5rem, var(--safe-area-inset-left));
+    padding-right: max(1.5rem, var(--safe-area-inset-right));
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-safe {
+    padding-left: max(2rem, var(--safe-area-inset-left));
+    padding-right: max(2rem, var(--safe-area-inset-right));
+  }
+}
+
+/* Fix 100vh issue on mobile browsers */
+.h-screen-safe {
+  height: 100vh;
+  height: 100dvh;
+}
+
+.min-h-screen-safe {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Horizontal scroll container for mobile */
+.scroll-x-mobile {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.scroll-x-mobile::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-x-mobile > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* Image loading states */
+.img-loading {
+  background: linear-gradient(
+    90deg,
+    rgba(99, 0, 43, 0.05) 0%,
+    rgba(99, 0, 43, 0.1) 50%,
+    rgba(99, 0, 43, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: img-shimmer 1.5s infinite;
+}
+
+@keyframes img-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
