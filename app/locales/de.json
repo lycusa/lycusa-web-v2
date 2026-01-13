@@ -3,79 +3,79 @@
         "signIn": "Anmelden"
     },
     "hero": {
-        "badge": "DATENSCHUTZ-MARKTPLATZ",
-        "title1": "Intime Artikel",
-        "title2": "Mit Totaler",
-        "title3": "Privatsphäre",
-        "description": "Ein sicherer Marktplatz, auf dem Ihre Identität anonym bleibt, Nachrichten verschlüsselt sind und Pakete diskret ankommen."
+        "badge": "Privater Marktplatz für Kleidung",
+        "title1": "Deine Kleidung",
+        "title2": "Dein Verlangen",
+        "title3": "Dein Bereich",
+        "description": "Verkaufe und kaufe getragene Socken, Unterwäsche, Strumpfhosen und mehr – von echten Menschen. Private Profile. Echte Verbindung. Echter Wert."
     },
     "features": {
         "anonymousShopping": {
-            "title": "Anonymes Einkaufen",
-            "description": "Ihre Identität bleibt während Ihrer gesamten Reise vollständig privat."
+            "title": "Verwandle Kleidung in Einkommen",
+            "description": "Deine Socken, Unterwäsche oder Strumpfhosen können für jemand anderen mehr bedeuten. Verkaufe, was du bereits besitzt. Bestimme deinen Preis. Behalte die Kontrolle."
         },
         "encrypted": {
-            "title": "E2E Verschlüsselt",
-            "subtitle": "Signal-Protokoll",
+            "title": "Finde Artikel mit Geschichte",
+            "subtitle": "Echte Kleidung von echten Menschen – mit Duft, Gefühl und persönlicher Note.",
             "status": "Aktiv"
         },
         "delivery": {
-            "title": "Diskrete Lieferung",
-            "subtitle": "Neutrale Verpackung"
+            "title": "Standardmäßig privat",
+            "subtitle": "Keine Klarnamen. Kein Druck. Teile nur, was du willst. Sei du selbst, ganz sicher."
         },
         "escrow": {
-            "title": "Sicheres Treuhand",
-            "subtitle": "KYC verifiziert · Käuferschutz"
+            "title": "Auf Vertrauen gebaut",
+            "subtitle": "Jeder Nutzer ist geprüft. Keine Fakeprofile. Kein Rätselraten, wer auf der anderen Seite ist."
         }
     },
     "howItWorks": {
         "badge": "Einfach & Sicher",
-        "title": "So funktioniert's",
-        "description": "Der Einstieg ist einfach. Erstellen Sie ein Konto, stöbern Sie anonym und kaufen Sie mit vollem Vertrauen ein.",
+        "title": "So funktioniert Lycusa",
+        "description": "Lycusa startet bald in Europa, beginnend in Deutschland. Trage dich in die Warteliste ein und erhalte früheren Zugang.",
         "step1": {
-            "title": "Anonym Registrieren",
-            "description": "Erstellen Sie Ihr Konto nur mit einer E-Mail oder Web3-Wallet. Keine persönlichen Daten erforderlich, um zu stöbern.",
-            "hint": "E-Mail oder Wallet"
+            "title": "Früh dabei sein",
+            "description": "Erstelle dein Konto nur mit E-Mail oder Web3-Wallet. Keine persönlichen Daten zum Stöbern nötig.",
+            "hint": "Keine persönlichen Details"
         },
         "step2": {
-            "title": "Stöbern & Verbinden",
-            "description": "Entdecken Sie verifizierte Angebote und schreiben Sie Verkäufern über unseren verschlüsselten Chat. Ihre Gespräche bleiben vollständig privat.",
-            "hint": "Ende-zu-Ende verschlüsselt"
+            "title": "Verkaufe, was du möchtest",
+            "description": "Socken, Unterwäsche, Strumpfhosen und mehr. Fotos hinzufügen. Details ergänzen. Entscheide, wie persönlich du sein willst.",
+            "hint": "Deine Details, deine Wahl"
         },
         "step3": {
-            "title": "Sichere Zahlung",
-            "description": "Schließen Sie Ihren Kauf mit unserem sicheren Treuhandsystem ab. Zahlungen sind geschützt, bis Sie die Lieferung bestätigen.",
-            "hint": "Treuhand geschützt"
+            "title": "Wähle, was dir gefällt",
+            "description": "Durchstöbere echte Angebote. Finde den Stil, das Gefühl und den Vibe, den du suchst.",
+            "hint": "Folge deinem Geschmack"
         },
         "step4": {
-            "title": "Diskrete Lieferung",
-            "description": "Erhalten Sie Ihre Artikel in neutraler, unmarkierter Verpackung. Keine externen Etiketten oder Marken verraten den Inhalt.",
-            "hint": "Neutrale Verpackung"
+            "title": "Verbindung",
+            "description": "Das ist nicht nur Shopping. Es geht um Verlangen, Neugier und persönlichen Geschmack – ganz ohne Bloßstellung.",
+            "hint": "Nur unter euch"
         },
         "cta": {
-            "title": "Demnächst Verfügbar",
-            "description": "Unser datenschutzorientierter Marktplatz startet bald.",
-            "button": "Bleiben Sie Dran"
+            "title": "Tritt der Warteliste bei",
+            "description": "Erhalte früheren Zugang zu Lycusa.",
+            "button": "Warteliste beitreten"
         }
     },
     "footer": {
-        "tagline": "Der datenschutzorientierte Marktplatz für diskretes Einkaufen.",
+        "tagline": "Ein privater Ort zum Verkauf und Kauf von gebrauchter Kleidung",
         "badges": {
-            "encrypted": "E2E Verschlüsselt",
-            "escrow": "Sicheres Treuhand"
+            "encrypted": "Verifizierte Nutzer",
+            "escrow": "Sichere Zahlungen"
         },
-        "copyright": "© 2025 Lycusa. Alle Rechte vorbehalten."
+        "copyright": "© 2026 Lycusa. Alle Rechte vorbehalten."
     },
     "modal": {
-        "title": "Frühen Zugang Erhalten",
-        "description": "Seien Sie der Erste, der erfährt, wenn Lycusa startet. Erhalten Sie exklusive Updates und frühen Zugang zu unserem datenschutzorientierten Marktplatz.",
-        "placeholder": "ihre@email.de",
-        "button": "Frühen Zugang Erhalten",
-        "successMessage": "Sie sind auf der Liste! Wir benachrichtigen Sie, wenn wir starten.",
+        "title": "Sei früh bei Lycusa dabei",
+        "description": "Erfahre als Erster, wann Lycusa startet. Erhalte exklusive Updates und frühen Zugang zu unserem Marktplatz, bei dem Privatsphäre an erster Stelle steht.",
+        "placeholder": "deine@email.de",
+        "button": "Frühen Zugang erhalten",
+        "successMessage": "Du bist auf der Liste! Wir geben Bescheid, wenn wir starten.",
         "trust": {
             "noSpam": "Kein Spam, niemals",
-            "unsubscribe": "Jederzeit abmelden",
-            "privacy": "Datenschutz zuerst"
+            "unsubscribe": "Jederzeit abbestellbar",
+            "privacy": "Privatsphäre zuerst"
         },
         "skip": "Vielleicht später"
     },
