@@ -1,37 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useAuth } from "./components/auth/AuthGuard";
-import LogoutButton from "./components/auth/LogoutButton";
-import { useState, useEffect } from "react";
-import { getUserProfile } from "./lib/api";
 import { AppBackground } from "./components/layout";
-import EmailSubscriptionModal from "./components/shared/EmailSubscriptionModal";
+import EmailCollector from "./components/shared/EmailCollector";
 
 export default function Home() {
-  const { user, loading, isAuthenticated } = useAuth();
-  const [hasProfile, setHasProfile] = useState<boolean | null>(null);
-  const [profileLoading, setProfileLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    const checkProfile = async () => {
-      if (isAuthenticated && user?.id) {
-        try {
-          const response = await getUserProfile(user.id);
-          setHasProfile(response.success && response.data);
-        } catch (err: any) {
-          setHasProfile(false);
-        } finally {
-          setProfileLoading(false);
-        }
-      } else {
-        setProfileLoading(false);
-      }
-    };
-
-    checkProfile();
-  }, [isAuthenticated, user]);
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   return (
     <AppBackground>
@@ -51,56 +30,12 @@ export default function Home() {
             </Link>
 
             <nav className="flex items-center gap-3">
-              {loading ? (
-                <div className="flex items-center gap-3">
-                  <div className="w-24 h-9 glass animate-pulse rounded-xl"></div>
-                  <div className="w-20 h-9 glass animate-pulse rounded-xl"></div>
-                </div>
-              ) : isAuthenticated ? (
-                <>
-                  <Link
-                    href="/my-products"
-                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-all text-sm font-medium glass-hover rounded-xl"
-                  >
-                    My Products
-                  </Link>
-                  <Link
-                    href="/orders"
-                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-all text-sm font-medium glass-hover rounded-xl"
-                  >
-                    Orders
-                  </Link>
-                  <Link
-                    href="/messages"
-                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-all text-sm font-medium glass-hover rounded-xl"
-                  >
-                    Messages
-                  </Link>
-                  <div className="hidden sm:flex items-center gap-2 px-4 py-2 glass rounded-xl border border-white/40">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-medium text-gray-700 max-w-[150px] truncate">
-                      {user?.email ||
-                        `${user?.walletAddress?.slice(0, 6)}...${user?.walletAddress?.slice(-4)}`}
-                    </span>
-                  </div>
-                  <LogoutButton className="px-4 py-2 neumorphic-tyrian text-white rounded-xl hover:scale-105 transition-all text-sm font-medium" />
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/signin"
-                    className="px-4 py-2 text-gray-700 hover:text-tyrian-800 transition-all text-sm font-medium glass-hover rounded-xl"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    href="/signup"
-                    className="px-5 py-2.5 neumorphic-tyrian text-white rounded-xl hover:scale-105 transition-all text-sm font-semibold glow-tyrian"
-                  >
-                    Get Started
-                  </Link>
-                </>
-              )}
+              <button
+                onClick={openModal}
+                className="px-5 py-2.5 neumorphic-tyrian text-white rounded-xl hover:scale-105 transition-all text-sm font-semibold glow-tyrian"
+              >
+                Sign In
+              </button>
             </nav>
           </div>
         </div>
@@ -145,28 +80,7 @@ export default function Home() {
               </p>
             </div>
 
-            {/* CTAs */}
-            <div className="relative z-10 mt-8">
-              {!loading && !profileLoading && !isAuthenticated && (
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Link
-                    href="/signup"
-                    className="group px-6 py-3.5 bg-white text-tyrian-900 rounded-xl hover:bg-tyrian-50 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center justify-center gap-2"
-                  >
-                    Get Started Free
-                    <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </Link>
-                  <Link
-                    href="/products"
-                    className="px-6 py-3.5 border border-white/30 text-white rounded-xl hover:bg-white/10 transition-all font-semibold backdrop-blur-sm hover:-translate-y-0.5"
-                  >
-                    Browse Products
-                  </Link>
-                </div>
-              )}
-            </div>
+{/* CTAs hidden for marketing landing page */}
           </div>
 
           {/* Right Side - Bento Grid with Glass Effects */}
@@ -273,79 +187,28 @@ export default function Home() {
         </div>
 
         {/* Trust Bar - Below Hero */}
-        {!loading && !profileLoading && !isAuthenticated && (
-          <div className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-3 text-sm text-gray-500">
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-tyrian-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>No credit card required</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-tyrian-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>100% anonymous browsing</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-tyrian-600" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <span>Signal Protocol encryption</span>
-            </div>
-            <p className="text-gray-400">
-              Already have an account?{" "}
-              <Link href="/signin" className="text-tyrian-800 hover:text-tyrian-900 font-semibold">
-                Sign In →
-              </Link>
-            </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-x-8 gap-y-3 text-sm text-gray-500">
+          <div className="flex items-center gap-2">
+            <svg className="w-4 h-4 text-tyrian-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span>No credit card required</span>
           </div>
-        )}
-
-        {/* Authenticated User State */}
-        {!loading && !profileLoading && isAuthenticated && (
-          <div className="mt-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-linear-to-br from-tyrian-600 to-tyrian-500 rounded-full flex items-center justify-center shadow-lg">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Welcome back!</p>
-                    <p className="text-sm text-gray-600">
-                      {user?.email && `${user.email}`}
-                      {user?.walletAddress && `${user.walletAddress.slice(0, 10)}...${user.walletAddress.slice(-6)}`}
-                    </p>
-                  </div>
-                </div>
-
-                {!hasProfile ? (
-                  <Link
-                    href="/profile/edit"
-                    className="px-6 py-3 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 text-center"
-                  >
-                    Complete Profile →
-                  </Link>
-                ) : (
-                  <div className="flex flex-wrap gap-3">
-                    <Link href="/products" className="px-5 py-2.5 bg-tyrian-800 text-white rounded-xl hover:bg-tyrian-900 transition-all font-medium shadow-md hover:shadow-lg text-sm">
-                      Browse Products
-                    </Link>
-                    <Link href="/orders" className="px-5 py-2.5 bg-gray-800 text-white rounded-xl hover:bg-gray-900 transition-all font-medium shadow-md hover:shadow-lg text-sm">
-                      My Orders
-                    </Link>
-                    <Link href="/profile" className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all font-medium text-sm">
-                      Profile
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </div>
+          <div className="flex items-center gap-2">
+            <svg className="w-4 h-4 text-tyrian-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span>100% anonymous browsing</span>
           </div>
-        )}
+          <div className="flex items-center gap-2">
+            <svg className="w-4 h-4 text-tyrian-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span>Signal Protocol encryption</span>
+          </div>
+        </div>
+
+{/* Authenticated User State hidden for marketing landing page */}
 
         {/* Why Lycusa Section - Glass Bento Grid */}
         <div className="mt-32">
@@ -694,16 +557,13 @@ export default function Home() {
                     </svg>
                   </div>
                   <div className="text-left">
-                    <p className="text-gray-900 font-bold text-lg">Ready to get started?</p>
-                    <p className="text-gray-600">Join our privacy-first marketplace today.</p>
+                    <p className="text-gray-900 font-bold text-lg">Coming Soon</p>
+                    <p className="text-gray-600">Our privacy-first marketplace is launching soon.</p>
                   </div>
                 </div>
-                <Link
-                  href="/signup"
-                  className="px-8 py-4 neumorphic-tyrian text-white rounded-2xl hover:scale-105 transition-all font-semibold whitespace-nowrap glow-tyrian"
-                >
-                  Join Now
-                </Link>
+                <div className="px-8 py-4 neumorphic-tyrian text-white rounded-2xl font-semibold whitespace-nowrap">
+                  Stay Tuned
+                </div>
               </div>
             </div>
           </div>
@@ -938,43 +798,23 @@ export default function Home() {
                   {/* Badge */}
                   <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 backdrop-blur-sm rounded-full mb-8 border border-white/20">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                    <span className="text-sm font-semibold text-white">Start Your Private Journey</span>
+                    <span className="text-sm font-semibold text-white">Coming Soon</span>
                   </div>
 
                   <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                    Ready to Shop with
+                    Shop with
                     <br />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-tyrian-200 via-white to-tyrian-200">Complete Privacy?</span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-tyrian-200 via-white to-tyrian-200">Complete Privacy</span>
                   </h2>
                   <p className="text-xl text-tyrian-100/90 mb-10 leading-relaxed max-w-2xl mx-auto">
-                    Join Lycusa today and experience a marketplace built for discretion, security, and your peace of mind.
+                    Lycusa is launching soon. A marketplace built for discretion, security, and your peace of mind.
                   </p>
 
-                  {/* CTA Buttons with neumorphic styling */}
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
-                    <Link
-                      href="/signup"
-                      className="group relative px-10 py-5 bg-white text-tyrian-900 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-                    >
-                      {/* Shimmer effect */}
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                        style={{
-                          background: 'linear-gradient(90deg, transparent, rgba(99, 0, 43, 0.1), transparent)',
-                          animation: 'shimmer 2s infinite',
-                        }} />
-                      <span className="relative z-10 flex items-center justify-center gap-2">
-                        Create Free Account
-                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </span>
-                    </Link>
-                    <Link
-                      href="/products"
-                      className="px-10 py-5 bg-white/10 backdrop-blur-sm text-white rounded-2xl font-bold text-lg border border-white/20 hover:bg-white/20 transition-all duration-300 hover:-translate-y-1"
-                    >
-                      Explore Products
-                    </Link>
+                  {/* Coming Soon Badge */}
+                  <div className="flex justify-center mb-10">
+                    <div className="px-10 py-5 bg-white text-tyrian-900 rounded-2xl font-bold text-lg shadow-xl">
+                      Launching Soon
+                    </div>
                   </div>
 
                   {/* Trust indicators with glass styling */}
@@ -1075,8 +915,149 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Email Subscription Modal - Shows on first visit */}
-      <EmailSubscriptionModal delayMs={3000} />
+      {/* Email Subscription Modal */}
+      <>
+        {/* Backdrop */}
+        <div
+          className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity duration-300 ${
+            isModalOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+          onClick={closeModal}
+        />
+
+        {/* Modal */}
+        <div
+          className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ${
+            isModalOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+          }`}
+        >
+          <div
+            className="relative bg-white rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center group"
+              aria-label="Close modal"
+            >
+              <svg
+                className="w-5 h-5 text-gray-600 group-hover:text-gray-900 transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Decorative Background */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div
+                className="absolute -top-40 -right-40 w-80 h-80 rounded-full opacity-20"
+                style={{
+                  background: 'radial-gradient(circle, rgba(99, 0, 43, 0.3) 0%, transparent 70%)',
+                  filter: 'blur(60px)',
+                }}
+              />
+              <div
+                className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full opacity-15"
+                style={{
+                  background: 'radial-gradient(circle, rgba(214, 146, 174, 0.3) 0%, transparent 70%)',
+                  filter: 'blur(60px)',
+                }}
+              />
+            </div>
+
+            {/* Content */}
+            <div className="relative z-10 p-8 md:p-12">
+              <div className="text-center mb-8">
+                {/* Icon */}
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-tyrian-700 to-tyrian-600 mb-6 shadow-lg shadow-tyrian-700/30">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+
+                {/* Heading */}
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  Get Early Access
+                </h2>
+                <p className="text-lg text-gray-600 leading-relaxed max-w-lg mx-auto">
+                  Be the first to know when Lycusa launches. Get exclusive updates and early access to our privacy-first marketplace.
+                </p>
+              </div>
+
+              {/* Email Collector */}
+              <div className="flex justify-center mb-6">
+                <EmailCollector
+                  source="signin_modal"
+                  placeholder="your@email.com"
+                  buttonText="Get Early Access"
+                  successMessage="You're on the list! We'll notify you when we launch."
+                  onSuccess={() => {
+                    setTimeout(() => {
+                      closeModal();
+                    }, 2000);
+                  }}
+                  onError={(error) => {
+                    console.error('Subscription error:', error);
+                  }}
+                />
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-500">
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span>No spam, ever</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span>Unsubscribe anytime</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span>Privacy first</span>
+                </div>
+              </div>
+
+              {/* Skip Link */}
+              <div className="mt-6 text-center">
+                <button
+                  onClick={closeModal}
+                  className="text-sm text-gray-500 hover:text-gray-700 transition-colors underline"
+                >
+                  Maybe later
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
     </AppBackground>
   );
 }
