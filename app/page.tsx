@@ -148,39 +148,28 @@ function HomeContent() {
               <div className="absolute inset-0 opacity-30" style={{
                 background: 'radial-gradient(ellipse at 20% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%)',
               }}></div>
-              <div className="relative z-10">
+              <div className="relative z-10 flex flex-col h-full">
                 <div className="w-9 h-9 sm:w-10 sm:h-10 bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4 sm:group-hover:scale-110 transition-transform border border-white/20">
                   <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                 </div>
-                <h3 className="font-bold text-white text-sm mb-0.5 sm:mb-1">{t('features.encrypted.title')}</h3>
-                <p className="text-[11px] sm:text-xs text-gray-400">{t('features.encrypted.subtitle')}</p>
-              </div>
-              <div className="absolute bottom-2.5 sm:bottom-3 right-2.5 sm:right-3 flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-                <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-[9px] sm:text-[10px] font-medium text-green-300">{t('features.encrypted.status')}</span>
+                <h3 className="font-bold text-white text-sm mb-1 sm:mb-1.5">{t('features.encrypted.title')}</h3>
+                <p className="text-[11px] sm:text-xs text-gray-300/80 leading-relaxed line-clamp-3 sm:line-clamp-none">{t('features.encrypted.subtitle')}</p>
               </div>
             </div>
 
             {/* Feature Card 3 - Delivery - Neumorphic */}
             <div className="group neumorphic rounded-xl sm:rounded-2xl p-4 sm:p-5 sm:hover:shadow-2xl transition-all duration-300 sm:hover:-translate-y-1 active:scale-[0.99] relative overflow-hidden min-h-[120px] sm:min-h-[140px]">
               <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/40 to-gray-100/20 pointer-events-none"></div>
-              <div className="relative z-10">
+              <div className="relative z-10 flex flex-col h-full">
                 <div className="w-9 h-9 sm:w-10 sm:h-10 neumorphic-inset rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4 sm:group-hover:scale-110 transition-transform">
                   <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                   </svg>
                 </div>
-                <h3 className="font-bold text-gray-900 text-sm mb-0.5 sm:mb-1">{t('features.delivery.title')}</h3>
-                <p className="text-[11px] sm:text-xs text-gray-500">{t('features.delivery.subtitle')}</p>
-              </div>
-              <div className="absolute bottom-2.5 sm:bottom-3 right-2.5 sm:right-3">
-                <div className="w-5 h-5 sm:w-6 sm:h-6 neumorphic-button rounded-md sm:rounded-lg flex items-center justify-center">
-                  <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
+                <h3 className="font-bold text-gray-900 text-sm mb-1 sm:mb-1.5">{t('features.delivery.title')}</h3>
+                <p className="text-[11px] sm:text-xs text-gray-500 leading-relaxed line-clamp-3 sm:line-clamp-none">{t('features.delivery.subtitle')}</p>
               </div>
             </div>
 
