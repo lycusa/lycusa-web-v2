@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { AppBackground } from "./components/layout";
@@ -9,8 +9,39 @@ import EmailCollector from "./components/shared/EmailCollector";
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const openModal = useCallback(() => setIsModalOpen(true), []);
+  const closeModal = useCallback(() => setIsModalOpen(false), []);
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isModalOpen) {
+        closeModal();
+      }
+    };
+
+    if (isModalOpen) {
+      document.addEventListener('keydown', handleEscape);
+      // Lock body scroll when modal is open
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.top = `-${window.scrollY}px`;
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      // Restore body scroll
+      const scrollY = document.body.style.top;
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.top = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
+      }
+    };
+  }, [isModalOpen, closeModal]);
 
   return (
     <AppBackground>
@@ -81,7 +112,7 @@ export default function Home() {
               </p>
             </div>
 
-{/* CTAs hidden for marketing landing page */}
+            {/* CTAs hidden for marketing landing page */}
           </div>
 
           {/* Right Side - Bento Grid with Glass Effects */}
@@ -187,29 +218,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Trust Bar - Below Hero */}
-        <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-x-8 sm:gap-y-3 text-xs sm:text-sm text-gray-500">
-          <div className="flex items-center gap-2">
-            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-tyrian-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span>No credit card required</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-tyrian-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span>100% anonymous browsing</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-tyrian-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span>Signal Protocol encryption</span>
-          </div>
-        </div>
 
-{/* Authenticated User State hidden for marketing landing page */}
+
+        {/* Authenticated User State hidden for marketing landing page */}
 
         {/* How It Works Section - Bento Glass Grid */}
         <div className="mt-16 sm:mt-24 md:mt-32 relative">
@@ -487,22 +498,19 @@ export default function Home() {
       <>
         {/* Backdrop */}
         <div
-          className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity duration-300 ${
-            isModalOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-          }`}
+          className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity duration-300 ${isModalOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
           onClick={closeModal}
         />
 
         {/* Modal */}
         <div
-          className={`fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 transition-all duration-300 ${
-            isModalOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
-          }`}
+          className={`fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 transition-all duration-300 ${isModalOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
         >
           <div
-            className={`relative bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden max-h-[90vh] sm:max-h-[85vh] overflow-y-auto safe-area-bottom transition-transform duration-300 ${
-              isModalOpen ? 'translate-y-0' : 'translate-y-full sm:translate-y-0 sm:scale-95'
-            }`}
+            className={`relative bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden max-h-[90vh] sm:max-h-[85vh] overflow-y-auto safe-area-bottom transition-transform duration-300 ${isModalOpen ? 'translate-y-0' : 'translate-y-full sm:translate-y-0 sm:scale-95'
+              }`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Mobile drag handle indicator */}
