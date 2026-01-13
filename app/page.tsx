@@ -5,9 +5,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { AppBackground } from "./components/layout";
 import EmailCollector from "./components/shared/EmailCollector";
+import LanguageSwitcher from "./components/shared/LanguageSwitcher";
+import { I18nProvider, useI18n } from "./lib/i18n/i18nContext";
 
-export default function Home() {
+function HomeContent() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { t } = useI18n();
 
   const openModal = useCallback(() => setIsModalOpen(true), []);
   const closeModal = useCallback(() => setIsModalOpen(false), []);
@@ -62,11 +65,12 @@ export default function Home() {
             </Link>
 
             <nav className="flex items-center gap-2 sm:gap-3">
+              <LanguageSwitcher />
               <button
                 onClick={openModal}
                 className="px-4 sm:px-5 py-2.5 sm:py-2.5 min-h-[44px] neumorphic-tyrian text-white rounded-xl active:scale-[0.98] sm:hover:scale-105 transition-all text-sm font-semibold glow-tyrian touch-target"
               >
-                Sign In
+                {t('header.signIn')}
               </button>
             </nav>
           </div>
@@ -94,21 +98,21 @@ export default function Home() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tyrian-300 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-white"></span>
                 </span>
-                PRIVACY-FIRST MARKETPLACE
+                {t('hero.badge')}
               </div>
 
               <h1 className="text-fluid-hero font-bold text-white leading-[1.1] tracking-tight mb-4 sm:mb-6">
-                Shop Intimate
+                {t('hero.title1')}
                 <br />
-                Items With
+                {t('hero.title2')}
                 <br />
                 <span className="relative inline-block">
-                  <span className="text-transparent bg-clip-text bg-linear-to-r from-tyrian-200 via-white to-tyrian-200">Total Privacy</span>
+                  <span className="text-transparent bg-clip-text bg-linear-to-r from-tyrian-200 via-white to-tyrian-200">{t('hero.title3')}</span>
                 </span>
               </h1>
 
               <p className="text-fluid-sm sm:text-fluid-base text-tyrian-100/80 leading-relaxed max-w-md">
-                A secure marketplace where your identity stays anonymous, messages are encrypted, and packages arrive discreetly.
+                {t('hero.description')}
               </p>
             </div>
 
@@ -129,8 +133,8 @@ export default function Home() {
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-gray-900 text-base sm:text-lg mb-0.5 sm:mb-1">Anonymous Shopping</h3>
-                  <p className="text-xs sm:text-sm text-gray-600 leading-snug">Your identity stays completely private throughout your journey.</p>
+                  <h3 className="font-bold text-gray-900 text-base sm:text-lg mb-0.5 sm:mb-1">{t('features.anonymousShopping.title')}</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 leading-snug">{t('features.anonymousShopping.description')}</p>
                 </div>
               </div>
             </div>
@@ -150,12 +154,12 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                 </div>
-                <h3 className="font-bold text-white text-sm mb-0.5 sm:mb-1">E2E Encrypted</h3>
-                <p className="text-[11px] sm:text-xs text-gray-400">Signal Protocol</p>
+                <h3 className="font-bold text-white text-sm mb-0.5 sm:mb-1">{t('features.encrypted.title')}</h3>
+                <p className="text-[11px] sm:text-xs text-gray-400">{t('features.encrypted.subtitle')}</p>
               </div>
               <div className="absolute bottom-2.5 sm:bottom-3 right-2.5 sm:right-3 flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
                 <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-[9px] sm:text-[10px] font-medium text-green-300">Active</span>
+                <span className="text-[9px] sm:text-[10px] font-medium text-green-300">{t('features.encrypted.status')}</span>
               </div>
             </div>
 
@@ -168,8 +172,8 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                   </svg>
                 </div>
-                <h3 className="font-bold text-gray-900 text-sm mb-0.5 sm:mb-1">Discreet Delivery</h3>
-                <p className="text-[11px] sm:text-xs text-gray-500">Plain packaging</p>
+                <h3 className="font-bold text-gray-900 text-sm mb-0.5 sm:mb-1">{t('features.delivery.title')}</h3>
+                <p className="text-[11px] sm:text-xs text-gray-500">{t('features.delivery.subtitle')}</p>
               </div>
               <div className="absolute bottom-2.5 sm:bottom-3 right-2.5 sm:right-3">
                 <div className="w-5 h-5 sm:w-6 sm:h-6 neumorphic-button rounded-md sm:rounded-lg flex items-center justify-center">
@@ -191,8 +195,8 @@ export default function Home() {
                     </svg>
                   </div>
                   <div className="min-w-0">
-                    <h3 className="font-bold text-gray-900 text-sm sm:text-base">Secure Escrow</h3>
-                    <p className="text-xs sm:text-sm text-gray-600">KYC verified · Buyer protection</p>
+                    <h3 className="font-bold text-gray-900 text-sm sm:text-base">{t('features.escrow.title')}</h3>
+                    <p className="text-xs sm:text-sm text-gray-600">{t('features.escrow.subtitle')}</p>
                   </div>
                 </div>
                 <div className="flex -space-x-1.5 sm:-space-x-2 self-end sm:self-auto">
@@ -237,13 +241,13 @@ export default function Home() {
               <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              Simple & Secure
+              {t('howItWorks.badge')}
             </div>
             <h2 className="text-fluid-4xl font-bold text-gray-900 mb-3 sm:mb-4 md:mb-6">
-              How It Works
+              {t('howItWorks.title')}
             </h2>
             <p className="text-fluid-sm sm:text-fluid-base text-gray-600 max-w-2xl mx-auto px-4 sm:px-0">
-              Getting started is simple. Create an account, browse anonymously, and shop with complete confidence.
+              {t('howItWorks.description')}
             </p>
           </div>
 
@@ -267,9 +271,9 @@ export default function Home() {
                   </div>
                 </div>
 
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">Sign Up Anonymously</h3>
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">{t('howItWorks.step1.title')}</h3>
                 <p className="text-sm sm:text-base text-gray-600 leading-relaxed flex-1">
-                  Create your account with just an email or Web3 wallet. No personal information required to start browsing.
+                  {t('howItWorks.step1.description')}
                 </p>
 
                 <div className="mt-4 sm:mt-6 flex items-center gap-2 sm:gap-3">
@@ -278,7 +282,7 @@ export default function Home() {
                     <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-tyrian-400 rounded-full" />
                     <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-tyrian-200 rounded-full" />
                   </div>
-                  <span className="text-[10px] sm:text-xs text-gray-400 font-medium">Email or Wallet</span>
+                  <span className="text-[10px] sm:text-xs text-gray-400 font-medium">{t('howItWorks.step1.hint')}</span>
                 </div>
               </div>
             </div>
@@ -299,9 +303,9 @@ export default function Home() {
                   </div>
                 </div>
 
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">Browse & Connect</h3>
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">{t('howItWorks.step2.title')}</h3>
                 <p className="text-sm sm:text-base text-gray-600 leading-relaxed flex-1">
-                  Explore verified listings and message sellers through our encrypted chat. Your conversations stay completely private.
+                  {t('howItWorks.step2.description')}
                 </p>
 
                 <div className="mt-4 sm:mt-6 flex items-center gap-2 sm:gap-3">
@@ -310,7 +314,7 @@ export default function Home() {
                     <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-gray-400 rounded-full" />
                     <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-gray-200 rounded-full" />
                   </div>
-                  <span className="text-[10px] sm:text-xs text-gray-400 font-medium">End-to-end encrypted</span>
+                  <span className="text-[10px] sm:text-xs text-gray-400 font-medium">{t('howItWorks.step2.hint')}</span>
                 </div>
               </div>
             </div>
@@ -331,9 +335,9 @@ export default function Home() {
                   </div>
                 </div>
 
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">Secure Payment</h3>
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">{t('howItWorks.step3.title')}</h3>
                 <p className="text-sm sm:text-base text-gray-600 leading-relaxed flex-1">
-                  Complete your purchase with our secure escrow system. Payments are protected until you confirm delivery.
+                  {t('howItWorks.step3.description')}
                 </p>
 
                 <div className="mt-4 sm:mt-6 flex items-center gap-2 sm:gap-3">
@@ -342,7 +346,7 @@ export default function Home() {
                     <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-tyrian-400 rounded-full" />
                     <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-tyrian-200 rounded-full" />
                   </div>
-                  <span className="text-[10px] sm:text-xs text-gray-400 font-medium">Escrow protected</span>
+                  <span className="text-[10px] sm:text-xs text-gray-400 font-medium">{t('howItWorks.step3.hint')}</span>
                 </div>
               </div>
             </div>
@@ -374,9 +378,9 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 sm:mb-3">Discreet Delivery</h3>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2 sm:mb-3">{t('howItWorks.step4.title')}</h3>
                   <p className="text-sm sm:text-base text-tyrian-100/90 leading-relaxed">
-                    Receive your items in plain, unmarked packaging. No external labels or branding reveal the contents.
+                    {t('howItWorks.step4.description')}
                   </p>
 
                   <div className="mt-4 sm:mt-6 flex items-center gap-2 sm:gap-3">
@@ -385,7 +389,7 @@ export default function Home() {
                       <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-tyrian-300 rounded-full" />
                       <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-tyrian-500 rounded-full" />
                     </div>
-                    <span className="text-[10px] sm:text-xs text-tyrian-200 font-medium">Plain packaging</span>
+                    <span className="text-[10px] sm:text-xs text-tyrian-200 font-medium">{t('howItWorks.step4.hint')}</span>
                   </div>
                 </div>
 
@@ -410,12 +414,12 @@ export default function Home() {
                     </svg>
                   </div>
                   <div className="text-left">
-                    <p className="text-gray-900 font-bold text-base sm:text-lg">Coming Soon</p>
-                    <p className="text-gray-600 text-sm sm:text-base">Our privacy-first marketplace is launching soon.</p>
+                    <p className="text-gray-900 font-bold text-base sm:text-lg">{t('howItWorks.cta.title')}</p>
+                    <p className="text-gray-600 text-sm sm:text-base">{t('howItWorks.cta.description')}</p>
                   </div>
                 </div>
                 <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 min-h-[44px] neumorphic-tyrian text-white rounded-xl sm:rounded-2xl font-semibold whitespace-nowrap active:scale-[0.98] transition-transform">
-                  Stay Tuned
+                  {t('howItWorks.cta.button')}
                 </button>
               </div>
             </div>
@@ -466,7 +470,7 @@ export default function Home() {
 
               {/* Tagline */}
               <p className="text-tyrian-200/80 text-xs sm:text-sm mb-5 sm:mb-6 text-center max-w-md px-4">
-                The privacy-first marketplace for discreet shopping.
+                {t('footer.tagline')}
               </p>
 
               {/* Trust badges */}
@@ -475,19 +479,19 @@ export default function Home() {
                   <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-[10px] sm:text-xs text-tyrian-100/80">E2E Encrypted</span>
+                  <span className="text-[10px] sm:text-xs text-tyrian-100/80">{t('footer.badges.encrypted')}</span>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10">
                   <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-[10px] sm:text-xs text-tyrian-100/80">Secure Escrow</span>
+                  <span className="text-[10px] sm:text-xs text-tyrian-100/80">{t('footer.badges.escrow')}</span>
                 </div>
               </div>
 
               {/* Copyright */}
               <p className="text-xs sm:text-sm text-tyrian-300/60">
-                © 2025 Lycusa. All rights reserved.
+                {t('footer.copyright')}
               </p>
             </div>
           </div>
@@ -569,10 +573,10 @@ export default function Home() {
 
                 {/* Heading */}
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
-                  Get Early Access
+                  {t('modal.title')}
                 </h2>
                 <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed max-w-lg mx-auto">
-                  Be the first to know when Lycusa launches. Get exclusive updates and early access to our privacy-first marketplace.
+                  {t('modal.description')}
                 </p>
               </div>
 
@@ -580,9 +584,9 @@ export default function Home() {
               <div className="flex justify-center mb-5 sm:mb-6">
                 <EmailCollector
                   source="signin_modal"
-                  placeholder="your@email.com"
-                  buttonText="Get Early Access"
-                  successMessage="You're on the list! We'll notify you when we launch."
+                  placeholder={t('modal.placeholder')}
+                  buttonText={t('modal.button')}
+                  successMessage={t('modal.successMessage')}
                   onSuccess={() => {
                     setTimeout(() => {
                       closeModal();
@@ -604,7 +608,7 @@ export default function Home() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span>No spam, ever</span>
+                  <span>{t('modal.trust.noSpam')}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -614,7 +618,7 @@ export default function Home() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span>Unsubscribe anytime</span>
+                  <span>{t('modal.trust.unsubscribe')}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -624,7 +628,7 @@ export default function Home() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  <span>Privacy first</span>
+                  <span>{t('modal.trust.privacy')}</span>
                 </div>
               </div>
 
@@ -634,7 +638,7 @@ export default function Home() {
                   onClick={closeModal}
                   className="text-sm text-gray-500 hover:text-gray-700 active:text-gray-800 transition-colors underline min-h-[44px] px-4"
                 >
-                  Maybe later
+                  {t('modal.skip')}
                 </button>
               </div>
             </div>
@@ -642,5 +646,13 @@ export default function Home() {
         </div>
       </>
     </AppBackground>
+  );
+}
+
+export default function Home() {
+  return (
+    <I18nProvider>
+      <HomeContent />
+    </I18nProvider>
   );
 }

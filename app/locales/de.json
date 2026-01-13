@@ -1,0 +1,87 @@
+{
+    "header": {
+        "signIn": "Anmelden"
+    },
+    "hero": {
+        "badge": "DATENSCHUTZ-MARKTPLATZ",
+        "title1": "Intime Artikel",
+        "title2": "Mit Totaler",
+        "title3": "Privatsphäre",
+        "description": "Ein sicherer Marktplatz, auf dem Ihre Identität anonym bleibt, Nachrichten verschlüsselt sind und Pakete diskret ankommen."
+    },
+    "features": {
+        "anonymousShopping": {
+            "title": "Anonymes Einkaufen",
+            "description": "Ihre Identität bleibt während Ihrer gesamten Reise vollständig privat."
+        },
+        "encrypted": {
+            "title": "E2E Verschlüsselt",
+            "subtitle": "Signal-Protokoll",
+            "status": "Aktiv"
+        },
+        "delivery": {
+            "title": "Diskrete Lieferung",
+            "subtitle": "Neutrale Verpackung"
+        },
+        "escrow": {
+            "title": "Sicheres Treuhand",
+            "subtitle": "KYC verifiziert · Käuferschutz"
+        }
+    },
+    "howItWorks": {
+        "badge": "Einfach & Sicher",
+        "title": "So funktioniert's",
+        "description": "Der Einstieg ist einfach. Erstellen Sie ein Konto, stöbern Sie anonym und kaufen Sie mit vollem Vertrauen ein.",
+        "step1": {
+            "title": "Anonym Registrieren",
+            "description": "Erstellen Sie Ihr Konto nur mit einer E-Mail oder Web3-Wallet. Keine persönlichen Daten erforderlich, um zu stöbern.",
+            "hint": "E-Mail oder Wallet"
+        },
+        "step2": {
+            "title": "Stöbern & Verbinden",
+            "description": "Entdecken Sie verifizierte Angebote und schreiben Sie Verkäufern über unseren verschlüsselten Chat. Ihre Gespräche bleiben vollständig privat.",
+            "hint": "Ende-zu-Ende verschlüsselt"
+        },
+        "step3": {
+            "title": "Sichere Zahlung",
+            "description": "Schließen Sie Ihren Kauf mit unserem sicheren Treuhandsystem ab. Zahlungen sind geschützt, bis Sie die Lieferung bestätigen.",
+            "hint": "Treuhand geschützt"
+        },
+        "step4": {
+            "title": "Diskrete Lieferung",
+            "description": "Erhalten Sie Ihre Artikel in neutraler, unmarkierter Verpackung. Keine externen Etiketten oder Marken verraten den Inhalt.",
+            "hint": "Neutrale Verpackung"
+        },
+        "cta": {
+            "title": "Demnächst Verfügbar",
+            "description": "Unser datenschutzorientierter Marktplatz startet bald.",
+            "button": "Bleiben Sie Dran"
+        }
+    },
+    "footer": {
+        "tagline": "Der datenschutzorientierte Marktplatz für diskretes Einkaufen.",
+        "badges": {
+            "encrypted": "E2E Verschlüsselt",
+            "escrow": "Sicheres Treuhand"
+        },
+        "copyright": "© 2025 Lycusa. Alle Rechte vorbehalten."
+    },
+    "modal": {
+        "title": "Frühen Zugang Erhalten",
+        "description": "Seien Sie der Erste, der erfährt, wenn Lycusa startet. Erhalten Sie exklusive Updates und frühen Zugang zu unserem datenschutzorientierten Marktplatz.",
+        "placeholder": "ihre@email.de",
+        "button": "Frühen Zugang Erhalten",
+        "successMessage": "Sie sind auf der Liste! Wir benachrichtigen Sie, wenn wir starten.",
+        "trust": {
+            "noSpam": "Kein Spam, niemals",
+            "unsubscribe": "Jederzeit abmelden",
+            "privacy": "Datenschutz zuerst"
+        },
+        "skip": "Vielleicht später"
+    },
+    "languageSwitcher": {
+        "switchTo": "Wechseln zu",
+        "english": "Englisch",
+        "german": "Deutsch"
+    }
+}
