@@ -15,6 +15,15 @@ function HomeContent() {
   const openModal = useCallback(() => setIsModalOpen(true), []);
   const closeModal = useCallback(() => setIsModalOpen(false), []);
 
+  // Auto-show modal 3 seconds after page load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      openModal();
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [openModal]);
+
   // Handle Escape key to close modal
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
