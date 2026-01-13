@@ -9,7 +9,14 @@ function initializeFirebaseAdmin() {
     try {
       const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
       const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-      const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+
+      const formatPrivateKey = (key: string) => {
+        return key.replace(/\\n/g, '\n').replace(/^"|"$/g, '');
+      };
+
+      const privateKey = process.env.FIREBASE_PRIVATE_KEY
+        ? formatPrivateKey(process.env.FIREBASE_PRIVATE_KEY)
+        : undefined;
 
       if (!projectId || !clientEmail || !privateKey) {
         console.warn('Firebase Admin credentials not fully configured');
