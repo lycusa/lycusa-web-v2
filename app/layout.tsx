@@ -12,7 +12,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "lycusa",
+  title: "Lycusa",
   description: "Buy and sell pre-loved clothing with ease. Join our community of conscious shoppers making fashion sustainable.",
 };
 
