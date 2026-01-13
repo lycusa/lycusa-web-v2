@@ -139,9 +139,9 @@ function HomeContent() {
               <div className="absolute inset-0 glass-reflection pointer-events-none opacity-30 hidden sm:block"></div>
               <div className="relative z-10 flex items-start gap-3 sm:gap-4">
                 <div className="w-11 h-11 sm:w-14 sm:h-14 neumorphic-tyrian rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 sm:group-hover:scale-110 transition-transform">
-                  {/* Coin/Sparkle icon for income/earnings */}
+                  {/* Abstract rising/growth icon - represents value transformation */}
                   <svg className="w-5 h-5 sm:w-7 sm:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
@@ -162,9 +162,9 @@ function HomeContent() {
               }}></div>
               <div className="relative z-10 flex flex-col h-full">
                 <div className="w-9 h-9 sm:w-10 sm:h-10 bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl flex items-center justify-center mb-3 sm:mb-4 sm:group-hover:scale-110 transition-transform border border-white/20">
-                  {/* Sparkles/Touch icon for feeling/story */}
+                  {/* Wave/Signal icon - represents emanation & personal aura */}
                   <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.982 0 13.79" />
                   </svg>
                 </div>
                 <h3 className="font-bold text-white text-sm mb-1 sm:mb-1.5">{t('features.encrypted.title')}</h3>
@@ -301,7 +301,7 @@ function HomeContent() {
                   <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                     {t('howItWorks.step3.description')}
                   </p>
-                  <span className="inline-block mt-2 text-[10px] sm:text-xs text-tyrian-600 font-medium bg-tyrian-50 px-2 py-0.5 rounded-full">{t('howItWorks.step3.hint')}</span>
+                  <span className="inline-block mt-2 text-[10px] sm:text-xs text-teal-700 font-medium bg-teal-50 px-2 py-0.5 rounded-full">{t('howItWorks.step3.hint')}</span>
                 </div>
               </div>
             </div>
