@@ -5,14 +5,14 @@
     "hero": {
         "badge": "Private Clothing Marketplace",
         "title1": "Your Clothes",
-        "title2": "Your Desire",
+        "title2": "Your Feelings",
         "title3": "Your Space",
-        "description": "Sell and buy used socks, underwear, tights and more — from real people. Real connection. Real value."
+        "description": "Sell and buy personal items — from real people. Real connection. Real value."
     },
     "features": {
         "anonymousShopping": {
             "title": "Turn everyday clothes into income",
-            "description": "Your socks, underwear or tights can mean more to someone else. Sell items you already own. Set your price. Stay in control."
+            "description": "Your clothes, personal wears can mean more to someone else. Sell items you already own. Set your price. Stay in control."
         },
         "encrypted": {
             "title": "Find items with a story",
@@ -39,7 +39,7 @@
         },
         "step2": {
             "title": "List What You Want to Sell",
-            "description": "Socks, underwear, tights and more. Add photos. Add details. Decide how personal you want to be.",
+            "description": "Personal clothes. Add photos. Add details. Decide how personal you want to be.",
             "hint": "Your details, your choice"
         },
         "step3": {
